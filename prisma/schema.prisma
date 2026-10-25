@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Article {
+  der
+  das
+  die
+  none
+}
+
+enum GrammaticalNumber {
+  singular
+  plural
+  not_applicable
+}
+
+enum CefrLevel {
+  A1
+  A2
+  B1
+  B2
+  C1
+  C2
+}
+
+model Word {
+  id           String    @id @default(cuid())
+  german       String
+  article      Article   @default(none)
+  grammaticalNumber GrammaticalNumber @default(not_applicable)
+  translation  String
+  pluralForm   String?
+  level        CefrLevel?
+  lessonNumber Int?
+  notes        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([german])
+  @@index([lessonNumber, level])
+  @@map("words")
+}
