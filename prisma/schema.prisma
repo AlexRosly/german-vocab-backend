@@ -30,19 +30,35 @@ enum CefrLevel {
 }
 
 model Word {
-  id           String    @id @default(cuid())
-  german       String
-  article      Article   @default(none)
+  id                String            @id @default(cuid())
+  german            String
+  article           Article           @default(none)
   grammaticalNumber GrammaticalNumber @default(not_applicable)
-  translation  String
-  pluralForm   String?
-  level        CefrLevel?
-  lessonNumber Int?
-  notes        String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  translation       String
+  pluralForm        String?
+  level             CefrLevel?
+  lessonNumber      Int?
+  notes             String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  examples WordExample[]
 
   @@index([german])
   @@index([lessonNumber, level])
   @@map("words")
+}
+
+model WordExample {
+  id          String   @id @default(cuid())
+  wordId      String
+  german      String
+  translation String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  word Word @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@index([wordId])
+  @@map("word_examples")
 }
