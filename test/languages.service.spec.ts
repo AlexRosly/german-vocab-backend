@@ -19,19 +19,19 @@ describe("Independent language preferences", () => {
   });
 
   it("returns only the requested user's two language preferences", async () => {
-    expect(await preferences.get(userA.id)).toEqual({ interfaceLanguage: "ru", translationLanguage: "ru" });
+    expect(await preferences.get(userA.id)).toEqual({ interfaceLanguage: "ru", translationLanguage: "ru", timeZone: "UTC", dailyGoal: 10 });
     expect(await preferences.get(userA.id)).not.toHaveProperty("role");
   });
 
   it("changes interface and translation languages independently without affecting another user", async () => {
-    expect(await preferences.update(userA.id, { interfaceLanguage: "de" })).toEqual({ interfaceLanguage: "de", translationLanguage: "ru" });
-    expect(await preferences.update(userA.id, { translationLanguage: "en" })).toEqual({ interfaceLanguage: "de", translationLanguage: "en" });
-    expect(await preferences.get(userB.id)).toEqual({ interfaceLanguage: "ru", translationLanguage: "ru" });
+    expect(await preferences.update(userA.id, { interfaceLanguage: "de" })).toEqual({ interfaceLanguage: "de", translationLanguage: "ru", timeZone: "UTC", dailyGoal: 10 });
+    expect(await preferences.update(userA.id, { translationLanguage: "en" })).toEqual({ interfaceLanguage: "de", translationLanguage: "en", timeZone: "UTC", dailyGoal: 10 });
+    expect(await preferences.get(userB.id)).toEqual({ interfaceLanguage: "ru", translationLanguage: "ru", timeZone: "UTC", dailyGoal: 10 });
     expect(store.users.get(userA.id)!.role).toBe("USER");
   });
 
   it("normalizes supported language codes", async () => {
-    expect(await preferences.update(userA.id, { interfaceLanguage: " UK ", translationLanguage: " EN " })).toEqual({ interfaceLanguage: "uk", translationLanguage: "en" });
+    expect(await preferences.update(userA.id, { interfaceLanguage: " UK ", translationLanguage: " EN " })).toEqual({ interfaceLanguage: "uk", translationLanguage: "en", timeZone: "UTC", dailyGoal: 10 });
   });
 
   it("rejects empty, unsupported and null preferences without writing", () => {

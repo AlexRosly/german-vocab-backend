@@ -115,6 +115,7 @@ export function makeStudyDatabase() {
   }
 
   const db = {
+    user: { findUnique: jest.fn(async (_args: unknown) => ({ timeZone: "UTC", dailyGoal: 10 })) },
     word: {
       findMany: jest.fn(async (args: Args = {}) => ordered([...words.values()].filter((row) => matches(row, args.where)), args.orderBy).map((row) => projectWord(row, args))),
       count: jest.fn(async (args: Args = {}) => [...words.values()].filter((row) => matches(row, args.where)).length),

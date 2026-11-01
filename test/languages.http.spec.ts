@@ -65,10 +65,10 @@ describe("Language preferences and translations HTTP (mocked persistence)", () =
   });
 
   it("stores interface and translation languages independently for one user", async () => {
-    expect(await (await request("/users/me/preferences", "PATCH", { interfaceLanguage: "DE" })).json()).toEqual({ interfaceLanguage: "de", translationLanguage: "ru" });
-    expect(await (await request("/users/me/preferences", "PATCH", { translationLanguage: " EN " })).json()).toEqual({ interfaceLanguage: "de", translationLanguage: "en" });
-    expect(await (await request("/users/me/preferences")).json()).toEqual({ interfaceLanguage: "de", translationLanguage: "en" });
-    expect(await (await request("/users/me/preferences", "GET", undefined, "b")).json()).toEqual({ interfaceLanguage: "ru", translationLanguage: "ru" });
+    expect(await (await request("/users/me/preferences", "PATCH", { interfaceLanguage: "DE" })).json()).toEqual({ interfaceLanguage: "de", translationLanguage: "ru", timeZone: "UTC", dailyGoal: 10 });
+    expect(await (await request("/users/me/preferences", "PATCH", { translationLanguage: " EN " })).json()).toEqual({ interfaceLanguage: "de", translationLanguage: "en", timeZone: "UTC", dailyGoal: 10 });
+    expect(await (await request("/users/me/preferences")).json()).toEqual({ interfaceLanguage: "de", translationLanguage: "en", timeZone: "UTC", dailyGoal: 10 });
+    expect(await (await request("/users/me/preferences", "GET", undefined, "b")).json()).toEqual({ interfaceLanguage: "ru", translationLanguage: "ru", timeZone: "UTC", dailyGoal: 10 });
     expect(await (await request("/auth/me")).json()).toMatchObject({ id: userA.id, interfaceLanguage: "de", translationLanguage: "en", role: "USER" });
   });
 
@@ -87,7 +87,7 @@ describe("Language preferences and translations HTTP (mocked persistence)", () =
     await request("/users/me/preferences?userId=user-b", "PATCH", { translationLanguage: "en" });
     expect(store.users.get(userA.id)!.translationLanguage).toBe("en");
     expect(store.users.get(userB.id)!.translationLanguage).toBe("ru");
-    expect(await (await request("/users/me/preferences?userId=user-b")).json()).toEqual({ interfaceLanguage: "ru", translationLanguage: "en" });
+    expect(await (await request("/users/me/preferences?userId=user-b")).json()).toEqual({ interfaceLanguage: "ru", translationLanguage: "en", timeZone: "UTC", dailyGoal: 10 });
   });
 
   it("reads the chosen translation from WordTranslation while preserving the legacy field", async () => {
@@ -171,6 +171,30 @@ describe("Language preferences and translations HTTP (mocked persistence)", () =
   it("does not cache preference or personalized word reads", async () => {
     for (const path of ["/users/me/preferences", "/words", "/words/mine", "/words/shared", "/words/shared/translations/en"]) {
       expect((await request(path)).headers.get("Cache-Control")).toBe("no-store");
+    }
+  });
+
+  it("persists study settings independently and isolates USER and ADMIN preferences", async () => {
+    const response = await request("/users/me/preferences", "PATCH", { timeZone: "Europe/Berlin", dailyGoal: 25 });
+    expect(response.status).toBe(200); expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(await response.json()).toEqual({ interfaceLanguage: "ru", translationLanguage: "ru", timeZone: "Europe/Berlin", dailyGoal: 25 });
+    await request("/users/me/preferences", "PATCH", { translationLanguage: "en" });
+    expect(await (await request("/users/me/preferences")).json()).toMatchObject({ timeZone: "Europe/Berlin", dailyGoal: 25, translationLanguage: "en" });
+    for (const actor of ["b", "c"]) expect(await (await request("/users/me/preferences", "GET", undefined, actor)).json()).toMatchObject({ timeZone: "UTC", dailyGoal: 10 });
+    expect(fixture.db.word.update).not.toHaveBeenCalled();
+  });
+  it("rejects invalid goals, zones and injected identity without a partial save", async () => {
+    for (const payload of [{ dailyGoal: 0 }, { dailyGoal: 501 }, { dailyGoal: 1.5 }, { dailyGoal: "20" }, { dailyGoal: null },
+      { timeZone: null }, { timeZone: "" }, { timeZone: "+02:00" }, { timeZone: "Mars/Test", dailyGoal: 20 },
+      { timeZone: "Europe/Berlin", userId: userB.id }, { dailyGoal: 20, role: "ADMIN" }]) {
+      expect((await request("/users/me/preferences", "PATCH", payload)).status).toBe(400);
+    }
+    expect(store.model.update).not.toHaveBeenCalled();
+    expect(await (await request("/users/me/preferences")).json()).toMatchObject({ timeZone: "UTC", dailyGoal: 10 });
+  });
+  it("accepts boundary goals and timezone aliases without changing languages", async () => {
+    for (const dailyGoal of [1, 500]) {
+      expect(await (await request("/users/me/preferences", "PATCH", { timeZone: "europe/berlin", dailyGoal })).json()).toMatchObject({ timeZone: "Europe/Berlin", dailyGoal, interfaceLanguage: "ru", translationLanguage: "ru" });
     }
   });
 });

@@ -57,6 +57,8 @@ model User {
   emailVerified       DateTime?
   interfaceLanguage   String    @default("ru")
   translationLanguage String    @default("ru")
+  timeZone            String    @default("UTC")
+  dailyGoal           Int       @default(10)
   role                UserRole  @default(USER)
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt

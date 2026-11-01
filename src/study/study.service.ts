@@ -8,6 +8,7 @@ import { dictionaryWords, WORD_INCLUDE } from "../words/word-access.service";
 import { CreateStudySessionDto, StudySessionWordDto } from "./dto/create-study-session.dto";
 
 import { historyCursor, readHistoryCursor } from "./history-cursor";
+import { canonicalTimeZone, localDay, localDayFormatter } from "../preferences/study-preferences";
 import { StudyHistoryQueryDto } from "./dto/study-history-query.dto";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -176,15 +177,15 @@ export class StudyService {
 
   getProgress(userId: string) {
     const now = new Date();
-    // Preserve the existing definition of "today": the API server's calendar day.
-    const startOfDay = new Date(now);
-    startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(now);
-    endOfDay.setHours(23, 59, 59, 999);
     const activeProgress: Prisma.WordProgressWhereInput = { userId, word: personalWords(userId) };
 
     return this.prisma.$transaction(async (tx) => {
-      const [totalSessions, progressRows, wordCount, studiedToday, dueCount] = await Promise.all([
+      const preferences = await tx.user.findUnique({ where: { id: userId }, select: { timeZone: true, dailyGoal: true } });
+      if (!preferences) throw new NotFoundException("Пользователь не найден");
+      const timeZone = canonicalTimeZone(preferences.timeZone);
+      const formatter = localDayFormatter(timeZone);
+      const studyDate = localDay(formatter, now);
+      const [totalSessions, progressRows, wordCount, dueCount] = await Promise.all([
         tx.studySession.count({ where: { userId } }),
         tx.wordProgress.findMany({
           where: activeProgress,
@@ -192,16 +193,16 @@ export class StudyService {
           orderBy: { updatedAt: "desc" },
         }),
         tx.word.count({ where: personalWords(userId) }),
-        tx.wordProgress.count({
-          where: { ...activeProgress, lastReviewedAt: { gte: startOfDay, lte: endOfDay } },
-        }),
         tx.wordProgress.count({ where: { ...activeProgress, nextReviewAt: { lte: now } } }),
       ]);
       return {
         totalSessions,
         totalWordsInDictionary: wordCount,
         wordsWithProgress: progressRows.length,
-        studiedToday,
+        studiedToday: progressRows.filter((row) => row.lastReviewedAt && row.lastReviewedAt <= now && localDay(formatter, row.lastReviewedAt) === studyDate).length,
+        timeZone,
+        dailyGoal: preferences.dailyGoal,
+        studyDate,
         dueCount,
         knownAnswers: progressRows.reduce((sum, row) => sum + row.knownCount, 0),
         needsReviewAnswers: progressRows.reduce((sum, row) => sum + row.needsReviewCount, 0),
