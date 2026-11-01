@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 
 type Row = Record<string, any>;
-type Args = { where?: Row; include?: Row; select?: Row; data?: Row; orderBy?: Row | Row[] };
+type Args = { where?: Row; include?: Row; select?: Row; data?: Row; orderBy?: Row | Row[]; take?: number };
 
 // Test persistence only: PostgreSQL isolation and contention require a real DB check.
 export function makeStudyDatabase() {
@@ -13,12 +13,14 @@ export function makeStudyDatabase() {
   let sequence = 0;
 
   function valueMatches(value: unknown, condition: any): boolean {
-    if (condition === null || typeof condition !== "object" || condition instanceof Date) return value === condition;
+    if (condition instanceof Date) return value instanceof Date && value.getTime() === condition.getTime();
+    if (condition === null || typeof condition !== "object") return value === condition;
     for (const [operator, expected] of Object.entries(condition)) {
+      if (operator === "lt" && value != null && (value as any) < (expected as any)) continue;
       if (operator === "in" && (expected as unknown[]).includes(value)) continue;
       if (operator === "lte" && value != null && (value as Date) <= (expected as Date)) continue;
       if (operator === "gte" && value != null && (value as Date) >= (expected as Date)) continue;
-      if (["in", "lte", "gte"].includes(operator)) return false;
+      if (["in", "lte", "gte", "lt"].includes(operator)) return false;
       throw new Error(`Unhandled value filter: ${operator}`);
     }
     return true;
@@ -74,6 +76,7 @@ export function makeStudyDatabase() {
   }
 
   function projectSession(row: Row, args: Args) {
+    if (args.select) return Object.fromEntries(Object.keys(args.select).filter((key) => args.select![key]).map((key) => [key, row[key]]));
     const result = structuredClone(row);
     if (args.include?.words) {
       const nested = args.include.words === true ? {} : args.include.words;
@@ -117,7 +120,7 @@ export function makeStudyDatabase() {
       count: jest.fn(async (args: Args = {}) => [...words.values()].filter((row) => matches(row, args.where)).length),
     },
     studySession: {
-      findMany: jest.fn(async (args: Args = {}) => ordered([...sessions.values()].filter((row) => matches(row, args.where)), args.orderBy).map((row) => projectSession(row, args))),
+      findMany: jest.fn(async (args: Args = {}) => ordered([...sessions.values()].filter((row) => matches(row, args.where)), args.orderBy).slice(0, args.take).map((row) => projectSession(row, args))),
       findFirst: jest.fn(async (args: Args) => {
         const row = [...sessions.values()].find((item) => matches(item, args.where));
         return row ? projectSession(row, args) : null;

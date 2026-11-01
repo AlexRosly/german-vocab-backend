@@ -7,6 +7,9 @@ import { PrismaService } from "../prisma.service";
 import { dictionaryWords, WORD_INCLUDE } from "../words/word-access.service";
 import { CreateStudySessionDto, StudySessionWordDto } from "./dto/create-study-session.dto";
 
+import { historyCursor, readHistoryCursor } from "./history-cursor";
+import { StudyHistoryQueryDto } from "./dto/study-history-query.dto";
+
 const DAY_MS = 24 * 60 * 60 * 1000;
 const INTERVALS = [1, 3, 7, 14, 30];
 
@@ -144,6 +147,30 @@ export class StudyService {
       where: { userId },
       orderBy: { startedAt: "desc" },
       include: sessionInclude(userId),
+    });
+  }
+
+  async getHistory(userId: string, query: StudyHistoryQueryDto) {
+    const limit = query.limit ?? 20;
+    if (!Number.isInteger(limit) || limit < 1 || limit > 50) throw new BadRequestException("Некорректный размер страницы истории");
+    const after = query.cursor === undefined ? null : readHistoryCursor(query.cursor);
+    const rows = await this.prisma.studySession.findMany({
+      where: { userId, ...(after ? { OR: [
+        { startedAt: { lt: after.startedAt } },
+        { startedAt: after.startedAt, id: { lt: after.id } },
+      ] } : {}) },
+      orderBy: [{ startedAt: "desc" }, { id: "desc" }],
+      take: limit + 1,
+      select: { id: true, totalWords: true, knownCount: true, needsReviewCount: true, startedAt: true, completedAt: true },
+    });
+    const sessions = rows.slice(0, limit);
+    return { sessions, nextCursor: rows.length > limit ? historyCursor(sessions[sessions.length - 1]) : null };
+  }
+
+  getHistorySession(userId: string, id: string) {
+    if (typeof id !== "string" || !/^[A-Za-z0-9_-]{1,128}$/.test(id)) throw new BadRequestException("Некорректный идентификатор тренировки");
+    return this.prisma.$transaction((tx) => this.getSession(tx, userId, id), {
+      isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead,
     });
   }
 

@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Header, Headers, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Header, Headers, Param, Post, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeader, ApiTags } from "@nestjs/swagger";
 import { AuthGuard } from "../auth/auth.guard";
 import { AuthUser } from "../auth/auth.service";
 import { CurrentUser } from "../auth/current-user.decorator";
 import { StudyService } from "./study.service";
 import { CreateStudySessionDto } from "./dto/create-study-session.dto";
+import { StudyHistoryQueryDto } from "./dto/study-history-query.dto";
 import { presentWord } from "../languages/word-presentation";
 
 @ApiTags("study")
@@ -30,6 +31,18 @@ export class StudyController {
   async getSessions(@CurrentUser() user: AuthUser) {
     const sessions = await this.studyService.getSessions(user.id);
     return sessions.map((session) => this.presentSession(session, user.translationLanguage));
+  }
+
+  @Get("history")
+  @Header("Cache-Control", "no-store")
+  getHistory(@CurrentUser() user: AuthUser, @Query() query: StudyHistoryQueryDto) {
+    return this.studyService.getHistory(user.id, query);
+  }
+
+  @Get("history/:id")
+  @Header("Cache-Control", "no-store")
+  async getHistorySession(@CurrentUser() user: AuthUser, @Param("id") id: string) {
+    return this.presentSession(await this.studyService.getHistorySession(user.id, id), user.translationLanguage);
   }
 
   @Get("progress")
