@@ -6,48 +6,57 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { AuthGuard } from "../auth/auth.guard";
+import { AuthUser } from "../auth/auth.service";
+import { CurrentUser } from "../auth/current-user.decorator";
 import { WordExamplesService } from "./word-examples.service";
 import { CreateWordExampleDto } from "./dto/create-word-example.dto";
 import { UpdateWordExampleDto } from "./dto/update-word-example.dto";
 
 @ApiTags("word-examples")
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 @Controller("words/:wordId/examples")
 export class WordExamplesController {
   constructor(private readonly wordExamplesService: WordExamplesService) {}
 
   @Get()
   @ApiOperation({ summary: "Get examples for a word" })
-  list(@Param("wordId") wordId: string) {
-    return this.wordExamplesService.list(wordId);
+  list(@CurrentUser() user: AuthUser, @Param("wordId") wordId: string) {
+    return this.wordExamplesService.list(user, wordId);
   }
 
   @Post()
   @ApiOperation({ summary: "Create an example for a word" })
   create(
+    @CurrentUser() user: AuthUser,
     @Param("wordId") wordId: string,
     @Body() dto: CreateWordExampleDto,
   ) {
-    return this.wordExamplesService.create(wordId, dto);
+    return this.wordExamplesService.create(user, wordId, dto);
   }
 
   @Patch(":exampleId")
   @ApiOperation({ summary: "Update a word example" })
   update(
+    @CurrentUser() user: AuthUser,
     @Param("wordId") wordId: string,
     @Param("exampleId") exampleId: string,
     @Body() dto: UpdateWordExampleDto,
   ) {
-    return this.wordExamplesService.update(wordId, exampleId, dto);
+    return this.wordExamplesService.update(user, wordId, exampleId, dto);
   }
 
   @Delete(":exampleId")
   @ApiOperation({ summary: "Delete a word example" })
   remove(
+    @CurrentUser() user: AuthUser,
     @Param("wordId") wordId: string,
     @Param("exampleId") exampleId: string,
   ) {
-    return this.wordExamplesService.remove(wordId, exampleId);
+    return this.wordExamplesService.remove(user, wordId, exampleId);
   }
 }

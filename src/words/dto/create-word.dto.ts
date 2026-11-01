@@ -1,5 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsEnum, IsInt, IsOptional, IsString, Max, Min, MinLength } from "class-validator";
+import { Transform } from "class-transformer";
+import { IsEnum, IsInt, IsOptional, IsString, Max, MaxLength, Min, MinLength } from "class-validator";
+
+const trimText = ({ value }: { value: unknown }) =>
+  typeof value === "string" ? value.normalize("NFC").trim() : value;
 
 export enum ArticleDto {
   der = "der",
@@ -16,8 +20,10 @@ export enum CefrLevelDto {
 
 export class CreateWordDto {
   @ApiProperty({ example: "Tisch" })
+  @Transform(trimText)
   @IsString()
   @MinLength(1)
+  @MaxLength(200)
   german!: string;
 
   @ApiProperty({ enum: ArticleDto, example: "der" })
@@ -29,29 +35,35 @@ export class CreateWordDto {
   grammaticalNumber!: GrammaticalNumberDto;
 
   @ApiProperty({ example: "стол" })
+  @Transform(trimText)
   @IsString()
   @MinLength(1)
+  @MaxLength(1000)
   translation!: string;
 
   @ApiPropertyOptional({ example: "Tische" })
+  @Transform(trimText)
   @IsOptional()
   @IsString()
-  pluralForm?: string;
+  @MaxLength(200)
+  pluralForm?: string | null;
 
   @ApiPropertyOptional({ enum: CefrLevelDto, example: "A1" })
   @IsOptional()
   @IsEnum(CefrLevelDto)
-  level?: CefrLevelDto;
+  level?: CefrLevelDto | null;
 
   @ApiPropertyOptional({ example: 1 })
   @IsOptional()
   @IsInt()
   @Min(1)
   @Max(10000)
-  lessonNumber?: number;
+  lessonNumber?: number | null;
 
   @ApiPropertyOptional({ example: "Предмет мебели" })
+  @Transform(trimText)
   @IsOptional()
   @IsString()
-  notes?: string;
+  @MaxLength(4000)
+  notes?: string | null;
 }

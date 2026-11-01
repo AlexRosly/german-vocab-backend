@@ -1,39 +1,72 @@
-import { Body, Controller, Get, Param, Post, Delete, Patch, NotFoundException } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Delete, Get, Header, HttpCode, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
+import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { AuthGuard } from "../auth/auth.guard";
+import { AuthUser } from "../auth/auth.service";
+import { CurrentUser } from "../auth/current-user.decorator";
 import { CreateWordDto } from "./dto/create-word.dto";
 import { UpdateWordDto } from "./dto/update-word.dto";
+import { WordQueryDto } from "./dto/word-query.dto";
 import { WordsService } from "./words.service";
+import { presentWord } from "../languages/word-presentation";
 
 @ApiTags("words")
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 @Controller("words")
 export class WordsController {
   constructor(private readonly wordsService: WordsService) {}
+
   @Get()
-  @ApiOperation({ summary: "Получить список карточек" })
-  findAll() { return this.wordsService.findAll(); }
+  @Header("Cache-Control", "no-store")
+  @ApiOperation({ summary: "Получить опубликованную библиотеку" })
+  async findAll(@CurrentUser() user: AuthUser, @Query() query: WordQueryDto) {
+    const words = await this.wordsService.findAll(query.q);
+    return words.map((word) => presentWord(word, user.translationLanguage));
+  }
+
+  @Get("mine")
+  @Header("Cache-Control", "no-store")
+  @ApiOperation({ summary: "Получить свой личный словарь" })
+  async findMine(@CurrentUser() user: AuthUser, @Query() query: WordQueryDto) {
+    const words = await this.wordsService.findMine(user, query.q);
+    return words.map((word) => presentWord(word, user.translationLanguage));
+  }
+
   @Post()
-  @ApiOperation({ summary: "Создать карточку" })
-  create(@Body() dto: CreateWordDto) { return this.wordsService.create(dto); }
+  @ApiOperation({ summary: "Создать личную карточку и отправить на проверку" })
+  async create(@CurrentUser() user: AuthUser, @Body() dto: CreateWordDto) {
+    return presentWord(await this.wordsService.create(user, dto), user.translationLanguage);
+  }
+
+  @Post(":id/dictionary")
+  @HttpCode(200)
+  @ApiOperation({ summary: "Добавить доступную карточку в свой словарь" })
+  async addToDictionary(@CurrentUser() user: AuthUser, @Param("id") id: string) {
+    return presentWord(await this.wordsService.addToDictionary(user, id), user.translationLanguage);
+  }
+
+  @Delete(":id/dictionary")
+  @ApiOperation({ summary: "Убрать карточку из своего словаря" })
+  removeFromDictionary(@CurrentUser() user: AuthUser, @Param("id") id: string) {
+    return this.wordsService.removeFromDictionary(user, id);
+  }
+
   @Get(":id")
-  @ApiOperation({ summary: "Получить карточку по ID" })
-  async findOne(@Param("id") id: string) {
-    const word = await this.wordsService.findOne(id);
-    if (!word) throw new NotFoundException("Карточка не найдена");
-    return word;
+  @Header("Cache-Control", "no-store")
+  @ApiOperation({ summary: "Получить опубликованную или свою карточку" })
+  async findOne(@CurrentUser() user: AuthUser, @Param("id") id: string) {
+    return presentWord(await this.wordsService.findOne(user, id), user.translationLanguage);
   }
+
   @Patch(":id")
-  @ApiOperation({ summary: "Обновить карточку" })
-  async update(@Param("id") id: string, @Body() dto: UpdateWordDto) {
-    const word = await this.wordsService.findOne(id);
-    if (!word) throw new NotFoundException("Карточка не найдена");
-    return this.wordsService.update(id, dto);
+  @ApiOperation({ summary: "Изменить свою неопубликованную карточку или карточку как администратор" })
+  async update(@CurrentUser() user: AuthUser, @Param("id") id: string, @Body() dto: UpdateWordDto) {
+    return presentWord(await this.wordsService.update(user, id, dto), user.translationLanguage);
   }
+
   @Delete(":id")
-  @ApiOperation({ summary: "Удалить карточку" })
-  async remove(@Param("id") id: string) {
-    const word = await this.wordsService.findOne(id);
-    if (!word) throw new NotFoundException("Карточка не найдена");
-    await this.wordsService.remove(id);
-    return { deleted: true };
+  @ApiOperation({ summary: "Убрать карточку из своего словаря (совместимый маршрут)" })
+  remove(@CurrentUser() user: AuthUser, @Param("id") id: string) {
+    return this.wordsService.removeFromDictionary(user, id);
   }
 }

@@ -5,17 +5,17 @@ import { WordsController } from "./words/words.controller";
 import { WordsService } from "./words/words.service";
 import { WordExamplesController } from "./words/word-examples.controller";
 import { WordExamplesService } from "./words/word-examples.service";
+import { StudyModule } from "./study/study.module";
+import { AuthModule } from "./auth/auth.module";
+import { WordAccessService } from "./words/word-access.service";
+import { ModerationModule } from "./moderation/moderation.module";
+import { PreferencesModule } from "./preferences/preferences.module";
+import { WordTranslationsController } from "./words/word-translations.controller";
+import { WordTranslationsService } from "./words/word-translations.service";
 
 @Module({
-  controllers: [
-    HealthController,
-    WordsController,
-    WordExamplesController,
-  ],
-  providers: [
-    PrismaService,
-    WordsService,
-    WordExamplesService,
-  ],
+  imports: [AuthModule, StudyModule, ModerationModule, PreferencesModule],
+  controllers: [HealthController, WordsController, WordExamplesController, WordTranslationsController],
+  providers: [PrismaService, WordsService, WordExamplesService, WordAccessService, WordTranslationsService],
 })
 export class AppModule {}

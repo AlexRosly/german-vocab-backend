@@ -8,8 +8,9 @@ async function bootstrap() {
   app.setGlobalPrefix("api/v1");
   app.enableCors({
     origin: process.env.FRONTEND_ORIGIN ?? "http://localhost:3000",
-    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Idempotency-Key"]
   });
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
@@ -21,6 +22,7 @@ async function bootstrap() {
     .setTitle("German Vocab API")
     .setDescription("API приложения для изучения немецкой лексики")
     .setVersion("1.0")
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup("docs", app, document);

@@ -1,78 +1,51 @@
-import {
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
-import { PrismaService } from "../prisma.service";
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { AuthUser } from "../auth/auth.service";
 import { CreateWordExampleDto } from "./dto/create-word-example.dto";
 import { UpdateWordExampleDto } from "./dto/update-word-example.dto";
+import { WordAccessService } from "./word-access.service";
 
 @Injectable()
 export class WordExamplesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly access: WordAccessService) {}
 
-  async list(wordId: string) {
-    await this.ensureWordExists(wordId);
-
-    return this.prisma.wordExample.findMany({
-      where: { wordId },
-      orderBy: { createdAt: "asc" },
+  async list(user: AuthUser, wordId: string) {
+    return this.access.transaction(async (tx) => {
+      await this.access.requireReadable(user, wordId, tx);
+      return tx.wordExample.findMany({ where: { wordId }, orderBy: { createdAt: "asc" } });
     });
   }
 
-  async create(wordId: string, dto: CreateWordExampleDto) {
-    await this.ensureWordExists(wordId);
-
-    return this.prisma.wordExample.create({
-      data: {
-        wordId,
-        german: dto.german,
-        translation: dto.translation,
-      },
+  create(user: AuthUser, wordId: string, dto: CreateWordExampleDto) {
+    return this.access.transaction(async (tx) => {
+      await this.access.beginEdit(tx, user, wordId);
+      return tx.wordExample.create({
+        data: { wordId, german: dto.german.trim(), translation: dto.translation.trim() },
+      });
     });
   }
 
-  async update(
-    wordId: string,
-    exampleId: string,
-    dto: UpdateWordExampleDto,
-  ) {
-    await this.ensureWordExists(wordId);
-    await this.ensureExampleExists(wordId, exampleId);
-
-    return this.prisma.wordExample.update({
-      where: { id: exampleId },
-      data: dto,
+  update(user: AuthUser, wordId: string, exampleId: string, dto: UpdateWordExampleDto) {
+    return this.access.transaction(async (tx) => {
+      await this.access.beginEdit(tx, user, wordId);
+      const updated = await tx.wordExample.updateMany({
+        where: { id: exampleId, wordId },
+        data: {
+          ...(dto.german !== undefined ? { german: dto.german.trim() } : {}),
+          ...(dto.translation !== undefined ? { translation: dto.translation.trim() } : {}),
+        },
+      });
+      if (updated.count !== 1) throw new NotFoundException("Пример не найден");
+      return tx.wordExample.findFirst({ where: { id: exampleId, wordId } });
     });
   }
 
-  async remove(wordId: string, exampleId: string) {
-    await this.ensureWordExists(wordId);
-    await this.ensureExampleExists(wordId, exampleId);
-
-    return this.prisma.wordExample.delete({
-      where: { id: exampleId },
+  remove(user: AuthUser, wordId: string, exampleId: string) {
+    return this.access.transaction(async (tx) => {
+      await this.access.beginEdit(tx, user, wordId);
+      const example = await tx.wordExample.findFirst({ where: { id: exampleId, wordId } });
+      if (!example) throw new NotFoundException("Пример не найден");
+      await tx.wordExample.deleteMany({ where: { id: exampleId, wordId } });
+      return example;
     });
-  }
-
-  private async ensureWordExists(wordId: string) {
-    const word = await this.prisma.word.findUnique({
-      where: { id: wordId },
-      select: { id: true },
-    });
-
-    if (!word) {
-      throw new NotFoundException("Word not found");
-    }
-  }
-
-  private async ensureExampleExists(wordId: string, exampleId: string) {
-    const example = await this.prisma.wordExample.findFirst({
-      where: { id: exampleId, wordId },
-      select: { id: true },
-    });
-
-    if (!example) {
-      throw new NotFoundException("Example not found");
-    }
   }
 }

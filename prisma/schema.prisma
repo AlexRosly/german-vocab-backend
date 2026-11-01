@@ -29,24 +29,137 @@ enum CefrLevel {
   C2
 }
 
+enum StudyAnswer {
+  KNOWN
+  NEEDS_REVIEW
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum AuthProvider {
+  EMAIL
+  GOOGLE
+  APPLE
+}
+
+enum WordPublicationStatus {
+  PENDING_REVIEW
+  PUBLISHED
+  REJECTED
+}
+
+model User {
+  id                  String    @id @default(cuid())
+  email               String?   @unique
+  emailVerified       DateTime?
+  interfaceLanguage   String    @default("ru")
+  translationLanguage String    @default("ru")
+  role                UserRole  @default(USER)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  accounts     Account[]
+  authSessions AuthSession[]
+  words        UserWord[]
+  progress     WordProgress[]
+  sessions     StudySession[]
+  createdWords Word[]         @relation("WordCreator")
+
+  @@map("users")
+}
+
+model Account {
+  id                String       @id @default(cuid())
+  userId            String
+  provider          AuthProvider
+  providerAccountId String
+  passwordHash      String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model AuthSession {
+  id               String   @id @default(cuid())
+  userId           String
+  accessTokenHash  String   @unique
+  refreshTokenHash String   @unique
+  accessExpiresAt  DateTime
+  refreshExpiresAt DateTime
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([refreshExpiresAt])
+  @@map("auth_sessions")
+}
+
 model Word {
-  id                String            @id @default(cuid())
+  id                String                @id @default(cuid())
   german            String
-  article           Article           @default(none)
-  grammaticalNumber GrammaticalNumber @default(not_applicable)
+  article           Article               @default(none)
+  grammaticalNumber GrammaticalNumber     @default(not_applicable)
   translation       String
   pluralForm        String?
   level             CefrLevel?
   lessonNumber      Int?
   notes             String?
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
+  publicationStatus WordPublicationStatus @default(PUBLISHED)
+  createdByUserId   String?
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
 
-  examples WordExample[]
+  creator      User?              @relation("WordCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  translations WordTranslation[]
+  examples     WordExample[]
+  userWords    UserWord[]
+  sessionWords StudySessionWord[]
+  progress     WordProgress[]
 
   @@index([german])
   @@index([lessonNumber, level])
+  @@index([publicationStatus])
+  @@index([createdByUserId])
   @@map("words")
+}
+
+model UserWord {
+  id        String   @id @default(cuid())
+  userId    String
+  wordId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  word Word @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, wordId])
+  @@index([wordId])
+  @@map("user_words")
+}
+
+model WordTranslation {
+  id        String   @id @default(cuid())
+  wordId    String
+  language  String
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  word Word @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@unique([wordId, language])
+  @@index([language])
+  @@map("word_translations")
 }
 
 model WordExample {
@@ -61,4 +174,55 @@ model WordExample {
 
   @@index([wordId])
   @@map("word_examples")
+}
+
+model StudySession {
+  id               String   @id @default(cuid())
+  userId           String
+  totalWords       Int
+  knownCount       Int      @default(0)
+  needsReviewCount Int      @default(0)
+  startedAt        DateTime @default(now())
+  completedAt      DateTime @default(now())
+
+  user  User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  words StudySessionWord[]
+
+  @@index([userId, startedAt])
+  @@map("study_sessions")
+}
+
+model StudySessionWord {
+  id         String      @id @default(cuid())
+  sessionId  String
+  wordId     String
+  answer     StudyAnswer
+  answeredAt DateTime    @default(now())
+
+  session StudySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  word    Word         @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, wordId])
+  @@index([wordId, answeredAt])
+  @@map("study_session_words")
+}
+
+model WordProgress {
+  id                  String    @id @default(cuid())
+  userId              String
+  wordId              String
+  knownCount          Int       @default(0)
+  needsReviewCount    Int       @default(0)
+  consecutiveKnown    Int       @default(0)
+  currentIntervalDays Int       @default(0)
+  lastReviewedAt      DateTime?
+  nextReviewAt        DateTime?
+  updatedAt           DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  word Word @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, wordId])
+  @@index([userId, nextReviewAt])
+  @@map("word_progress")
 }
