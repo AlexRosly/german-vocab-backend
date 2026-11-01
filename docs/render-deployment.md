@@ -9,7 +9,7 @@ Frontend: https://german-vocab-frontend.onrender.com.
 | --- | --- |
 | Repository | AlexRosly/german-vocab-backend |
 | Branch / Region / Plan | main / Frankfurt / Free |
-| Build | `npm ci --include=dev && npm run prisma:generate && npm run build` |
+| Build | `npm ci --include=dev && npm run build` |
 | Start | `node dist/main.js` |
 | Health check | `/api/v1/health` |
 | NODE_VERSION / NODE_ENV | `22` / `production` |
@@ -19,6 +19,21 @@ Frontend: https://german-vocab-frontend.onrender.com.
 Render передаёт PORT; NestJS уже читает его. Prisma Client генерируется из текущей
 схемы, Prisma остаётся 6.19.3. NODE_ENV=production включает Secure refresh cookie.
 `npm ci --include=dev` нужен для сборочных инструментов Nest/TypeScript/Prisma.
+
+`npm run build` теперь сам выполняет `npm run prisma:generate` перед `nest build`.
+Генерация явно читает `prisma/schema.prisma`; она не подключается к БД и не
+применяет миграции. Это устраняет зависимость сборки от ранее сгенерированного
+клиента в node_modules. Ошибки вида `translations does not exist in
+WordExampleInclude` / `wordExampleTranslation does not exist on TransactionClient`
+при новом исходном коде указывают на клиент, сгенерированный по старой схеме.
+
+Для существующего вручную созданного Render-сервиса проверить Build Command:
+`npm ci --include=dev && npm run build`. Старый вариант с дополнительным
+`npm run prisma:generate` тоже совместим, но генерирует клиент дважды.
+После push выбрать Manual Deploy → Clear build cache & deploy последнего коммита.
+В логе перед Nest должны появиться `prisma generate --schema=prisma/schema.prisma`
+и подтверждение Generated Prisma Client. Затем проверить запуск dist/main.js
+и health 200. Не повторять миграцию или переключать Neon из-за ошибки компиляции.
 
 01.11.2026 в подтверждённой пользователем ветке Neon «миграцион» применена
 `20261031120000_add_auth_sessions`. До операции проверено, что она единственная
