@@ -1,0 +1,22 @@
+# Existing Neon demo/test database only. No database is created here.
+# Apply reviewed migrations separately with explicit approval for the selected DB.
+services:
+  - type: web
+    name: wortkarten-api-demo
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: main
+    buildCommand: npm ci --include=dev && npm run prisma:generate && npm run build
+    startCommand: node dist/main.js
+    healthCheckPath: /api/v1/health
+    autoDeployTrigger: "off"
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: FRONTEND_ORIGIN
+        sync: false
