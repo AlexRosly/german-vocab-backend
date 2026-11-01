@@ -154,4 +154,48 @@ describe("Dictionary HTTP boundary (real services, mocked persistence)", () => {
     expect(fixture.words.size).toBe(3);
     expect(fixture.links.size).toBe(1);
   });
+  it("creates German-only words and examples, and selects translations without Russian fallback", async () => {
+    const response = await request("", "POST", { german: "Kran", article: "der", grammaticalNumber: "singular", examples: [
+      { german: "Der Kran ist hoch." },
+      { german: "Ich sehe den Kran.", translations: [{ language: "en", text: "I see the crane." }] },
+    ] });
+    expect(response.status).toBe(201);
+    const created = await response.json();
+    expect(created.translation).toBe("");
+    expect(created.translations).toEqual([]);
+    const examples = await (await request(`/${created.id}/examples`)).json();
+    expect(examples).toHaveLength(2);
+    expect(examples[0]).toMatchObject({ german: "Der Kran ist hoch.", translation: "", selectedTranslation: { language: "ru", text: null } });
+    expect(examples[1].selectedTranslation.text).toBeNull();
+    expect(examples[1].translations).toEqual([expect.objectContaining({ language: "en", text: "I see the crane." })]);
+  });
+
+  it("rejects malformed nested examples and language patches before any word is written", async () => {
+    for (const extra of [
+      { examples: [{ german: " " }] }, { examples: [{ german: "Ja", translations: [{ language: "fr", text: "Oui" }] }] },
+      { examples: [{ german: "Ja", translations: [{ language: "en", text: " " }] }] },
+      { examples: Array.from({ length: 21 }, () => ({ german: "Ja" })) },
+      { examples: [{ german: "Ja", wordId: "private" }] },
+      { translations: [{ language: "en", text: "tree" }, { language: " EN ", text: "tree" }] },
+      { examples: null }, { translations: null },
+      { examples: [null] }, { translations: [null] },
+      { examples: [{ german: "Ja", translations: [null] }] },
+    ]) expect((await request("", "POST", { ...card, ...extra })).status).toBe(400);
+    expect(fixture.db.word.create).not.toHaveBeenCalled();
+    expect((await request("/private", "PATCH", { examples: [] })).status).toBe(400);
+  });
+
+  it("adds and removes one example language without erasing others or permitting foreign writes", async () => {
+    const created = await (await request("/private/examples", "POST", { german: "Ja.", translations: [
+      { language: "ru", text: "Да." }, { language: "en", text: "Yes." },
+    ] })).json();
+    const path = `/private/examples/${created.id}`;
+    expect((await request(path, "PATCH", { translations: [{ language: "uk", text: "Так." }] }, "b")).status).toBe(404);
+    const updated = await (await request(path, "PATCH", { translations: [{ language: "ru", text: null }, { language: "uk", text: "Так." }] })).json();
+    expect(updated.translation).toBe("");
+    expect(updated.selectedTranslation.text).toBeNull();
+    expect(updated.translations.map((entry: { language: string }) => entry.language).sort()).toEqual(["en", "uk"]);
+    expect((await request(path, "PATCH", { translations: [{ language: "en" }] })).status).toBe(400);
+  });
+
 });

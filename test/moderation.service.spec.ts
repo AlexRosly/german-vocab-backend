@@ -137,6 +137,24 @@ describe("Administrative moderation (in-memory Prisma)", () => {
     await expect(moderation.changeStatus(admin, "pending", { publicationStatus: "PUBLISHED", expectedRevision: reviewed.revision })).rejects.toBeInstanceOf(ConflictException);
   });
 
+  it("includes example translations in the reviewed revision, even if the German text is unchanged", async () => {
+    fixture.exampleTranslations.set("en-example", { id: "en-example", exampleId: "example", language: "en", text: "The tree is tall." });
+    const reviewed = await moderation.findOne(admin, "pending");
+    expect(reviewed.examples[0].translations).toEqual([expect.objectContaining({ language: "en", text: "The tree is tall." })]);
+    fixture.exampleTranslations.get("en-example")!.text = "The tree is high.";
+    await expect(moderation.changeStatus(admin, "pending", { publicationStatus: "PUBLISHED", expectedRevision: reviewed.revision })).rejects.toBeInstanceOf(ConflictException);
+  });
+
+  it("detects matching published meanings in English without requiring a Russian translation", async () => {
+    Object.assign(fixture.words.get("published")!, { german: "Baum", translation: "" });
+    Object.assign(fixture.words.get("pending")!, { translation: "" });
+    fixture.translations.delete("ru-pending");
+    fixture.translations.set("en-published", { id: "en-published", wordId: "published", language: "en", text: "tree" });
+    fixture.translations.set("en-pending", { id: "en-pending", wordId: "pending", language: "en", text: "tree" });
+    const reviewed = await moderation.findOne(admin, "pending");
+    await expect(moderation.changeStatus(admin, "pending", { publicationStatus: "PUBLISHED", expectedRevision: reviewed.revision })).rejects.toBeInstanceOf(ConflictException);
+  });
+
   it("blocks an exact published duplicate without merging or deleting either card", async () => {
     Object.assign(fixture.words.get("pending")!, { german: "TISCH", translation: "стол" });
     const reviewed = await moderation.findOne(admin, "pending");

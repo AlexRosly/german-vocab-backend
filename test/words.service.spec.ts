@@ -187,4 +187,34 @@ describe("Personal dictionaries and word permissions (in-memory Prisma)", () => 
     await expect(words.create(userA, { ...card, german: "Wald" })).rejects.toBeInstanceOf(ConflictException);
     expect(fixture.db.$transaction).toHaveBeenCalledTimes(5);
   });
+  it("rolls back the word, dictionary link and translations when an initial example fails", async () => {
+    fixture.db.wordExample.create.mockRejectedValueOnce(new Error("example write failed"));
+    await expect(words.create(userA, { ...card, examples: [{ german: "Ein Baum." }] })).rejects.toThrow("example write failed");
+    expect(fixture.words.size).toBe(0); expect(fixture.links.size).toBe(0);
+    expect(fixture.translations.size).toBe(0); expect(fixture.examples.size).toBe(0);
+  });
+
+  it("keeps word language patches independent and synchronizes legacy Russian only with Russian", async () => {
+    const created = await words.create(userA, { ...card, translations: [{ language: "en", text: "tree" }] });
+    const updated = await words.update(userA, created.id, { translations: [{ language: "ru", text: null }, { language: "uk", text: "дерево" }] });
+    expect(updated.translation).toBe("");
+    expect(updated.translations.map((entry) => entry.language).sort()).toEqual(["en", "uk"]);
+    const restored = await words.update(userA, created.id, { translation: "дерево" });
+    expect(restored.translations).toHaveLength(3); expect(restored.translation).toBe("дерево");
+  });
+
+  it("compares multilingual meanings without treating every missing Russian translation as a duplicate", async () => {
+    const base = { german: "Bank", article: ArticleDto.die, grammaticalNumber: GrammaticalNumberDto.singular };
+    await words.create(userA, { ...base, translations: [{ language: "en", text: "bench" }] });
+    await expect(words.create(userA, { ...base, translations: [{ language: "en", text: "bench" }] })).rejects.toBeInstanceOf(ConflictException);
+    await expect(words.create(userA, { ...base, translations: [{ language: "en", text: "bank" }] })).resolves.toMatchObject({ translation: "" });
+  });
+
+  it("selects the example translation in the reader's language and never falls back to Russian", async () => {
+    fixture.seedWord("shared");
+    await examples.create(admin, "shared", { german: "Ein Tisch.", translations: [{ language: "ru", text: "Стол." }, { language: "en", text: "A table." }] });
+    expect((await examples.list({ ...userA, translationLanguage: "en" }, "shared"))[0].selectedTranslation).toEqual({ language: "en", text: "A table." });
+    expect((await examples.list({ ...userA, translationLanguage: "uk" }, "shared"))[0].selectedTranslation).toEqual({ language: "uk", text: null });
+  });
+
 });

@@ -1,3 +1,3 @@
-import { PartialType } from "@nestjs/swagger";
+import { OmitType, PartialType } from "@nestjs/swagger";
 import { CreateWordDto } from "./create-word.dto";
-export class UpdateWordDto extends PartialType(CreateWordDto, { skipNullProperties: false }) {}
+export class UpdateWordDto extends PartialType(OmitType(CreateWordDto, ["examples"] as const), { skipNullProperties: false }) {}

@@ -1,6 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Transform } from "class-transformer";
-import { IsEnum, IsInt, IsOptional, IsString, Max, MaxLength, Min, MinLength } from "class-validator";
+import { Transform, Type } from "class-transformer";
+import { ArrayMaxSize, ArrayUnique, IsArray, ValidateIf, ValidateNested, IsEnum, IsInt, IsOptional, IsString, Max, MaxLength, Min, MinLength } from "class-validator";
+
+import { TranslationInputDto } from "./translation-input.dto";
+import { CreateWordExampleDto } from "./create-word-example.dto";
 
 const trimText = ({ value }: { value: unknown }) =>
   typeof value === "string" ? value.normalize("NFC").trim() : value;
@@ -34,12 +37,30 @@ export class CreateWordDto {
   @IsEnum(GrammaticalNumberDto)
   grammaticalNumber!: GrammaticalNumberDto;
 
-  @ApiProperty({ example: "стол" })
+  @ApiPropertyOptional({ example: "стол", description: "Legacy Russian translation" })
+  @ValidateIf((_object, value) => value !== undefined)
   @Transform(trimText)
   @IsString()
   @MinLength(1)
   @MaxLength(1000)
-  translation!: string;
+  translation?: string;
+
+  @ApiPropertyOptional({ type: [TranslationInputDto] })
+  @ValidateIf((_object, value) => value !== undefined)
+  @IsArray()
+  @ArrayMaxSize(4)
+  @ArrayUnique((item: TranslationInputDto) => item?.language)
+  @ValidateNested({ each: true })
+  @Type(() => TranslationInputDto)
+  translations?: TranslationInputDto[];
+
+  @ApiPropertyOptional({ type: [CreateWordExampleDto] })
+  @ValidateIf((_object, value) => value !== undefined)
+  @IsArray()
+  @ArrayMaxSize(20)
+  @ValidateNested({ each: true })
+  @Type(() => CreateWordExampleDto)
+  examples?: CreateWordExampleDto[];
 
   @ApiPropertyOptional({ example: "Tische" })
   @Transform(trimText)

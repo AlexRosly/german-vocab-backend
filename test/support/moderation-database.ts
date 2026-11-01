@@ -11,7 +11,7 @@ export function makeModerationDatabase() {
     if (row && args.include?.examples) {
       row.examples = [...fixture.examples.values()]
         .filter((example) => example.wordId === row.id)
-        .map((example) => structuredClone(example));
+        .map((example) => ({ ...structuredClone(example), translations: [...fixture.exampleTranslations.values()].filter((entry) => entry.exampleId === example.id) }));
     }
     return row;
   }

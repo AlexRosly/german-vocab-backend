@@ -171,6 +171,7 @@ model WordExample {
   updatedAt   DateTime @updatedAt
 
   word Word @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  translations WordExampleTranslation[]
 
   @@index([wordId])
   @@map("word_examples")
@@ -225,4 +226,18 @@ model WordProgress {
   @@unique([userId, wordId])
   @@index([userId, nextReviewAt])
   @@map("word_progress")
+}
+
+model WordExampleTranslation {
+  id String @id @default(cuid())
+  exampleId String
+  language String
+  text String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  example WordExample @relation(fields: [exampleId], references: [id], onDelete: Cascade)
+
+  @@unique([exampleId, language])
+  @@index([language])
+  @@map("word_example_translations")
 }

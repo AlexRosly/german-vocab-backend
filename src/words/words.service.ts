@@ -4,6 +4,7 @@ import { AuthUser } from "../auth/auth.service";
 import { PrismaService } from "../prisma.service";
 import { CreateWordDto } from "./dto/create-word.dto";
 import { UpdateWordDto } from "./dto/update-word.dto";
+import { meaningWhere, translationEntries } from "./translation-data";
 import { dictionaryWords, WordAccessService, WORD_INCLUDE } from "./word-access.service";
 
 function searchWhere(query?: string): Prisma.WordWhereInput {
@@ -45,14 +46,19 @@ export class WordsService {
 
   create(user: AuthUser, dto: CreateWordDto) {
     return this.access.transaction(async (tx) => {
-      const data = this.cardData(dto);
-      await this.ensureNoDuplicate(tx, user, data);
+      const entries = translationEntries(dto);
+      const data = this.cardData({ ...dto, translation: entries.find((entry) => entry.language === "ru")?.text ?? "" });
+      await this.ensureNoDuplicate(tx, user, data, entries);
       return tx.word.create({
         data: {
           ...data,
           publicationStatus: "PENDING_REVIEW",
           createdByUserId: user.id,
-          translations: { create: { language: "ru", text: data.translation } },
+          translations: { create: entries },
+          examples: { create: (dto.examples ?? []).map((example) => {
+            const translations = translationEntries(example);
+            return { german: example.german.normalize("NFC").trim(), translation: translations.find((entry) => entry.language === "ru")?.text ?? "", translations: { create: translations } };
+          }) },
           userWords: { create: { userId: user.id } },
         },
         include: WORD_INCLUDE,
@@ -64,22 +70,25 @@ export class WordsService {
     return this.access.transaction(async (tx) => {
       await this.access.beginEdit(tx, user, id);
       const current = await this.access.requireReadable(user, id, tx);
+      const entries = translationEntries(dto, current.translations, current.translation);
       const data = this.cardData({
         german: dto.german ?? current.german,
         article: dto.article ?? current.article,
         grammaticalNumber: dto.grammaticalNumber ?? current.grammaticalNumber,
-        translation: dto.translation ?? current.translation,
+        translation: entries.find((entry) => entry.language === "ru")?.text ?? "",
         pluralForm: dto.pluralForm === undefined ? current.pluralForm : dto.pluralForm,
         level: dto.level === undefined ? current.level : dto.level,
         lessonNumber: dto.lessonNumber === undefined ? current.lessonNumber : dto.lessonNumber,
         notes: dto.notes === undefined ? current.notes : dto.notes,
       });
-      await this.ensureNoDuplicate(tx, user, data, id);
+      await this.ensureNoDuplicate(tx, user, data, entries, id);
       await tx.word.update({ where: { id }, data });
-      await tx.wordTranslation.upsert({
-        where: { wordId_language: { wordId: id, language: "ru" } },
-        create: { wordId: id, language: "ru", text: data.translation },
-        update: { text: data.translation },
+      for (const language of (dto.translations ?? []).filter((entry) => entry.text === null).map((entry) => entry.language)) {
+        await tx.wordTranslation.deleteMany({ where: { wordId: id, language } });
+      }
+      for (const entry of entries) await tx.wordTranslation.upsert({
+        where: { wordId_language: { wordId: id, language: entry.language } },
+        create: { wordId: id, ...entry }, update: { text: entry.text },
       });
       return this.access.requireReadable(user, id, tx);
     });
@@ -126,6 +135,7 @@ export class WordsService {
     tx: Prisma.TransactionClient,
     user: AuthUser,
     data: ReturnType<WordsService["cardData"]>,
+    entries: { language: string; text: string }[],
     excludedId?: string,
   ): Promise<void> {
     // Never report another author's private card or merge ambiguous meanings.
@@ -137,7 +147,7 @@ export class WordsService {
           german: { equals: data.german, mode: "insensitive" },
           article: data.article,
           grammaticalNumber: data.grammaticalNumber,
-          translation: data.translation,
+          ...meaningWhere(entries, data.translation),
           pluralForm: data.pluralForm,
           notes: data.notes,
         },

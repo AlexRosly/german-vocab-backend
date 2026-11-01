@@ -15,6 +15,7 @@ export function makeWordsDatabase() {
   const links = new Map<string, Row>();
   const translations = new Map<string, Row>();
   const examples = new Map<string, Row>();
+  const exampleTranslations = new Map<string, Row>();
   let sequence = 0;
 
   function valueMatches(value: unknown, condition: any): boolean {
@@ -40,8 +41,10 @@ export function makeWordsDatabase() {
         if (!condition.some((item: Row) => matches(row, item))) return false;
       } else if (field === "userWords" || field === "translations") {
         const table = field === "userWords" ? links : translations;
-        if (!Object.hasOwn(condition, "some")) throw new Error("Unsupported relation filter");
-        if (![...table.values()].some((item) => item.wordId === row.id && matches(item, condition.some))) return false;
+        const related = [...table.values()].filter((item) => item.wordId === row.id);
+        if (Object.hasOwn(condition, "some")) { if (!related.some((item) => matches(item, condition.some))) return false; }
+        else if (Object.hasOwn(condition, "none")) { if (related.some((item) => matches(item, condition.none))) return false; }
+        else throw new Error("Unsupported relation filter");
       } else if (!valueMatches(row[field], condition)) return false;
     }
     return true;
@@ -51,7 +54,10 @@ export function makeWordsDatabase() {
     if (!row) return null;
     if (args.select) return Object.fromEntries(Object.keys(args.select).filter((key) => args.select![key]).map((key) => [key, row[key]]));
     const result = structuredClone(row);
-    if (args.include?.translations) result.translations = [...translations.values()].filter((item) => item.wordId === row.id).map((item) => structuredClone(item));
+    if (args.include?.translations) {
+      const table = row.wordId ? exampleTranslations : translations;
+      result.translations = [...table.values()].filter((item) => row.wordId ? item.exampleId === row.id : item.wordId === row.id).map((item) => structuredClone(item));
+    }
     return result;
   }
 
@@ -71,13 +77,16 @@ export function makeWordsDatabase() {
       findMany: jest.fn(async (args: Args = {}) => [...words.values()].filter((row) => matches(row, args.where)).map((row) => project(row, args))),
       findFirst: jest.fn(async (args: Args) => project([...words.values()].find((row) => matches(row, args.where)), args)),
       create: jest.fn(async (args: Args) => {
-        const { translations: nestedTranslations, userWords: nestedLinks, ...data } = args.data!;
+        const { translations: nestedTranslations, examples: nestedExamples, userWords: nestedLinks, ...data } = args.data!;
         const id = `word-${++sequence}`;
         const row = seedWord(id, data);
         if (nestedTranslations) {
-          const translation = { id: `translation-${++sequence}`, wordId: id, ...nestedTranslations.create };
-          translations.set(translation.id, translation);
+          for (const entry of (Array.isArray(nestedTranslations.create) ? nestedTranslations.create : [nestedTranslations.create])) {
+            const translation = { id: `translation-${++sequence}`, wordId: id, ...entry };
+            translations.set(translation.id, translation);
+          }
         }
+        for (const example of nestedExamples?.create ?? []) await db.wordExample.create({ data: { wordId: id, ...example } });
         if (nestedLinks) {
           const link = { id: `link-${++sequence}`, wordId: id, createdAt: new Date(), ...nestedLinks.create };
           links.set(link.id, link);
@@ -111,7 +120,24 @@ export function makeWordsDatabase() {
         return { count };
       }),
     },
+    wordExampleTranslation: {
+      deleteMany: jest.fn(async (args: Args) => {
+        let count = 0;
+        for (const [id, row] of exampleTranslations) if (matches(row, args.where)) { exampleTranslations.delete(id); count++; }
+        return { count };
+      }),
+      upsert: jest.fn(async (args: { where: Row; create: Row; update: Row }) => {
+        const existing = [...exampleTranslations.values()].find((row) => matches(row, args.where.exampleId_language));
+        if (existing) { Object.assign(existing, args.update); return structuredClone(existing); }
+        const row = { id: `example-translation-${++sequence}`, ...args.create }; exampleTranslations.set(row.id, row); return structuredClone(row);
+      }),
+    },
     wordTranslation: {
+      deleteMany: jest.fn(async (args: Args) => {
+        let count = 0;
+        for (const [id, row] of translations) if (matches(row, args.where)) { translations.delete(id); count++; }
+        return { count };
+      }),
       upsert: jest.fn(async (args: { where: Row; create: Row; update: Row }) => {
         const existing = [...translations.values()].find((row) => matches(row, args.where.wordId_language));
         if (existing) { Object.assign(existing, args.update); return structuredClone(existing); }
@@ -121,12 +147,14 @@ export function makeWordsDatabase() {
       }),
     },
     wordExample: {
-      findMany: jest.fn(async (args: Args) => [...examples.values()].filter((row) => matches(row, args.where)).map((row) => structuredClone(row))),
+      findMany: jest.fn(async (args: Args) => [...examples.values()].filter((row) => matches(row, args.where)).map((row) => project(row, args))),
       findFirst: jest.fn(async (args: Args) => project([...examples.values()].find((row) => matches(row, args.where)), args)),
       create: jest.fn(async (args: Args) => {
-        const row = { id: `example-${++sequence}`, ...args.data };
+        const { translations: nested, ...data } = args.data!;
+        const row = { id: `example-${++sequence}`, ...data };
         examples.set(row.id, row);
-        return structuredClone(row);
+        for (const entry of nested?.create ?? []) await db.wordExampleTranslation.upsert({ where: { exampleId_language: { exampleId: row.id, language: entry.language } }, create: { exampleId: row.id, ...entry }, update: {} });
+        return project(row, args);
       }),
       updateMany: jest.fn(async (args: Args) => {
         let count = 0;
@@ -143,7 +171,7 @@ export function makeWordsDatabase() {
   };
   db.$transaction.mockImplementation(async (work: (tx: unknown) => Promise<unknown>, options?: Row) => {
     if (options?.isolationLevel !== Prisma.TransactionIsolationLevel.Serializable) throw new Error("Expected serializable transaction");
-    const tables = [words, links, translations, examples];
+    const tables = [words, links, translations, examples, exampleTranslations];
     const snapshots = tables.map((table) => structuredClone([...table.entries()]));
     try { return await work(db); }
     catch (error) {
@@ -151,5 +179,5 @@ export function makeWordsDatabase() {
       throw error;
     }
   });
-  return { db, words, links, translations, examples, seedWord };
+  return { db, words, links, translations, examples, exampleTranslations, seedWord };
 }

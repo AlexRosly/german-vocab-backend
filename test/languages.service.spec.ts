@@ -100,10 +100,13 @@ describe("WordTranslation writes and permissions", () => {
     expect((await translations.get(userA, "own", "en")).text).toBe("tree");
   });
 
-  it("keeps Russian duplicate protection when writing through the translation endpoint", async () => {
+  it("keeps duplicate protection for Russian and English through the translation endpoint", async () => {
     fixture.seedWord("same-published", { german: "Baum", translation: "дерево, растение" });
     await expect(translations.set(userA, "own", "ru", { text: "дерево, растение" })).rejects.toBeInstanceOf(ConflictException);
     expect(fixture.words.get("own")!.translation).toBe("дерево");
+    fixture.translations.set("en-same", { id: "en-same", wordId: "same-published", language: "en", text: "tree" });
+    await expect(translations.set(userA, "own", "en", { text: "tree" })).rejects.toBeInstanceOf(ConflictException);
+    expect((await translations.get(userA, "own", "en")).text).toBeNull();
   });
 
   it("does not reveal a foreign private word or its translations", async () => {
