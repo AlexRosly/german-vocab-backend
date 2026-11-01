@@ -68,6 +68,7 @@ model User {
   words        UserWord[]
   progress     WordProgress[]
   sessions     StudySession[]
+  personalNotes PersonalWordNote[]
   createdWords Word[]         @relation("WordCreator")
 
   @@map("users")
@@ -127,6 +128,7 @@ model Word {
   userWords    UserWord[]
   sessionWords StudySessionWord[]
   progress     WordProgress[]
+  personalNotes PersonalWordNote[]
 
   @@index([german])
   @@index([lessonNumber, level])
@@ -242,4 +244,19 @@ model WordExampleTranslation {
   @@unique([exampleId, language])
   @@index([language])
   @@map("word_example_translations")
+}
+
+// Independent of UserWord so a temporary dictionary unlink retains the note.
+model PersonalWordNote {
+  userId String
+  wordId String
+  text String @db.VarChar(2000)
+  revision String @default(cuid()) @db.VarChar(64)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  word Word @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  @@id([userId, wordId])
+  @@index([wordId])
+  @@map("personal_word_notes")
 }
