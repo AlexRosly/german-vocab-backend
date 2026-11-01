@@ -150,6 +150,28 @@ export class AuthService {
     }
   }
 
+  async listSessions(userId: string, currentSessionId: string) {
+    const now = new Date();
+    const select = { id: true, createdAt: true, updatedAt: true, refreshExpiresAt: true } satisfies Prisma.AuthSessionSelect;
+    return this.prisma.$transaction(async (tx) => {
+      const current = await tx.authSession.findFirst({ where: { id: currentSessionId, userId, refreshExpiresAt: { gt: now } }, select });
+      if (!current) throw new UnauthorizedException();
+      const others = await tx.authSession.findMany({ where: { userId, id: { not: currentSessionId }, refreshExpiresAt: { gt: now } },
+        select, orderBy: [{ createdAt: "desc" }, { id: "desc" }], take: 101 });
+      return { sessions: [{ ...current, current: true }, ...others.slice(0, 100).map((row) => ({ ...row, current: false }))], hasMore: others.length > 100 };
+    }, { isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead });
+  }
+
+  async revokeSession(userId: string, sessionId: string) {
+    if (typeof sessionId !== "string" || !/^[A-Za-z0-9_-]{1,128}$/.test(sessionId)) throw new BadRequestException("Некорректный идентификатор входа");
+    // Same no-content response for missing/foreign/already-ended sessions.
+    await this.prisma.authSession.deleteMany({ where: { id: sessionId, userId } });
+  }
+
+  async logoutAll(userId: string) {
+    await this.prisma.authSession.deleteMany({ where: { userId } });
+  }
+
   async authenticate(accessToken: string): Promise<AuthContext> {
     if (!isToken(accessToken)) throw new UnauthorizedException();
     const session = await this.prisma.authSession.findUnique({

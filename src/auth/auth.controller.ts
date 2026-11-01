@@ -1,5 +1,5 @@
 import {
-  Body, Controller, Get, Header, HttpCode, Post, Req, Res, UseGuards,
+  Body, Controller, Delete, Get, Header, HttpCode, Param, Post, Req, Res, UseGuards,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { SkipThrottle, Throttle, ThrottlerGuard } from "@nestjs/throttler";
@@ -8,6 +8,8 @@ import { AuthGuard } from "./auth.guard";
 import { AuthOriginGuard } from "./auth-origin.guard";
 import { AuthResult, AuthService, AuthUser } from "./auth.service";
 import { CurrentUser } from "./current-user.decorator";
+import { CurrentSession } from "./current-session.decorator";
+import { SessionIdDto } from "./dto/session-id.dto";
 import { CredentialsDto } from "./dto/credentials.dto";
 
 const COOKIE_NAME = "wortkarten_refresh";
@@ -55,6 +57,35 @@ export class AuthController {
   @Header("Cache-Control", "no-store")
   me(@CurrentUser() user: AuthUser) {
     return user;
+  }
+
+  @Get("sessions")
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Header("Cache-Control", "no-store")
+  listSessions(@CurrentUser() user: AuthUser, @CurrentSession() sessionId: string) {
+    return this.authService.listSessions(user.id, sessionId);
+  }
+
+  @Delete("sessions/:id")
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @HttpCode(204)
+  @Header("Cache-Control", "no-store")
+  async revokeSession(@CurrentUser() user: AuthUser, @CurrentSession() currentId: string,
+    @Param() params: SessionIdDto, @Res({ passthrough: true }) response: Response) {
+    await this.authService.revokeSession(user.id, params.id);
+    if (params.id === currentId) response.clearCookie(COOKIE_NAME, this.cookieOptions());
+  }
+
+  @Post("logout-all")
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @HttpCode(204)
+  @Header("Cache-Control", "no-store")
+  async logoutAll(@CurrentUser() user: AuthUser, @Res({ passthrough: true }) response: Response) {
+    await this.authService.logoutAll(user.id);
+    response.clearCookie(COOKIE_NAME, this.cookieOptions());
   }
 
   private readCookie(request: Request): string | undefined {

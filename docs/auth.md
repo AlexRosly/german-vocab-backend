@@ -4,7 +4,9 @@
 теперь защищены и поддерживают личные словари: см. `docs/dictionaries.md`.
 Маршруты `study` также защищены и персонализированы: см. `docs/study.md`.
 Языковые настройки доступны отдельно: см. `docs/languages.md`.
-Проверка настоящей тестовой БД и адаптация frontend ещё не завершены.
+Frontend интегрирован с авторизацией. Управление активными входами описано в
+[account-sessions.md](account-sessions.md); локальные mock-проверки отделены от
+проверки настоящего демо-сервера.
 
 ## Подготовка и проверки
 
@@ -48,6 +50,9 @@ npx prisma migrate status
 | POST | /login | `{ email, password }` | 200: пользователь, access token, refresh cookie |
 | POST | /refresh | HttpOnly refresh cookie | 200: новый access token и новая refresh cookie |
 | POST | /logout | HttpOnly refresh cookie | 204: сессия удалена, cookie очищена |
+| GET | /sessions | Bearer | Свои активные входы без токенов и хешей |
+| DELETE | /sessions/:id | Bearer | 204: завершить один свой вход |
+| POST | /logout-all | Bearer | 204: завершить все свои входы |
 | GET | /me | `Authorization: Bearer <accessToken>` | Текущий пользователь |
 
 Email нормализуется в нижний регистр и очищается от пробелов по краям.
