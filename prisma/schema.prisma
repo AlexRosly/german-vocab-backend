@@ -129,6 +129,8 @@ model Word {
   sessionWords StudySessionWord[]
   progress     WordProgress[]
   personalNotes PersonalWordNote[]
+  relationsFrom WordRelation[] @relation("RelationLeft")
+  relationsTo WordRelation[] @relation("RelationRight")
 
   @@index([german])
   @@index([lessonNumber, level])
@@ -259,4 +261,16 @@ model PersonalWordNote {
   @@id([userId, wordId])
   @@index([wordId])
   @@map("personal_word_notes")
+}
+
+// One undirected edge, stored in canonical ASCII ID order.
+model WordRelation {
+  leftWordId String
+  rightWordId String
+  createdAt DateTime @default(now())
+  leftWord Word @relation("RelationLeft", fields: [leftWordId], references: [id], onDelete: Cascade)
+  rightWord Word @relation("RelationRight", fields: [rightWordId], references: [id], onDelete: Cascade)
+  @@id([leftWordId, rightWordId])
+  @@index([rightWordId])
+  @@map("word_relations")
 }

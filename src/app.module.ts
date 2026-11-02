@@ -1,5 +1,7 @@
 import { PersonalNotesController } from "./words/personal-notes.controller";
 import { PersonalNotesService } from "./words/personal-notes.service";
+import { WordRelationsController } from "./words/word-relations.controller";
+import { WordRelationsService } from "./words/word-relations.service";
 import { Module } from "@nestjs/common";
 import { HealthController } from "./health.controller";
 import { PrismaService } from "./prisma.service";
@@ -17,7 +19,7 @@ import { WordTranslationsService } from "./words/word-translations.service";
 
 @Module({
   imports: [AuthModule, StudyModule, ModerationModule, PreferencesModule],
-  controllers: [PersonalNotesController, HealthController, WordsController, WordExamplesController, WordTranslationsController],
-  providers: [PersonalNotesService, PrismaService, WordsService, WordExamplesService, WordAccessService, WordTranslationsService],
+  controllers: [WordRelationsController, PersonalNotesController, HealthController, WordsController, WordExamplesController, WordTranslationsController],
+  providers: [WordRelationsService, PersonalNotesService, PrismaService, WordsService, WordExamplesService, WordAccessService, WordTranslationsService],
 })
 export class AppModule {}
