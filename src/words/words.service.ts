@@ -35,7 +35,7 @@ export class WordsService {
         dictionaryWords(user.id),
         searchWhere(query),
       ] },
-      include: WORD_INCLUDE,
+      include: { ...WORD_INCLUDE, examples: { include: { translations: true }, orderBy: [{ createdAt: "asc" }, { id: "asc" }] } },
       orderBy: { createdAt: "desc" },
     });
   }

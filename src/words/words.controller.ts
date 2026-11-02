@@ -29,7 +29,7 @@ export class WordsController {
   @ApiOperation({ summary: "Получить свой личный словарь" })
   async findMine(@CurrentUser() user: AuthUser, @Query() query: WordQueryDto) {
     const words = await this.wordsService.findMine(user, query.q);
-    return words.map((word) => presentWord(word, user.translationLanguage));
+    return words.map((word) => ({ ...presentWord(word, user.translationLanguage), examples: word.examples.map(example => presentWord(example, user.translationLanguage)) }));
   }
 
   @Post()

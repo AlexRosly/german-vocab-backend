@@ -58,6 +58,9 @@ export function makeWordsDatabase() {
       const table = row.wordId ? exampleTranslations : translations;
       result.translations = [...table.values()].filter((item) => row.wordId ? item.exampleId === row.id : item.wordId === row.id).map((item) => structuredClone(item));
     }
+    if (args.include?.examples) {
+      result.examples = [...examples.values()].filter(item => item.wordId === row.id).map(item => project(item, { include: args.include!.examples.include }));
+    }
     return result;
   }
 
