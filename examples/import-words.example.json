@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "words": [
+    {
+      "sourceId": "example-001",
+      "german": "Baum",
+      "article": "der",
+      "grammaticalNumber": "singular",
+      "pluralForm": "Bäume",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "дерево"
+        },
+        {
+          "language": "en",
+          "text": "tree"
+        }
+      ],
+      "examples": [
+        {
+          "german": "Der Baum ist grün.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Дерево зелёное."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

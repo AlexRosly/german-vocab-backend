@@ -9,6 +9,8 @@
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,test}/**/*.ts\"",
     "test": "jest",
+    "import:words": "node scripts/import-words.cjs",
+    "test:import": "npm run build && node --test test/import-words.test.cjs",
     "test:auth": "jest --config jest.auth.config.cjs --runInBand",
     "test:words": "jest --config jest.words.config.cjs --runInBand",
     "test:study": "jest --config jest.study.config.cjs --runInBand",
