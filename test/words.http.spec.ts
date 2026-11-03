@@ -1,3 +1,4 @@
+import { TRANSLATION_LANGUAGE_CODES } from "../src/languages/language-options";
 import "reflect-metadata";
 import { INestApplication, UnauthorizedException, ValidationPipe } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
@@ -197,6 +198,35 @@ describe("Dictionary HTTP boundary (real services, mocked persistence)", () => {
     expect(updated.selectedTranslation.text).toBeNull();
     expect(updated.translations.map((entry: { language: string }) => entry.language).sort()).toEqual(["en", "uk"]);
     expect((await request(path, "PATCH", { translations: [{ language: "en" }] })).status).toBe(400);
+  });
+
+  it("creates a word and nested example with every supported language in one request", async () => {
+    const translations = TRANSLATION_LANGUAGE_CODES.map(language => ({ language, text: `meaning-${language}` }));
+    expect(translations.length).toBeGreaterThan(4);
+    const response = await request("", "POST", { german: "Mehrsprachigkeit", article: "none", grammaticalNumber: "not_applicable", translations,
+      examples: [{ german: "Wir lernen gemeinsam.", translations }] });
+    expect(response.status).toBe(201); const word = await response.json();
+    expect(word.translations.map((row: any) => row.language).sort()).toEqual([...TRANSLATION_LANGUAGE_CODES].sort());
+    const examples = await (await request(`/${word.id}/examples`)).json();
+    expect(examples[0].translations).toHaveLength(TRANSLATION_LANGUAGE_CODES.length);
+    expect(word.publicationStatus).toBe("PENDING_REVIEW");
+  });
+  it("updates word translations and creates/updates standalone examples with the full catalog", async () => {
+    const translations = TRANSLATION_LANGUAGE_CODES.map(language => ({ language, text: `meaning-${language}` }));
+    const updated = await request("/private", "PATCH", { translations }); expect(updated.status).toBe(200);
+    expect((await updated.json()).translations).toHaveLength(TRANSLATION_LANGUAGE_CODES.length);
+    const created = await request("/private/examples", "POST", { german: "Das ist ein Beispiel.", translations }); expect(created.status).toBe(201);
+    const example = await created.json(); expect(example.translations).toHaveLength(TRANSLATION_LANGUAGE_CODES.length);
+    const changed = await request(`/private/examples/${example.id}`, "PATCH", { translations: translations.map(row => ({ ...row, text: `updated-${row.language}` })) });
+    expect(changed.status).toBe(200); expect((await changed.json()).translations.every((row: any) => row.text === `updated-${row.language}`)).toBe(true);
+  });
+  it("still rejects oversized, unsupported and duplicate-language translation arrays", async () => {
+    const valid = TRANSLATION_LANGUAGE_CODES.map(language => ({ language, text: "meaning" }));
+    for (const translations of [[...valid, valid[0]], [{ language: "xx", text: "unknown" }], [{ language: "en", text: "one" }, { language: " EN ", text: "two" }]]) {
+      expect((await request("", "POST", { german: "validieren", article: "none", grammaticalNumber: "not_applicable", translations })).status).toBe(400);
+      expect((await request("/private/examples", "POST", { german: "Wir prüfen.", translations })).status).toBe(400);
+    }
+    expect(fixture.db.word.create).not.toHaveBeenCalled(); expect(fixture.db.wordExample.create).not.toHaveBeenCalled();
   });
 
 });

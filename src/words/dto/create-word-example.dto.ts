@@ -1,3 +1,4 @@
+import { TRANSLATION_LANGUAGE_CODES } from "../../languages/language-options";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Transform, Type } from "class-transformer";
 import { ArrayMaxSize, ArrayUnique, IsArray, IsNotEmpty, IsString, MaxLength, ValidateIf, ValidateNested } from "class-validator";
@@ -23,7 +24,7 @@ export class CreateWordExampleDto {
   @ApiPropertyOptional({ type: [TranslationInputDto] })
   @ValidateIf((_object, value) => value !== undefined)
   @IsArray()
-  @ArrayMaxSize(4)
+  @ArrayMaxSize(TRANSLATION_LANGUAGE_CODES.length)
   @ArrayUnique((item: TranslationInputDto) => item?.language)
   @ValidateNested({ each: true })
   @Type(() => TranslationInputDto)

@@ -141,3 +141,13 @@ test('an existing report lock blocks concurrent runs without changing the journa
   const result = spawnSync(process.execPath, [path.resolve(__dirname, '../scripts/import-words.cjs'), '--input', input, '--report', output], { encoding: 'utf8' });
   assert.notEqual(result.status, 0); assert.equal(await fs.readFile(output, 'utf8'), 'existing-report'); assert.equal(await fs.readFile(output + '.lock', 'utf8'), 'owned-by-test');
 });
+
+test('CLI preview accepts the whole supported translation catalog for a word and its examples', async () => {
+  const { TRANSLATION_LANGUAGE_CODES } = require('../dist/languages/language-options.js');
+  const translations = TRANSLATION_LANGUAGE_CODES.map(language => ({ language, text: `meaning-${language}` }));
+  assert.ok(translations.length > 4);
+  const prepared = await prepareBatch(batch(card('mehrsprachig', { translations, examples: [{ german: 'Wir lernen.', translations }] })));
+  assert.equal(prepared.rows[0].payload.translations.length, translations.length);
+  assert.equal(prepared.rows[0].payload.examples[0].translations.length, translations.length);
+  assert.equal(prepared.rows[0].state, 'pending');
+});
