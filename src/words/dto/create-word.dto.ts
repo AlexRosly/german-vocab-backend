@@ -1,7 +1,7 @@
 import { TRANSLATION_LANGUAGE_CODES } from "../../languages/language-options";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Transform, Type } from "class-transformer";
-import { ArrayMaxSize, ArrayUnique, IsArray, ValidateIf, ValidateNested, IsEnum, IsInt, IsOptional, IsString, Max, MaxLength, Min, MinLength } from "class-validator";
+import { ArrayMaxSize, ArrayUnique, IsArray, ValidateIf, ValidateNested, IsEnum, IsInt, IsOptional, IsString, Max, MaxLength, Matches, Min, MinLength } from "class-validator";
 
 import { TranslationInputDto } from "./translation-input.dto";
 import { CreateWordExampleDto } from "./create-word-example.dto";
@@ -54,6 +54,17 @@ export class CreateWordDto {
   @ValidateNested({ each: true })
   @Type(() => TranslationInputDto)
   translations?: TranslationInputDto[];
+
+  @ApiPropertyOptional({ type: [String], maxItems: 20, description: "Existing readable cards to link to the new pending card" })
+  @ValidateIf((_object, value) => value !== undefined)
+  @IsArray()
+  @ArrayMaxSize(20)
+  @ArrayUnique()
+  @IsString({ each: true })
+  @MinLength(1, { each: true })
+  @MaxLength(191, { each: true })
+  @Matches(/^[A-Za-z0-9._-]+$/, { each: true })
+  relatedWordIds?: string[];
 
   @ApiPropertyOptional({ type: [CreateWordExampleDto] })
   @ValidateIf((_object, value) => value !== undefined)

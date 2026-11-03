@@ -79,7 +79,9 @@ export class WordsService {
       const entries = translationEntries(dto);
       const data = this.cardData({ ...dto, translation: entries.find((entry) => entry.language === "ru")?.text ?? "" });
       await this.ensureNoDuplicate(tx, user, data, entries);
-      return tx.word.create({
+      // Validate all targets before writing. Visibility is checked again when relations are read.
+      for (const id of dto.relatedWordIds ?? []) await this.access.requireReadable(user, id, tx);
+      const created = await tx.word.create({
         data: {
           ...data,
           publicationStatus: "PENDING_REVIEW",
@@ -93,6 +95,11 @@ export class WordsService {
         },
         include: WORD_INCLUDE,
       });
+      for (const id of dto.relatedWordIds ?? []) {
+        const pair = created.id < id ? { leftWordId: created.id, rightWordId: id } : { leftWordId: id, rightWordId: created.id };
+        await tx.wordRelation.upsert({ where: { leftWordId_rightWordId: pair }, create: pair, update: {} });
+      }
+      return created;
     });
   }
 

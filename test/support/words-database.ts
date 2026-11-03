@@ -12,6 +12,7 @@ type Row = Record<string, any>;
 type Args = { where?: Row; include?: Row; select?: Row; data?: Row; orderBy?: Row };
 
 export function makeWordsDatabase() {
+  const relations = new Map<string, Row>();
   const privateTranslations = new Map<string, Row>();
   const words = new Map<string, Row>();
   const links = new Map<string, Row>();
@@ -84,6 +85,15 @@ export function makeWordsDatabase() {
   }
 
   const db = {
+    wordRelation: {
+      findMany: jest.fn(async (args: Args) => [...relations.values()].filter(row => matches(row, args.where))),
+      upsert: jest.fn(async (args: any) => {
+        const pair = args.where.leftWordId_rightWordId;
+        const key = pair.leftWordId + ":" + pair.rightWordId;
+        if (!relations.has(key)) relations.set(key, { ...args.create });
+        return structuredClone(relations.get(key));
+      }),
+    },
     personalWordTranslation: personalTranslationsModel(privateTranslations, matches),
     word: {
       findMany: jest.fn(async (args: Args = {}) => [...words.values()].filter((row) => matches(row, args.where)).map((row) => project(row, args))),
@@ -185,7 +195,7 @@ export function makeWordsDatabase() {
   };
   db.$transaction.mockImplementation(async (work: (tx: unknown) => Promise<unknown>, options?: Row) => {
     if (options?.isolationLevel !== Prisma.TransactionIsolationLevel.Serializable) throw new Error("Expected serializable transaction");
-    const tables = [words, links, translations, examples, exampleTranslations, privateTranslations];
+    const tables = [words, links, translations, examples, exampleTranslations, privateTranslations, relations];
     const snapshots = tables.map((table) => structuredClone([...table.entries()]));
     try { return await work(db); }
     catch (error) {
@@ -193,5 +203,5 @@ export function makeWordsDatabase() {
       throw error;
     }
   });
-  return { db, privateTranslations, words, links, translations, examples, exampleTranslations, seedWord };
+  return { db, relations, privateTranslations, words, links, translations, examples, exampleTranslations, seedWord };
 }

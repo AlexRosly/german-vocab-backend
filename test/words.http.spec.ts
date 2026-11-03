@@ -1,3 +1,5 @@
+import { WordRelationsService } from "../src/words/word-relations.service";
+import { WordRelationsController } from "../src/words/word-relations.controller";
 import { TRANSLATION_LANGUAGE_CODES } from "../src/languages/language-options";
 import "reflect-metadata";
 import { INestApplication, UnauthorizedException, ValidationPipe } from "@nestjs/common";
@@ -27,8 +29,8 @@ describe("Dictionary HTTP boundary (real services, mocked persistence)", () => {
     fixture.seedWord("private", { publicationStatus: "PENDING_REVIEW", createdByUserId: userA.id });
     const module = await Test.createTestingModule({
       imports: [AuthModule],
-      controllers: [WordsController, WordExamplesController],
-      providers: [PersonalTranslationsService, PrismaService, WordsService, WordAccessService, WordExamplesService],
+      controllers: [WordsController, WordExamplesController, WordRelationsController],
+      providers: [WordRelationsService, PersonalTranslationsService, PrismaService, WordsService, WordAccessService, WordExamplesService],
     })
       .overrideProvider(PrismaService).useValue(fixture.db)
       .overrideProvider(AuthService).useValue({ authenticate: async (token: string) => {
@@ -227,6 +229,44 @@ describe("Dictionary HTTP boundary (real services, mocked persistence)", () => {
       expect((await request("/private/examples", "POST", { german: "Wir prüfen.", translations })).status).toBe(400);
     }
     expect(fixture.db.word.create).not.toHaveBeenCalled(); expect(fixture.db.wordExample.create).not.toHaveBeenCalled();
+  });
+
+  it("creates bidirectional relations with a pending card without publishing or changing targets", async () => {
+    const before = structuredClone(fixture.words.get("published"));
+    const res = await request("", "POST", { ...card, relatedWordIds: ["published", "private"] });
+    expect(res.status).toBe(201); const created = await res.json();
+    expect(created.publicationStatus).toBe("PENDING_REVIEW");
+    const ids = async (path: string, actor = "a") => (await (await request(path, "GET", undefined, actor)).json()).map((row: { id: string }) => row.id);
+    expect((await ids(`/${created.id}/relations`)).sort()).toEqual(["private", "published"]);
+    expect(await ids("/published/relations")).toContain(created.id);
+    expect(await ids("/published/relations", "b")).not.toContain(created.id);
+    expect(fixture.words.get("published")).toEqual(before);
+    expect(fixture.links.size).toBe(1);
+    // Existing relation editing remains restricted to administrators.
+    expect((await request(`/published/relations/${created.id}`, "DELETE")).status).toBe(403);
+  });
+  it("rejects inaccessible or removed related targets before any card is written", async () => {
+    fixture.seedWord("foreign", { publicationStatus: "PENDING_REVIEW", createdByUserId: userB.id });
+    for (const target of ["foreign", "missing"]) {
+      expect((await request("", "POST", { ...card, relatedWordIds: ["published", target] })).status).toBe(404);
+    }
+    expect(fixture.db.word.create).not.toHaveBeenCalled();
+    expect(fixture.relations.size).toBe(0);
+  });
+  it("validates relation IDs and rejects attempts to change them through a word patch", async () => {
+    for (const relatedWordIds of [null, "published", [null], ["bad/id"], [""], ["x".repeat(192)], ["published", "published"], Array.from({ length: 21 }, (_, i) => `id-${i}`)]) {
+      expect((await request("", "POST", { ...card, relatedWordIds })).status).toBe(400);
+    }
+    expect((await request("/private", "PATCH", { relatedWordIds: ["published"] })).status).toBe(400);
+    expect(fixture.db.word.create).not.toHaveBeenCalled();
+  });
+  it("rolls back the card, dictionary link, examples and relations if any relation write fails", async () => {
+    fixture.db.wordRelation.upsert.mockImplementationOnce(async () => { throw new Error("simulated relation failure"); });
+    const res = await request("", "POST", { ...card, relatedWordIds: ["published"], examples: [{ german: "Ein Baum." }] });
+    expect(res.status).toBe(500);
+    expect(fixture.words.size).toBe(2); expect(fixture.links.size).toBe(0);
+    expect(fixture.examples.size).toBe(0); expect(fixture.translations.size).toBe(0);
+    expect(fixture.relations.size).toBe(0);
   });
 
 });
