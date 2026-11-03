@@ -102,7 +102,7 @@ export function makeStudyDatabase() {
   }
 
   function link(userId: string, wordId: string) {
-    const row = { id: `link-${++sequence}`, userId, wordId, createdAt: new Date() };
+    const row = { id: `link-${++sequence}`, isFavorite: false, isArchived: false, revision: `entry-${sequence}`, userId, wordId, createdAt: new Date() };
     links.set(row.id, row);
     return row;
   }

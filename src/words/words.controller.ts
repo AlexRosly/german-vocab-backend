@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Header, HttpCode, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Header, HttpCode, Param, Patch, Post, Put, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AuthGuard } from "../auth/auth.guard";
 import { AuthUser } from "../auth/auth.service";
@@ -6,6 +6,7 @@ import { CurrentUser } from "../auth/current-user.decorator";
 import { CreateWordDto } from "./dto/create-word.dto";
 import { UpdateWordDto } from "./dto/update-word.dto";
 import { WordQueryDto } from "./dto/word-query.dto";
+import { DictionaryEntryParams, SaveDictionaryEntryDto } from "./dto/dictionary-entry.dto";
 import { PersonalTranslationsService } from "./personal-translations.service";
 import { WordsService } from "./words.service";
 import { presentWord } from "../languages/word-presentation";
@@ -38,6 +39,12 @@ export class WordsController {
   async create(@CurrentUser() user: AuthUser, @Body() dto: CreateWordDto) {
     return presentWord(await this.wordsService.create(user, dto), user.translationLanguage);
   }
+
+  @Get(":id/dictionary-settings") @Header("Cache-Control", "no-store")
+  getDictionaryEntry(@CurrentUser() user: AuthUser, @Param() params: DictionaryEntryParams) { return this.wordsService.getDictionaryEntry(user, params.id); }
+
+  @Put(":id/dictionary-settings") @Header("Cache-Control", "no-store")
+  saveDictionaryEntry(@CurrentUser() user: AuthUser, @Param() params: DictionaryEntryParams, @Body() dto: SaveDictionaryEntryDto) { return this.wordsService.saveDictionaryEntry(user, params.id, dto); }
 
   @Post(":id/dictionary")
   @HttpCode(200)

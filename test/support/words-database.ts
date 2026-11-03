@@ -62,6 +62,10 @@ export function makeWordsDatabase() {
       const table = row.wordId ? exampleTranslations : translations;
       result.translations = [...table.values()].filter((item) => row.wordId ? item.exampleId === row.id : item.wordId === row.id).map((item) => structuredClone(item));
     }
+    if (args.include?.userWords) {
+      const nested = args.include.userWords;
+      result.userWords = [...links.values()].filter(item => item.wordId === row.id && matches(item, nested.where)).map(item => project(item, { select: nested.select }));
+    }
     if (args.include?.examples) {
       result.examples = [...examples.values()].filter(item => item.wordId === row.id).map(item => project(item, { include: args.include!.examples.include }));
     }
@@ -96,7 +100,7 @@ export function makeWordsDatabase() {
         }
         for (const example of nestedExamples?.create ?? []) await db.wordExample.create({ data: { wordId: id, ...example } });
         if (nestedLinks) {
-          const link = { id: `link-${++sequence}`, wordId: id, createdAt: new Date(), ...nestedLinks.create };
+          const link = { id: `link-${++sequence}`, isFavorite: false, isArchived: false, revision: `entry-${sequence}`, wordId: id, createdAt: new Date(), ...nestedLinks.create };
           links.set(link.id, link);
         }
         return project(row, args);
@@ -115,10 +119,12 @@ export function makeWordsDatabase() {
       delete: jest.fn(() => { throw new Error("Global word deletion is forbidden in this stage"); }),
     },
     userWord: {
+      findUnique: jest.fn(async (args: any) => project([...links.values()].find(row => matches(row, args.where.userId_wordId)), args)),
+      updateMany: jest.fn(async (args: Args) => { let count = 0; for (const row of links.values()) if (matches(row, args.where)) { Object.assign(row, args.data); count++; } return { count }; }),
       upsert: jest.fn(async (args: { where: Row; create: Row; update: Row }) => {
         const existing = [...links.values()].find((row) => matches(row, args.where.userId_wordId));
         if (existing) return structuredClone(existing);
-        const link = { id: `link-${++sequence}`, createdAt: new Date(), ...args.create };
+        const link = { id: `link-${++sequence}`, isFavorite: false, isArchived: false, revision: `entry-${sequence}`, createdAt: new Date(), ...args.create };
         links.set(link.id, link);
         return structuredClone(link);
       }),

@@ -142,6 +142,9 @@ model Word {
 }
 
 model UserWord {
+  isFavorite Boolean @default(false)
+  isArchived Boolean @default(false)
+  revision String @default(dbgenerated("(gen_random_uuid())::text")) @db.VarChar(64)
   id        String   @id @default(cuid())
   userId    String
   wordId    String
@@ -152,6 +155,7 @@ model UserWord {
 
   @@unique([userId, wordId])
   @@index([wordId])
+  @@index([userId, isArchived])
   @@map("user_words")
 }
 

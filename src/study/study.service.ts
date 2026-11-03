@@ -14,9 +14,9 @@ import { StudyHistoryQueryDto } from "./dto/study-history-query.dto";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const INTERVALS = [1, 3, 7, 14, 30];
 
-function personalWords(userId: string): Prisma.WordWhereInput {
+function personalWords(userId: string, activeOnly = true): Prisma.WordWhereInput {
   return { AND: [
-    { userWords: { some: { userId } } },
+    { userWords: { some: { userId, ...(activeOnly ? { isArchived: false } : {}) } } },
     dictionaryWords(userId),
   ] };
 }
@@ -65,7 +65,7 @@ export class StudyService {
 
       const wordIds = dto.words.map((item) => item.wordId);
       const availableWords = await tx.word.findMany({
-        where: { AND: [{ id: { in: wordIds } }, personalWords(userId)] },
+        where: { AND: [{ id: { in: wordIds } }, personalWords(userId, false)] },
         select: { id: true },
       });
       if (availableWords.length !== wordIds.length) {

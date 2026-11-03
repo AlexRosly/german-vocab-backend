@@ -1,4 +1,6 @@
-import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import { randomUUID } from "node:crypto";
+import { SaveDictionaryEntryDto } from "./dto/dictionary-entry.dto";
 import { Prisma } from "@prisma/client";
 import { AuthUser } from "../auth/auth.service";
 import { PrismaService } from "../prisma.service";
@@ -28,15 +30,43 @@ export class WordsService {
     });
   }
 
-  findMine(user: AuthUser, query?: string) {
-    return this.prisma.word.findMany({
+  async findMine(user: AuthUser, query?: string) {
+    const words = await this.prisma.word.findMany({
       where: { AND: [
         { userWords: { some: { userId: user.id } } },
         dictionaryWords(user.id),
         searchWhere(query),
       ] },
-      include: { ...WORD_INCLUDE, examples: { include: { translations: true }, orderBy: [{ createdAt: "asc" }, { id: "asc" }] } },
+      include: { ...WORD_INCLUDE, userWords: { where: { userId: user.id }, select: { isFavorite: true, isArchived: true, revision: true } }, examples: { include: { translations: true }, orderBy: [{ createdAt: "asc" }, { id: "asc" }] } },
       orderBy: { createdAt: "desc" },
+    });
+    // Expose only the caller's settings, never the underlying users' link rows.
+    return words.flatMap(({ userWords, ...word }) => userWords[0] ? [{ ...word, dictionaryEntry: userWords[0] }] : []);
+  }
+
+  private async ownEntry(tx: Prisma.TransactionClient, user: AuthUser, wordId: string) {
+    const word = await tx.word.findFirst({ where: { AND: [{ id: wordId }, { userWords: { some: { userId: user.id } } }, dictionaryWords(user.id)] }, select: { id: true } });
+    if (!word) throw new NotFoundException("Слово недоступно в вашем словаре");
+    const entry = await tx.userWord.findUnique({ where: { userId_wordId: { userId: user.id, wordId } }, select: { isFavorite: true, isArchived: true, revision: true } });
+    if (!entry) throw new NotFoundException("Слово недоступно в вашем словаре");
+    return { wordId, ...entry };
+  }
+
+  getDictionaryEntry(user: AuthUser, wordId: string) {
+    return this.access.transaction(tx => this.ownEntry(tx, user, wordId));
+  }
+
+  saveDictionaryEntry(user: AuthUser, wordId: string, dto: SaveDictionaryEntryDto) {
+    if (!dto || typeof dto.revision !== "string" || !/^[A-Za-z0-9_-]{1,64}$/.test(dto.revision) ||
+        [dto.isFavorite, dto.isArchived].every(value => value === undefined) ||
+        [dto.isFavorite, dto.isArchived].some(value => value !== undefined && typeof value !== "boolean")) throw new BadRequestException("Проверьте настройки слова");
+    return this.access.transaction(async tx => {
+      const current = await this.ownEntry(tx, user, wordId);
+      if (current.revision !== dto.revision) throw new ConflictException("Настройки слова изменились. Обновите словарь.");
+      const data = { revision: randomUUID(), ...(dto.isFavorite === undefined ? {} : { isFavorite: dto.isFavorite }), ...(dto.isArchived === undefined ? {} : { isArchived: dto.isArchived }) };
+      const updated = await tx.userWord.updateMany({ where: { userId: user.id, wordId, revision: dto.revision }, data });
+      if (updated.count !== 1) throw new ConflictException("Настройки слова изменились. Обновите словарь.");
+      return { ...current, ...data };
     });
   }
 
