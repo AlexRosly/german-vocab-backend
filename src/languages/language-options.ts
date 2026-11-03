@@ -6,7 +6,15 @@ export const INTERFACE_LANGUAGES = [
   { code: "en", label: "English" },
   { code: "uk", label: "Українська" },
 ];
-export const TRANSLATION_LANGUAGES = INTERFACE_LANGUAGES.map((language) => ({ ...language }));
+// Content languages can expand without translating the application interface.
+export const TRANSLATION_LANGUAGES = [
+  { code: "ru", label: "Русский" }, { code: "de", label: "Deutsch" },
+  { code: "en", label: "English" }, { code: "uk", label: "Українська" },
+  { code: "pl", label: "Polski" }, { code: "tr", label: "Türkçe" },
+  { code: "ar", label: "العربية" }, { code: "fr", label: "Français" },
+  { code: "es", label: "Español" }, { code: "it", label: "Italiano" },
+  { code: "pt", label: "Português" },
+];
 export const INTERFACE_LANGUAGE_CODES = INTERFACE_LANGUAGES.map((language) => language.code);
 export const TRANSLATION_LANGUAGE_CODES = TRANSLATION_LANGUAGES.map((language) => language.code);
 

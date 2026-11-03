@@ -1,3 +1,4 @@
+import { personalTranslationsModel } from "./personal-translations-database";
 import { Prisma } from "@prisma/client";
 import { AuthUser } from "../../src/auth/auth.service";
 
@@ -11,6 +12,7 @@ type Row = Record<string, any>;
 type Args = { where?: Row; include?: Row; select?: Row; data?: Row; orderBy?: Row };
 
 export function makeWordsDatabase() {
+  const privateTranslations = new Map<string, Row>();
   const words = new Map<string, Row>();
   const links = new Map<string, Row>();
   const translations = new Map<string, Row>();
@@ -39,6 +41,8 @@ export function makeWordsDatabase() {
         if (!(Array.isArray(condition) ? condition : [condition]).every((item) => matches(row, item))) return false;
       } else if (field === "OR") {
         if (!condition.some((item: Row) => matches(row, item))) return false;
+      } else if (field === "word") {
+        const word = words.get(row.wordId); if (!word || !matches(word, condition)) return false;
       } else if (field === "userWords" || field === "translations") {
         const table = field === "userWords" ? links : translations;
         const related = [...table.values()].filter((item) => item.wordId === row.id);
@@ -76,6 +80,7 @@ export function makeWordsDatabase() {
   }
 
   const db = {
+    personalWordTranslation: personalTranslationsModel(privateTranslations, matches),
     word: {
       findMany: jest.fn(async (args: Args = {}) => [...words.values()].filter((row) => matches(row, args.where)).map((row) => project(row, args))),
       findFirst: jest.fn(async (args: Args) => project([...words.values()].find((row) => matches(row, args.where)), args)),
@@ -174,7 +179,7 @@ export function makeWordsDatabase() {
   };
   db.$transaction.mockImplementation(async (work: (tx: unknown) => Promise<unknown>, options?: Row) => {
     if (options?.isolationLevel !== Prisma.TransactionIsolationLevel.Serializable) throw new Error("Expected serializable transaction");
-    const tables = [words, links, translations, examples, exampleTranslations];
+    const tables = [words, links, translations, examples, exampleTranslations, privateTranslations];
     const snapshots = tables.map((table) => structuredClone([...table.entries()]));
     try { return await work(db); }
     catch (error) {
@@ -182,5 +187,5 @@ export function makeWordsDatabase() {
       throw error;
     }
   });
-  return { db, words, links, translations, examples, exampleTranslations, seedWord };
+  return { db, privateTranslations, words, links, translations, examples, exampleTranslations, seedWord };
 }

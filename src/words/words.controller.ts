@@ -6,6 +6,7 @@ import { CurrentUser } from "../auth/current-user.decorator";
 import { CreateWordDto } from "./dto/create-word.dto";
 import { UpdateWordDto } from "./dto/update-word.dto";
 import { WordQueryDto } from "./dto/word-query.dto";
+import { PersonalTranslationsService } from "./personal-translations.service";
 import { WordsService } from "./words.service";
 import { presentWord } from "../languages/word-presentation";
 
@@ -14,7 +15,7 @@ import { presentWord } from "../languages/word-presentation";
 @UseGuards(AuthGuard)
 @Controller("words")
 export class WordsController {
-  constructor(private readonly wordsService: WordsService) {}
+  constructor(private readonly wordsService: WordsService, private readonly personalTranslations: PersonalTranslationsService) {}
 
   @Get()
   @Header("Cache-Control", "no-store")
@@ -29,7 +30,7 @@ export class WordsController {
   @ApiOperation({ summary: "Получить свой личный словарь" })
   async findMine(@CurrentUser() user: AuthUser, @Query() query: WordQueryDto) {
     const words = await this.wordsService.findMine(user, query.q);
-    return words.map((word) => ({ ...presentWord(word, user.translationLanguage), examples: word.examples.map(example => presentWord(example, user.translationLanguage)) }));
+    return (await this.personalTranslations.present(user, words)).map((word) => ({ ...word, examples: word.examples.map(example => presentWord(example, user.translationLanguage)) }));
   }
 
   @Post()

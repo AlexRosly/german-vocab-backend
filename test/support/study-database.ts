@@ -1,3 +1,4 @@
+import { personalTranslationsModel } from "./personal-translations-database";
 import { Prisma } from "@prisma/client";
 
 type Row = Record<string, any>;
@@ -5,6 +6,7 @@ type Args = { where?: Row; include?: Row; select?: Row; data?: Row; orderBy?: Ro
 
 // Test persistence only: PostgreSQL isolation and contention require a real DB check.
 export function makeStudyDatabase() {
+  const privateTranslations = new Map<string, Row>();
   const words = new Map<string, Row>();
   const links = new Map<string, Row>();
   const progress = new Map<string, Row>();
@@ -115,6 +117,7 @@ export function makeStudyDatabase() {
   }
 
   const db = {
+    personalWordTranslation: personalTranslationsModel(privateTranslations, matches),
     user: { findUnique: jest.fn(async (_args: unknown) => ({ timeZone: "UTC", dailyGoal: 10 })) },
     word: {
       findMany: jest.fn(async (args: Args = {}) => ordered([...words.values()].filter((row) => matches(row, args.where)), args.orderBy).map((row) => projectWord(row, args))),
@@ -170,5 +173,5 @@ export function makeStudyDatabase() {
 
   const progressFor = (userId: string, wordId: string) => [...progress.values()].find((row) => row.userId === userId && row.wordId === wordId);
   const unlink = (userId: string, wordId: string) => { for (const [id, row] of links) if (row.userId === userId && row.wordId === wordId) links.delete(id); };
-  return { db, words, links, progress, sessions, answers, seedWord, link, unlink, seedProgress, progressFor };
+  return { db, privateTranslations, words, links, progress, sessions, answers, seedWord, link, unlink, seedProgress, progressFor };
 }

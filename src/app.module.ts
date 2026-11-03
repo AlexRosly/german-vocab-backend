@@ -1,3 +1,5 @@
+import { PersonalTranslationsController } from "./words/personal-translations.controller";
+import { PersonalTranslationsService } from "./words/personal-translations.service";
 import { PersonalNotesController } from "./words/personal-notes.controller";
 import { PersonalNotesService } from "./words/personal-notes.service";
 import { WordRelationsController } from "./words/word-relations.controller";
@@ -19,7 +21,7 @@ import { WordTranslationsService } from "./words/word-translations.service";
 
 @Module({
   imports: [AuthModule, StudyModule, ModerationModule, PreferencesModule],
-  controllers: [WordRelationsController, PersonalNotesController, HealthController, WordsController, WordExamplesController, WordTranslationsController],
-  providers: [WordRelationsService, PersonalNotesService, PrismaService, WordsService, WordExamplesService, WordAccessService, WordTranslationsService],
+  controllers: [PersonalTranslationsController, WordRelationsController, PersonalNotesController, HealthController, WordsController, WordExamplesController, WordTranslationsController],
+  providers: [PersonalTranslationsService, WordRelationsService, PersonalNotesService, PrismaService, WordsService, WordExamplesService, WordAccessService, WordTranslationsService],
 })
 export class AppModule {}

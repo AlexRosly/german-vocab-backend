@@ -51,7 +51,7 @@ describe("Language preferences and translations HTTP (mocked persistence)", () =
     expect(response.status).toBe(200);
     const catalog = await response.json();
     expect(catalog.interfaceLanguages.map((item: { code: string }) => item.code)).toEqual(["ru", "de", "en", "uk"]);
-    expect(catalog.translationLanguages.map((item: { code: string }) => item.code)).toEqual(["ru", "de", "en", "uk"]);
+    expect(catalog.translationLanguages.map((item: { code: string }) => item.code)).toEqual(["ru", "de", "en", "uk", "pl", "tr", "ar", "fr", "es", "it", "pt"]);
     expect(store.model.findUnique).not.toHaveBeenCalled();
   });
 
@@ -153,7 +153,7 @@ describe("Language preferences and translations HTTP (mocked persistence)", () =
   });
 
   it("validates the language, text and extra fields before saving", async () => {
-    expect((await request("/words/own/translations/fr", "PUT", { text: "arbre" })).status).toBe(400);
+    expect((await request("/words/own/translations/xx", "PUT", { text: "arbre" })).status).toBe(400);
     for (const payload of [undefined, null, {}, { text: null }, { text: "   " }, { text: 123 }, { text: "a".repeat(1001) },
       { text: "tree", userId: userB.id }, { text: "tree", role: "ADMIN" }, { text: "tree", publicationStatus: "PUBLISHED" }, { text: "tree", language: "ru" }]) {
       expect((await request("/words/own/translations/en", "PUT", payload)).status).toBe(400);
@@ -197,4 +197,12 @@ describe("Language preferences and translations HTTP (mocked persistence)", () =
       expect(await (await request("/users/me/preferences", "PATCH", { timeZone: "europe/berlin", dailyGoal })).json()).toMatchObject({ timeZone: "Europe/Berlin", dailyGoal, interfaceLanguage: "ru", translationLanguage: "ru" });
     }
   });
+  it("accepts expanded content languages without adding interface locales", async () => {
+    for (const language of ["pl", "tr", "ar", "fr", "es", "it", "pt"]) {
+      expect((await request("/users/me/preferences", "PATCH", { translationLanguage: language })).status).toBe(200);
+      expect((await request("/users/me/preferences", "PATCH", { interfaceLanguage: language })).status).toBe(400);
+    }
+    expect((await (await request("/users/me/preferences")).json()).interfaceLanguage).toBe("ru");
+  });
+
 });

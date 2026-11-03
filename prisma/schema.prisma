@@ -69,6 +69,7 @@ model User {
   progress     WordProgress[]
   sessions     StudySession[]
   personalNotes PersonalWordNote[]
+  personalTranslations PersonalWordTranslation[]
   createdWords Word[]         @relation("WordCreator")
 
   @@map("users")
@@ -129,6 +130,7 @@ model Word {
   sessionWords StudySessionWord[]
   progress     WordProgress[]
   personalNotes PersonalWordNote[]
+  personalTranslations PersonalWordTranslation[]
   relationsFrom WordRelation[] @relation("RelationLeft")
   relationsTo WordRelation[] @relation("RelationRight")
 
@@ -273,4 +275,20 @@ model WordRelation {
   @@id([leftWordId, rightWordId])
   @@index([rightWordId])
   @@map("word_relations")
+}
+
+// Retained across dictionary unlink, readable only with an active readable UserWord.
+model PersonalWordTranslation {
+  userId String
+  wordId String
+  language String @db.VarChar(16)
+  text String @db.VarChar(1000)
+  revision String @default(cuid()) @db.VarChar(64)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  word Word @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  @@id([userId, wordId, language])
+  @@index([wordId])
+  @@map("personal_word_translations")
 }

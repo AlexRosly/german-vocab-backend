@@ -80,4 +80,21 @@ describe("Selected translations in personal study HTTP", () => {
     expect(fixture.progressFor(userA.id, "shared")).toEqual(before);
     expect(fixture.sessions.size).toBe(1);
   });
+  it("uses only the caller's selected personal translation in training/history without changing progress or stored answers", async () => {
+    fixture.privateTranslations.set("a-en", { userId: userA.id, wordId: "shared", language: "en", text: "MY_PRIVATE_TREE", revision: "r" });
+    fixture.privateTranslations.set("b-en", { userId: userB.id, wordId: "shared", language: "en", text: "B_PRIVATE_TREE", revision: "r" });
+    expect((await (await request("/study/new")).json()).words[0].selectedTranslation).toEqual({ language: "en", text: "MY_PRIVATE_TREE", source: "personal" });
+    const saved = await (await request("/study/sessions", "POST", session, "a", "personal-0001")).json();
+    expect(saved.words[0].word.selectedTranslation.text).toBe("MY_PRIVATE_TREE");
+    const before = structuredClone(fixture.progressFor(userA.id, "shared"));
+    expect((await (await request(`/study/history/${saved.id}`)).json()).words[0].word.selectedTranslation.text).toBe("MY_PRIVATE_TREE");
+    expect((await (await request("/study/progress")).json()).words[0].word.selectedTranslation.text).toBe("MY_PRIVATE_TREE");
+    fixture.progressFor(userA.id, "shared")!.nextReviewAt = new Date(0);
+    expect((await (await request("/study/due")).json()).words[0].selectedTranslation.text).toBe("MY_PRIVATE_TREE");
+    expect(JSON.stringify(await (await request("/study/new", "GET", undefined, "b")).json())).not.toContain("MY_PRIVATE_TREE");
+    await request("/users/me/preferences", "PATCH", { translationLanguage: "pl" });
+    expect((await (await request(`/study/history/${saved.id}`)).json()).words[0].word.selectedTranslation).toEqual({ language: "pl", text: null });
+    expect(fixture.sessions.size).toBe(1); expect(fixture.progressFor(userA.id, "shared")!.knownCount).toBe(before!.knownCount);
+  });
+
 });

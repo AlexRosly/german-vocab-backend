@@ -5,6 +5,7 @@ import type { AddressInfo } from "node:net";
 import { AuthModule } from "../src/auth/auth.module";
 import { AuthService } from "../src/auth/auth.service";
 import { PrismaService } from "../src/prisma.service";
+import { PersonalTranslationsService } from "../src/words/personal-translations.service";
 import { WordsController } from "../src/words/words.controller";
 import { WordsService } from "../src/words/words.service";
 import { WordAccessService } from "../src/words/word-access.service";
@@ -26,7 +27,7 @@ describe("Dictionary HTTP boundary (real services, mocked persistence)", () => {
     const module = await Test.createTestingModule({
       imports: [AuthModule],
       controllers: [WordsController, WordExamplesController],
-      providers: [PrismaService, WordsService, WordAccessService, WordExamplesService],
+      providers: [PersonalTranslationsService, PrismaService, WordsService, WordAccessService, WordExamplesService],
     })
       .overrideProvider(PrismaService).useValue(fixture.db)
       .overrideProvider(AuthService).useValue({ authenticate: async (token: string) => {
@@ -172,7 +173,7 @@ describe("Dictionary HTTP boundary (real services, mocked persistence)", () => {
 
   it("rejects malformed nested examples and language patches before any word is written", async () => {
     for (const extra of [
-      { examples: [{ german: " " }] }, { examples: [{ german: "Ja", translations: [{ language: "fr", text: "Oui" }] }] },
+      { examples: [{ german: " " }] }, { examples: [{ german: "Ja", translations: [{ language: "xx", text: "Oui" }] }] },
       { examples: [{ german: "Ja", translations: [{ language: "en", text: " " }] }] },
       { examples: Array.from({ length: 21 }, () => ({ german: "Ja" })) },
       { examples: [{ german: "Ja", wordId: "private" }] },

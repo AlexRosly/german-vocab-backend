@@ -132,7 +132,7 @@ describe("WordTranslation writes and permissions", () => {
   });
 
   it("rejects unsupported languages and empty/oversized translations", async () => {
-    await expect(translations.set(userA, "own", "fr", { text: "arbre" })).rejects.toBeInstanceOf(BadRequestException);
+    await expect(translations.set(userA, "own", "xx", { text: "arbre" })).rejects.toBeInstanceOf(BadRequestException);
     await expect(translations.get(userA, "own", "xx")).rejects.toBeInstanceOf(BadRequestException);
     for (const text of ["", "   ", "a".repeat(1001)]) {
       await expect(translations.set(userA, "own", "en", { text })).rejects.toBeInstanceOf(BadRequestException);
