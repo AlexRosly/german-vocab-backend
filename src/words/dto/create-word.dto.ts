@@ -86,6 +86,14 @@ export class CreateWordDto {
   @IsEnum(CefrLevelDto)
   level?: CefrLevelDto | null;
 
+  @ApiPropertyOptional({ example: "B1+ Brückenkurs", nullable: true, maxLength: 120 })
+  @Transform(({ value }: { value: unknown }) => typeof value === "string" ? value.normalize("NFC").trim().replace(/\s+/gu, " ") || null : value)
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  @Matches(/^[^\p{Cc}]+$/u)
+  sourceBook?: string | null;
+
   @ApiPropertyOptional({ example: 1 })
   @IsOptional()
   @IsInt()

@@ -13,6 +13,7 @@ function searchWhere(query?: string): Prisma.WordWhereInput {
   if (!query) return {};
   return { OR: [
     { german: { contains: query, mode: "insensitive" } },
+    { sourceBook: { contains: query, mode: "insensitive" } },
     { translation: { contains: query, mode: "insensitive" } },
     { translations: { some: { text: { contains: query, mode: "insensitive" } } } },
   ] };
@@ -40,8 +41,14 @@ export class WordsService {
       include: { ...WORD_INCLUDE, userWords: { where: { userId: user.id }, select: { isFavorite: true, isArchived: true, revision: true } }, examples: { include: { translations: true }, orderBy: [{ createdAt: "asc" }, { id: "asc" }] } },
       orderBy: { createdAt: "desc" },
     });
+    // Private titles are fetched only for the caller and the cards already visible in their dictionary.
+    const books = words.length ? await this.prisma.personalWordBooks.findMany({
+      where: { userId: user.id, wordId: { in: words.map(word => word.id) } },
+      select: { wordId: true, titles: true },
+    }) : [];
+    const titles = new Map(books.map(book => [book.wordId, book.titles]));
     // Expose only the caller's settings, never the underlying users' link rows.
-    return words.flatMap(({ userWords, ...word }) => userWords[0] ? [{ ...word, dictionaryEntry: userWords[0] }] : []);
+    return words.flatMap(({ userWords, ...word }) => userWords[0] ? [{ ...word, dictionaryEntry: userWords[0], personalBooks: titles.get(word.id) ?? [] }] : []);
   }
 
   private async ownEntry(tx: Prisma.TransactionClient, user: AuthUser, wordId: string) {
@@ -115,6 +122,7 @@ export class WordsService {
         translation: entries.find((entry) => entry.language === "ru")?.text ?? "",
         pluralForm: dto.pluralForm === undefined ? current.pluralForm : dto.pluralForm,
         level: dto.level === undefined ? current.level : dto.level,
+        sourceBook: dto.sourceBook === undefined ? current.sourceBook : dto.sourceBook,
         lessonNumber: dto.lessonNumber === undefined ? current.lessonNumber : dto.lessonNumber,
         notes: dto.notes === undefined ? current.notes : dto.notes,
       });
@@ -154,7 +162,7 @@ export class WordsService {
 
   private cardData(dto: {
     german: string; article: string; grammaticalNumber: string; translation: string;
-    pluralForm?: string | null; level?: string | null; lessonNumber?: number | null; notes?: string | null;
+    pluralForm?: string | null; level?: string | null; sourceBook?: string | null; lessonNumber?: number | null; notes?: string | null;
   }) {
     return {
       german: dto.german.normalize("NFC").trim().replace(/\s+/gu, " "),
@@ -163,6 +171,7 @@ export class WordsService {
       translation: dto.translation.normalize("NFC").trim(),
       pluralForm: dto.pluralForm?.normalize("NFC").trim() || null,
       level: (dto.level ?? null) as CreateWordDto["level"],
+      sourceBook: dto.sourceBook?.normalize("NFC").trim().replace(/\s+/gu, " ") || null,
       lessonNumber: dto.lessonNumber ?? null,
       notes: dto.notes?.normalize("NFC").trim() || null,
     };

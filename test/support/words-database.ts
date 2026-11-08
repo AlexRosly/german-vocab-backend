@@ -14,6 +14,7 @@ type Args = { where?: Row; include?: Row; select?: Row; data?: Row; orderBy?: Ro
 export function makeWordsDatabase() {
   const relations = new Map<string, Row>();
   const privateTranslations = new Map<string, Row>();
+  const privateBooks = new Map<string, Row>();
   const words = new Map<string, Row>();
   const links = new Map<string, Row>();
   const translations = new Map<string, Row>();
@@ -76,7 +77,7 @@ export function makeWordsDatabase() {
   function seedWord(id: string, overrides: Row = {}) {
     const row = {
       id, german: "Tisch", article: "der", grammaticalNumber: "singular", translation: "стол",
-      pluralForm: null, level: null, lessonNumber: null, notes: null,
+      pluralForm: null, level: null, lessonNumber: null, sourceBook: null, notes: null,
       publicationStatus: "PUBLISHED", createdByUserId: null, createdAt: new Date(), updatedAt: new Date(),
       ...overrides,
     };
@@ -85,6 +86,13 @@ export function makeWordsDatabase() {
   }
 
   const db = {
+    personalWordBooks: {
+      findMany: jest.fn(async (args: Args) => [...privateBooks.values()].filter(row => matches(row, args.where)).map(row => project(row, args))),
+      findUnique: jest.fn(async (args: any) => project([...privateBooks.values()].find(row => matches(row, args.where.userId_wordId)), args)),
+      create: jest.fn(async (args: Args) => { const data = structuredClone(args.data!); privateBooks.set(data.userId + ":" + data.wordId, data); return data; }),
+      updateMany: jest.fn(async (args: Args) => { let count = 0; for (const row of privateBooks.values()) if (matches(row, args.where)) { Object.assign(row, structuredClone(args.data)); count++; } return { count }; }),
+      deleteMany: jest.fn(async (args: Args) => { let count = 0; for (const [id, row] of privateBooks) if (matches(row, args.where)) { privateBooks.delete(id); count++; } return { count }; }),
+    },
     wordRelation: {
       findMany: jest.fn(async (args: Args) => [...relations.values()].filter(row => matches(row, args.where))),
       upsert: jest.fn(async (args: any) => {
@@ -195,7 +203,7 @@ export function makeWordsDatabase() {
   };
   db.$transaction.mockImplementation(async (work: (tx: unknown) => Promise<unknown>, options?: Row) => {
     if (options?.isolationLevel !== Prisma.TransactionIsolationLevel.Serializable) throw new Error("Expected serializable transaction");
-    const tables = [words, links, translations, examples, exampleTranslations, privateTranslations, relations];
+    const tables = [privateBooks, words, links, translations, examples, exampleTranslations, privateTranslations, relations];
     const snapshots = tables.map((table) => structuredClone([...table.entries()]));
     try { return await work(db); }
     catch (error) {
@@ -203,5 +211,5 @@ export function makeWordsDatabase() {
       throw error;
     }
   });
-  return { db, relations, privateTranslations, words, links, translations, examples, exampleTranslations, seedWord };
+  return { db, relations, privateTranslations, privateBooks, words, links, translations, examples, exampleTranslations, seedWord };
 }

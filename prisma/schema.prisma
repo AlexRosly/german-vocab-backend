@@ -71,6 +71,7 @@ model User {
   sessions     StudySession[]
   personalNotes PersonalWordNote[]
   personalTranslations PersonalWordTranslation[]
+  personalBooks PersonalWordBooks[]
   createdWords Word[]         @relation("WordCreator")
 
   @@map("users")
@@ -118,6 +119,7 @@ model Word {
   pluralForm        String?
   level             CefrLevel?
   lessonNumber      Int?
+  sourceBook        String?               @db.VarChar(120)
   notes             String?
   publicationStatus WordPublicationStatus @default(PUBLISHED)
   createdByUserId   String?
@@ -132,6 +134,7 @@ model Word {
   progress     WordProgress[]
   personalNotes PersonalWordNote[]
   personalTranslations PersonalWordTranslation[]
+  personalBooks PersonalWordBooks[]
   relationsFrom WordRelation[] @relation("RelationLeft")
   relationsTo WordRelation[] @relation("RelationRight")
 
@@ -307,4 +310,19 @@ model GoogleAuthChallenge {
   user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([expiresAt])
   @@map("google_auth_challenges")
+}
+
+// Private book associations survive a temporary dictionary unlink, like personal notes.
+model PersonalWordBooks {
+  userId String
+  wordId String
+  titles String[]
+  revision String @default(cuid()) @db.VarChar(64)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  word Word @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  @@id([userId, wordId])
+  @@index([wordId])
+  @@map("personal_word_books")
 }

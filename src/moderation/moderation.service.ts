@@ -23,6 +23,7 @@ function withRevision(word: ReviewCard) {
     pluralForm: word.pluralForm,
     level: word.level,
     lessonNumber: word.lessonNumber,
+    sourceBook: word.sourceBook,
     notes: word.notes,
     publicationStatus: word.publicationStatus,
     createdByUserId: word.createdByUserId,

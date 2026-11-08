@@ -3,7 +3,7 @@
 const fs=require('node:fs'),path=require('node:path');
 const {createHash}=require('node:crypto'),{spawnSync}=require('node:child_process');
 const repo=path.resolve(__dirname,'..');
-const tables=['users','accounts','auth_sessions','google_auth_challenges','words','word_translations','word_examples','word_example_translations','user_words','study_sessions','study_session_words','word_progress','personal_word_notes','personal_word_translations','word_relations','_prisma_migrations'];
+const tables=['users','accounts','auth_sessions','google_auth_challenges','words','word_translations','word_examples','word_example_translations','user_words','study_sessions','study_session_words','word_progress','personal_word_notes','personal_word_translations','personal_word_books','word_relations','_prisma_migrations'];
 const hash=value=>createHash('sha256').update(value).digest('hex');
 function canonical(value){return Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(k=>[k,canonical(value[k])])):value}
 const tableHash=rows=>hash(rows.map(row=>JSON.stringify(canonical(row))).sort().join('\n'));
