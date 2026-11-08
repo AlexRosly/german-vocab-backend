@@ -1,3 +1,4 @@
+import { GoogleAuthService } from "./google-auth.service";
 import { Module } from "@nestjs/common";
 import { ThrottlerModule } from "@nestjs/throttler";
 import { PrismaService } from "../prisma.service";
@@ -10,7 +11,7 @@ import { AdminGuard } from "./admin.guard";
 @Module({
   imports: [ThrottlerModule.forRoot([{ ttl: 60_000, limit: 10 }])],
   controllers: [AuthController],
-  providers: [PrismaService, AuthService, AuthGuard, AuthOriginGuard, AdminGuard],
+  providers: [GoogleAuthService, PrismaService, AuthService, AuthGuard, AuthOriginGuard, AdminGuard],
   exports: [AuthService, AuthGuard, AdminGuard],
 })
 export class AuthModule {}

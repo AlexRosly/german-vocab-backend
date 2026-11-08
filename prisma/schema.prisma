@@ -65,6 +65,7 @@ model User {
 
   accounts     Account[]
   authSessions AuthSession[]
+  googleChallenges GoogleAuthChallenge[]
   words        UserWord[]
   progress     WordProgress[]
   sessions     StudySession[]
@@ -295,4 +296,15 @@ model PersonalWordTranslation {
   @@id([userId, wordId, language])
   @@index([wordId])
   @@map("personal_word_translations")
+}
+
+model GoogleAuthChallenge {
+  nonceHash String @id @db.VarChar(64)
+  purpose String @db.VarChar(8)
+  userId String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([expiresAt])
+  @@map("google_auth_challenges")
 }

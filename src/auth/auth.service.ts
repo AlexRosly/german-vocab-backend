@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from "@nestjs/common";
@@ -8,6 +9,7 @@ import { Prisma } from "@prisma/client";
 import { compare, hash } from "bcrypt";
 import { createHash, randomBytes } from "node:crypto";
 import { PrismaService } from "../prisma.service";
+import type { GoogleIdentity } from "./google-auth.service";
 import { CredentialsDto } from "./dto/credentials.dto";
 
 const ACCESS_TTL_MS = 10 * 60 * 1000;
@@ -114,6 +116,55 @@ export class AuthService {
       data: { userId: account.user.id, ...this.sessionData(tokens) },
     });
     return { user: account.user, ...tokens };
+  }
+
+  async googleAccount(userId: string) {
+    const account = await this.prisma.account.findFirst({ where: { userId, provider: "GOOGLE" }, select: { id: true } });
+    return { connected: !!account };
+  }
+
+  async signInWithGoogle(identity: GoogleIdentity): Promise<AuthResult> {
+    const tokens = this.newTokens();
+    const user = await this.googleTransaction(async tx => {
+      const account = await tx.account.findUnique({ where: { provider_providerAccountId: { provider: "GOOGLE", providerAccountId: identity.subject } }, select: { user: { select: USER_SELECT } } });
+      let user = account?.user;
+      if (!user) {
+        const existing = await tx.user.findFirst({ where: { email: { equals: identity.email, mode: "insensitive" } }, select: { id: true } });
+        if (existing) throw new ConflictException("Этот email уже есть. Войдите с паролем и подключите Google в настройках.");
+        user = await tx.user.create({ data: { email: identity.email, emailVerified: identity.authoritativeEmail ? new Date() : null, role: "USER",
+          accounts: { create: { provider: "GOOGLE", providerAccountId: identity.subject } } }, select: USER_SELECT });
+      }
+      await tx.authSession.create({ data: { userId: user.id, ...this.sessionData(tokens) } });
+      return user;
+    });
+    return { user, ...tokens };
+  }
+
+  async linkGoogle(userId: string, identity: GoogleIdentity, password: string) {
+    this.checkPasswordLength(password);
+    const emailAccount = await this.prisma.account.findFirst({ where: { userId, provider: "EMAIL" }, select: { passwordHash: true } });
+    const valid = await compare(password, emailAccount?.passwordHash ?? await this.dummyHash);
+    if (!emailAccount?.passwordHash || !valid) throw new ForbiddenException("Неверный пароль текущего аккаунта");
+    return this.googleTransaction(async tx => {
+      const existing = await tx.account.findUnique({ where: { provider_providerAccountId: { provider: "GOOGLE", providerAccountId: identity.subject } }, select: { userId: true } });
+      if (existing && existing.userId !== userId) throw new ConflictException("Этот Google-аккаунт уже подключён к другому пользователю");
+      if (existing) return { connected: true };
+      const own = await tx.account.findFirst({ where: { userId, provider: "GOOGLE" }, select: { id: true } });
+      if (own) throw new ConflictException("К вашему аккаунту уже подключён Google");
+      await tx.account.create({ data: { userId, provider: "GOOGLE", providerAccountId: identity.subject } });
+      return { connected: true };
+    });
+  }
+
+  private async googleTransaction<T>(work: (tx: Prisma.TransactionClient) => Promise<T>): Promise<T> {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try { return await this.prisma.$transaction(work, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }); }
+      catch (error) {
+        if (!(error instanceof Prisma.PrismaClientKnownRequestError) || !["P2002", "P2034"].includes(error.code)) throw error;
+        if (attempt === 2) throw new ConflictException("Конфликт одновременных изменений. Повторите запрос");
+      }
+    }
+    throw new ConflictException("Повторите запрос");
   }
 
   async refresh(refreshToken: string | undefined): Promise<AuthResult> {

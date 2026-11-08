@@ -1,5 +1,7 @@
+import { GoogleAuthService, GOOGLE_NONCE_COOKIE, GOOGLE_CHALLENGE_TTL } from "./google-auth.service";
+import { GoogleCredentialDto, GoogleLinkDto } from "./dto/google-credential.dto";
 import {
-  Body, Controller, Delete, Get, Header, HttpCode, Param, Post, Req, Res, UseGuards,
+  ForbiddenException, UnauthorizedException, Body, Controller, Delete, Get, Header, HttpCode, Param, Post, Req, Res, UseGuards,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { SkipThrottle, Throttle, ThrottlerGuard } from "@nestjs/throttler";
@@ -18,7 +20,45 @@ const COOKIE_NAME = "wortkarten_refresh";
 @Controller("auth")
 @UseGuards(AuthOriginGuard, ThrottlerGuard)
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService, private readonly google: GoogleAuthService) {}
+
+  @Get("google/config") @SkipThrottle() @Header("Cache-Control", "no-store")
+  googleConfig() { return this.google.config(); }
+
+  @Post("google/challenge") @HttpCode(200) @Header("Cache-Control", "no-store")
+  async googleChallenge(@Res({ passthrough: true }) response: Response) {
+    return this.issueGoogleChallenge(response, "login");
+  }
+
+  @Post("google") @HttpCode(200) @Header("Cache-Control", "no-store")
+  async googleLogin(@Body() dto: GoogleCredentialDto, @Req() request: Request, @Res({ passthrough: true }) response: Response) {
+    const identity = await this.google.verify(dto.credential, this.readCookie(request, GOOGLE_NONCE_COOKIE), "login");
+    response.clearCookie(GOOGLE_NONCE_COOKIE, this.cookieOptions());
+    return this.sendAuth(await this.authService.signInWithGoogle(identity), response);
+  }
+
+  @Get("google/account") @UseGuards(AuthGuard) @Header("Cache-Control", "no-store")
+  googleAccount(@CurrentUser() user: AuthUser) { return this.authService.googleAccount(user.id); }
+
+  @Post("google/link-challenge") @UseGuards(AuthGuard) @HttpCode(200) @Header("Cache-Control", "no-store")
+  async googleLinkChallenge(@CurrentUser() user: AuthUser, @Res({ passthrough: true }) response: Response) {
+    return this.issueGoogleChallenge(response, "link", user.id);
+  }
+
+  @Post("google/link") @UseGuards(AuthGuard) @HttpCode(200) @Header("Cache-Control", "no-store")
+  async googleLink(@CurrentUser() user: AuthUser, @Body() dto: GoogleLinkDto, @Req() request: Request, @Res({ passthrough: true }) response: Response) {
+    let identity;
+    try { identity = await this.google.verify(dto.credential, this.readCookie(request, GOOGLE_NONCE_COOKIE), "link", user.id); }
+    catch (error) { if (error instanceof UnauthorizedException) throw new ForbiddenException(error.message); throw error; }
+    response.clearCookie(GOOGLE_NONCE_COOKIE, this.cookieOptions());
+    return this.authService.linkGoogle(user.id, identity, dto.password);
+  }
+
+  private async issueGoogleChallenge(response: Response, purpose: "login" | "link", userId?: string) {
+    const result = await this.google.issue(purpose, userId);
+    response.cookie(GOOGLE_NONCE_COOKIE, result.nonce, { ...this.cookieOptions(), maxAge: GOOGLE_CHALLENGE_TTL });
+    return result;
+  }
 
   @Post("register")
   @Header("Cache-Control", "no-store")
@@ -88,12 +128,12 @@ export class AuthController {
     response.clearCookie(COOKIE_NAME, this.cookieOptions());
   }
 
-  private readCookie(request: Request): string | undefined {
+  private readCookie(request: Request, name = COOKIE_NAME): string | undefined {
     const values = (request.headers.cookie ?? "")
       .split(";")
       .map((part) => part.trim())
-      .filter((part) => part.startsWith(`${COOKIE_NAME}=`));
-    return values.length === 1 ? values[0].slice(COOKIE_NAME.length + 1) : undefined;
+      .filter((part) => part.startsWith(`${name}=`));
+    return values.length === 1 ? values[0].slice(name.length + 1) : undefined;
   }
 
   private cookieOptions(): CookieOptions {
