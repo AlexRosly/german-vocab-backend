@@ -1,3 +1,4 @@
+import { BulkDictionaryDto } from "./dto/bulk-dictionary.dto";
 import { Body, Controller, Delete, Get, Header, HttpCode, Param, Patch, Post, Put, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AuthGuard } from "../auth/auth.guard";
@@ -45,6 +46,13 @@ export class WordsController {
 
   @Put(":id/dictionary-settings") @Header("Cache-Control", "no-store")
   saveDictionaryEntry(@CurrentUser() user: AuthUser, @Param() params: DictionaryEntryParams, @Body() dto: SaveDictionaryEntryDto) { return this.wordsService.saveDictionaryEntry(user, params.id, dto); }
+
+  @Post("dictionary/bulk")
+  @HttpCode(200)
+  @ApiOperation({ summary: "Добавить найденные опубликованные карточки в свой словарь, сохранив существующие записи" })
+  addManyToDictionary(@CurrentUser() user: AuthUser, @Body() dto: BulkDictionaryDto) {
+    return this.wordsService.addManyToDictionary(user, dto.wordIds);
+  }
 
   @Post(":id/dictionary")
   @HttpCode(200)

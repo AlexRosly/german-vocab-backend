@@ -137,6 +137,17 @@ export function makeWordsDatabase() {
       delete: jest.fn(() => { throw new Error("Global word deletion is forbidden in this stage"); }),
     },
     userWord: {
+      createMany: jest.fn(async (args: { data: Row[]; skipDuplicates: boolean }) => {
+        let count = 0;
+        for (const data of args.data) {
+          const existing = [...links.values()].some(row => row.userId === data.userId && row.wordId === data.wordId);
+          if (existing && args.skipDuplicates) continue;
+          if (existing) throw new Error("Duplicate dictionary entry");
+          const link = { id: `link-${++sequence}`, isFavorite: false, isArchived: false, revision: `entry-${sequence}`, createdAt: new Date(), ...data };
+          links.set(link.id, link); count++;
+        }
+        return { count };
+      }),
       findUnique: jest.fn(async (args: any) => project([...links.values()].find(row => matches(row, args.where.userId_wordId)), args)),
       updateMany: jest.fn(async (args: Args) => { let count = 0; for (const row of links.values()) if (matches(row, args.where)) { Object.assign(row, args.data); count++; } return { count }; }),
       upsert: jest.fn(async (args: { where: Row; create: Row; update: Row }) => {

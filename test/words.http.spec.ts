@@ -60,7 +60,7 @@ describe("Dictionary HTTP boundary (real services, mocked persistence)", () => {
     for (const [path, method] of [
       ["", "GET"], ["/mine", "GET"], ["/published", "GET"], ["", "POST"],
       ["/published", "PATCH"], ["/published", "DELETE"],
-      ["/published/dictionary", "POST"], ["/published/dictionary", "DELETE"],
+      ["/dictionary/bulk", "POST"], ["/published/dictionary", "POST"], ["/published/dictionary", "DELETE"],
       ["/published/examples", "GET"], ["/published/examples", "POST"],
       ["/published/examples/example", "PATCH"], ["/published/examples/example", "DELETE"],
     ]) {
@@ -79,6 +79,34 @@ describe("Dictionary HTTP boundary (real services, mocked persistence)", () => {
     expect(await (await request("/mine", "GET", undefined, "b")).json()).toEqual([]);
     expect(fixture.words.size).toBe(2);
     expect(fixture.links.size).toBe(1);
+  });
+
+  it("bulk-adds only published cards to the caller and preserves existing settings on retries", async () => {
+    fixture.seedWord("second");
+    await request("/published/dictionary", "POST");
+    const entry = [...fixture.links.values()][0];
+    Object.assign(entry, { isFavorite: true, isArchived: true, revision: "unchanged" });
+    const saved = structuredClone(entry);
+    const body = { wordIds: ["published", "second", "private", "missing"] };
+    const response = await request("/dictionary/bulk", "POST", body);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ requestedCount: 4, addedCount: 1, alreadyInDictionaryCount: 1, unavailableCount: 2, wordIds: ["published", "second"] });
+    expect(fixture.links.get(entry.id)).toEqual(saved);
+    expect((await (await request("/dictionary/bulk", "POST", body)).json()).addedCount).toBe(0);
+    expect(fixture.links.size).toBe(2);
+    expect(await (await request("/mine", "GET", undefined, "b")).json()).toEqual([]);
+    expect((await (await request("/dictionary/bulk", "POST", { wordIds: ["private"] }, "c")).json()).unavailableCount).toBe(1);
+    expect(fixture.words.size).toBe(3);
+  });
+
+  it("rejects invalid bulk requests and identity injection before dictionary writes", async () => {
+    for (const body of [{}, { wordIds: null }, { wordIds: [] }, { wordIds: "published" },
+      { wordIds: ["published", "published"] }, { wordIds: [null] }, { wordIds: ["bad/id"] },
+      { wordIds: ["published"], userId: "user-b" }, { wordIds: ["published"], role: "ADMIN" },
+      { wordIds: Array.from({ length: 2001 }, (_, i) => `word-${i}`) }]) {
+      expect((await request("/dictionary/bulk", "POST", body)).status).toBe(400);
+    }
+    expect(fixture.db.userWord.createMany).not.toHaveBeenCalled();
   });
 
   it("creates a pending card visible only to its author before moderation", async () => {

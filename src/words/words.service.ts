@@ -155,6 +155,23 @@ export class WordsService {
     });
   }
 
+  addManyToDictionary(user: AuthUser, requestedIds: string[]) {
+    const ids = [...new Set(requestedIds)];
+    return this.access.transaction(async (tx) => {
+      // Bulk library actions never disclose or attach unpublished cards, even for admins.
+      const words = await tx.word.findMany({
+        where: { id: { in: ids }, publicationStatus: "PUBLISHED" }, select: { id: true },
+      });
+      const result = words.length ? await tx.userWord.createMany({
+        data: words.map(word => ({ userId: user.id, wordId: word.id })), skipDuplicates: true,
+      }) : { count: 0 };
+      // Existing links (including archived/favourite settings) and SRS are never updated.
+      return { requestedCount: ids.length, addedCount: result.count,
+        alreadyInDictionaryCount: words.length - result.count, unavailableCount: ids.length - words.length,
+        wordIds: words.map(word => word.id) };
+    });
+  }
+
   async removeFromDictionary(user: AuthUser, wordId: string) {
     await this.prisma.userWord.deleteMany({ where: { userId: user.id, wordId } });
     return { deleted: true };
