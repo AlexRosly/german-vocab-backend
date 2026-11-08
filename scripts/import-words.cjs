@@ -21,7 +21,7 @@ function validator() {
     return errors.flatMap(error => [...(error.constraints ? [prefix + error.property] : []), ...fields(error.children ?? [], prefix + error.property + '.')]);
   }
   return async value => {
-    const allowed = ['german', 'article', 'grammaticalNumber', 'translation', 'translations', 'examples', 'pluralForm', 'level', 'lessonNumber', 'notes'];
+    const allowed = ['german', 'article', 'grammaticalNumber', 'translation', 'translations', 'examples', 'pluralForm', 'level', 'sourceBook', 'lessonNumber', 'notes'];
     if (Object.keys(value).some(key => !allowed.includes(key))) throw new Error('В карточке есть неизвестные поля. userId, role и статус публикации задаёт только сервер.');
     const dto = plainToInstance(CreateWordDto, value);
     const errors = await validate(dto, { whitelist: true, forbidNonWhitelisted: true, forbidUnknownValues: true });

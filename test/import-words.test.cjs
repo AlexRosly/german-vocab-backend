@@ -151,3 +151,12 @@ test('CLI preview accepts the whole supported translation catalog for a word and
   assert.equal(prepared.rows[0].payload.examples[0].translations.length, translations.length);
   assert.equal(prepared.rows[0].state, 'pending');
 });
+
+
+test('imports source books through the actual DTO without allowing private books or publication injection', async () => {
+  const prepared = await prepareBatch(batch(card('Quelle', { sourceBook: ' B1+   Brückenkurs ' })));
+  assert.equal(prepared.rows[0].payload.sourceBook, 'B1+ Brückenkurs');
+  for (const extras of [{ sourceBook: 'x'.repeat(121) }, { personalBooks: ['Private course'] }, { sourceBook:'Book', publicationStatus:'PUBLISHED' }]) {
+    await assert.rejects(prepareBatch(batch(card('Quelle', extras))));
+  }
+});
