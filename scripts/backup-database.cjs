@@ -3,7 +3,7 @@
 const fs=require('node:fs'),path=require('node:path');
 const {createHash}=require('node:crypto'),{spawnSync}=require('node:child_process');
 const repo=path.resolve(__dirname,'..');
-const tables=['users','accounts','auth_sessions','google_auth_challenges','words','word_translations','word_examples','word_example_translations','user_words','study_sessions','study_session_words','word_progress','personal_word_notes','personal_word_translations','personal_word_books','word_relations','_prisma_migrations'];
+const tables=['users','accounts','auth_sessions','google_auth_challenges','words','word_translations','word_examples','word_example_translations','user_words','study_sessions','study_session_words','word_progress','personal_word_notes','personal_word_translations','personal_word_books','word_relations','word_corrections','_prisma_migrations'];
 const hash=value=>createHash('sha256').update(value).digest('hex');
 function canonical(value){return Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(k=>[k,canonical(value[k])])):value}
 const tableHash=rows=>hash(rows.map(row=>JSON.stringify(canonical(row))).sort().join('\n'));
@@ -19,6 +19,7 @@ function sqlBackup(snapshot,schema){
  sql+="DO $wk_guard$ BEGIN IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public') THEN RAISE EXCEPTION 'Restore requires an empty public schema'; END IF; END $wk_guard$;\n";
  sql+=schema+'\nCREATE TABLE "public"."_prisma_migrations" ("id" VARCHAR(36) PRIMARY KEY,"checksum" VARCHAR(64) NOT NULL,"finished_at" TIMESTAMPTZ,"migration_name" VARCHAR(255) NOT NULL,"logs" TEXT,"rolled_back_at" TIMESTAMPTZ,"started_at" TIMESTAMPTZ NOT NULL DEFAULT now(),"applied_steps_count" INTEGER NOT NULL DEFAULT 0);\n';
  for(const c of snapshot.checks)sql+=`ALTER TABLE "public".${ident(c.table_name)} ADD CONSTRAINT ${ident(c.name)} ${c.definition};\n`;
+ if(Object.prototype.hasOwnProperty.call(snapshot.data,'word_corrections'))sql+='CREATE UNIQUE INDEX "word_corrections_one_open_per_reporter" ON "public"."word_corrections"("reporterId","wordId") WHERE "status" = \'OPEN\';\n';
  for(const table of tables){const rows=snapshot.data[table];if(!rows.length)continue;const json=JSON.stringify(rows),delimiter='$wk_'+hash(table+json).slice(0,20)+'$';if(json.includes(delimiter))throw new Error('JSON delimiter collision');sql+=`INSERT INTO "public".${ident(table)} SELECT * FROM jsonb_populate_recordset(NULL::"public".${ident(table)},${delimiter}${json}${delimiter}::jsonb);\n`}
  return sql+'COMMIT;\n';
 }
