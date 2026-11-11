@@ -8,7 +8,7 @@ Backend-репозиторий: NestJS + PostgreSQL + Prisma + REST/OpenAPI.
 
 **[Roadmap: что готово, что осталось и как принимаем результат](docs/roadmap.md)**.
 
-Основной backend размещён на VPS по сообщению владельца; БД — Neon. Выпуск последней функции на фактических хостах отмечается отдельно от готовности кода. Инструкции: [VPS](docs/vps-deployment.md), [предложения исправлений](docs/correction-suggestions.md), [резервные копии](docs/database-backups.md).
+Основной backend размещён на VPS по сообщению владельца; БД — Neon. Выпуск последней функции на фактических хостах отмечается отдельно от готовности кода. Инструкции: [VPS](docs/vps-deployment.md), [предложения исправлений](docs/correction-suggestions.md), [резервные копии](docs/database-backups.md). Подготовлена [автоматизация Google Drive](docs/automatic-backups.md) с отдельной приёмкой настройки на VPS.
 
 
 ## Требования

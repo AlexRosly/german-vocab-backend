@@ -54,5 +54,5 @@ async function main(argv=process.argv.slice(2)){
  console.log(JSON.stringify({directory:destination,host:target.hostname,tables:Object.fromEntries(tables.map(name=>[name,manifest.tables[name].count])),jsonAndFilesVerified:true,restorationTested:false}));
  return {destination,manifest};
 }
-module.exports={main,sqlBackup,tableHash,hash};
+module.exports={main,sqlBackup,tableHash,hash,tables};
 if(require.main===module)main().catch(error=>{console.error('Backup failed: '+String(error.message).replace(/postgres(?:ql)?:\/\/[^\s"']+/g,'[DATABASE_URL]'));process.exitCode=1});
