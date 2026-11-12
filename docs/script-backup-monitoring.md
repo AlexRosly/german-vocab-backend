@@ -17,13 +17,23 @@ Europe/Berlin** (VPS journal 11:51 UTC−9): dump, архив, upload и рот�
 ExecMainStatus=0. На присланном скриншоте Healthchecks зелёный: «This check is up».
 Установку конфигурации/override и полный ручной backup повторять не требуется.
 
-На том же скриншоте обнаружено **Period: 1 day, Grace Time: 1 hour**. Это режим
-интервала от последнего сигнала. До приёмки пропущенного ночного запуска нужно
-в Healthchecks нажать Change Schedule, выбрать **Cron**, указать `30 3 * * *`,
-Timezone `Europe/Berlin`, Grace Time `1 hour` и сохранить. Расписание самого
-VPS уже правильное, его не менять. При отсутствии успешного запуска к 04:30
+Следующим скриншотом владелец подтвердил исправленное расписание Healthchecks:
+**Cron Expression `30 3 * * *`, Time Zone `Europe/Berlin`, Grace Time `1 hour`**.
+Таким образом, расписания timer и Healthchecks совпадают; прежний Period 1 day
+больше не используется. При отсутствии успешного запуска примерно к 04:30
 Berlin проверка должна сообщить о просрочке (при работающей Email integration).
 Доставка тестового письма и первый автоматический запуск ещё не подтверждены.
+
+После ночного запуска 13.11 проверить (в root):
+
+```bash
+TZ=Europe/Berlin systemctl list-timers --all wortkarten-script-backup.timer
+TZ=Europe/Berlin journalctl -u wortkarten-script-backup.service --since today --no-pager
+```
+
+Нужны LAST около 03:30, журнал именно автоматического запуска, успешный backup,
+доставленный heartbeat и свежая пара файлов в новой папке Drive. Старое ручное
+Result=success само по себе не подтверждает ночной запуск.
 
 ## 1. Проверка Healthchecks
 
