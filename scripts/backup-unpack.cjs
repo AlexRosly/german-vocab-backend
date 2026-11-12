@@ -8,7 +8,7 @@ function unpack(input, directory, host) {
   if (bundle.version !== 1 || !bundle.files || JSON.stringify(Object.keys(bundle.files).sort()) !== JSON.stringify([...names].sort()) || names.some(n => typeof bundle.files[n] !== 'string')) throw Error('Unexpected backup bundle format');
   const destination = privateRoot(directory);
   for (const name of names) fs.writeFileSync(path.join(destination, name), bundle.files[name], { flag: 'wx', mode: 0o600 });
-  const verified = verifyExport(destination, host);
+  const verified = verifyExport(destination, host, true);
   return { directory: destination, counts: verified.counts, filesAndTableHashesVerified: true, databaseRestored: false };
 }
 module.exports = { unpack };

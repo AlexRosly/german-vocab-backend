@@ -1,0 +1,206 @@
+{
+  "metadata": {
+    "sourceSha256": "b11a534f4ad6a848b6f700ea8b7fedec035b508075201b56088cd026d0c03094",
+    "sourceRows": 3359,
+    "deferredRows": [
+      {
+        "row": 2496,
+        "german": "zumkommen",
+        "reason": "Owner explicitly deferred"
+      },
+      {
+        "row": 2756,
+        "german": "Aufreit",
+        "reason": "Owner explicitly deferred"
+      }
+    ],
+    "processedSourceRows": 3357,
+    "expandedOccurrences": 3440,
+    "uniqueEntries": 2821,
+    "newWords": 2093,
+    "reusedCards": 728,
+    "newByPrimaryBook": {
+      "A1.1 Schritte plus": 220,
+      "A1.2 Schritte plus": 351,
+      "A2.1 Schritte plus": 398,
+      "A2.2 Schritte plus": 367,
+      "B1.1 Schritte plus": 573,
+      "A1 Treffpunkt": 184
+    },
+    "preparedSha256": "330a21d7313c39269678f4b16acec235f6a86abc6903e2d9626954f48caf05b9",
+    "expandedOccurrencesByBook": {
+      "A1.1 Schritte plus": 508,
+      "B1.1 Schritte plus": 788,
+      "A2.2 Schritte plus": 459,
+      "A1 Treffpunkt": 567,
+      "A1.2 Schritte plus": 546,
+      "A2.1 Schritte plus": 572
+    },
+    "sourceRowsByBook": {
+      "A1.1 Schritte plus": 504,
+      "B1.1 Schritte plus": 771,
+      "A2.2 Schritte plus": 452,
+      "A1 Treffpunkt": 559,
+      "A1.2 Schritte plus": 515,
+      "A2.1 Schritte plus": 556
+    }
+  },
+  "result": {
+    "completedAt": "2026-11-12T10:53:55.005Z",
+    "sourceRows": 3359,
+    "processedSourceRows": 3357,
+    "deferredRows": [
+      {
+        "row": 2496,
+        "german": "zumkommen",
+        "reason": "Owner explicitly deferred"
+      },
+      {
+        "row": 2756,
+        "german": "Aufreit",
+        "reason": "Owner explicitly deferred"
+      }
+    ],
+    "newWords": 2093,
+    "reusedWords": 728,
+    "newExamples": 2093,
+    "newWordTranslations": 6279,
+    "newExampleTranslations": 6279,
+    "newDictionaryLinks": 2093,
+    "newCommonBookLinks": 3331,
+    "extendedCommonBookLinks": 28,
+    "sourceBookLessonTriples": 3419,
+    "newByPrimaryBook": {
+      "A1.1 Schritte plus": 220,
+      "A1.2 Schritte plus": 351,
+      "A2.1 Schritte plus": 398,
+      "A2.2 Schritte plus": 367,
+      "B1.1 Schritte plus": 573,
+      "A1 Treffpunkt": 184
+    },
+    "oldVocabularyAndProgressPreserved": true,
+    "privateBooksAndNotesPreserved": true,
+    "allNewCardsPublished": true,
+    "allInsertedFieldsVerified": true,
+    "allSourceBookLessonsVerified": true,
+    "planHash": "84d6209490bfe62e514b295bbe743ac526888b6844c258eb7c20bd6319d1ed85",
+    "sourceSha256": "b11a534f4ad6a848b6f700ea8b7fedec035b508075201b56088cd026d0c03094",
+    "totalCatalogWords": 3734,
+    "dictionaryWords": 3734,
+    "ownerAdmin": true,
+    "googleLinked": true,
+    "beforeCounts": {
+      "users": 6,
+      "accounts": 6,
+      "auth_sessions": 9,
+      "google_auth_challenges": 1,
+      "words": 1641,
+      "word_source_books": 1640,
+      "word_translations": 4921,
+      "word_examples": 1658,
+      "word_example_translations": 4972,
+      "user_words": 3154,
+      "study_sessions": 32,
+      "study_session_words": 795,
+      "word_progress": 388,
+      "personal_word_notes": 0,
+      "personal_word_translations": 0,
+      "personal_word_books": 42,
+      "word_relations": 118,
+      "word_corrections": 0,
+      "_prisma_migrations": 16
+    },
+    "afterCounts": {
+      "users": 6,
+      "accounts": 6,
+      "auth_sessions": 9,
+      "google_auth_challenges": 1,
+      "words": 3734,
+      "word_source_books": 4971,
+      "word_translations": 11200,
+      "word_examples": 3751,
+      "word_example_translations": 11251,
+      "user_words": 5247,
+      "study_sessions": 32,
+      "study_session_words": 795,
+      "word_progress": 388,
+      "personal_word_notes": 0,
+      "personal_word_translations": 0,
+      "personal_word_books": 42,
+      "word_relations": 118,
+      "word_corrections": 0,
+      "_prisma_migrations": 16
+    }
+  },
+  "verification": {
+    "readOnly": true,
+    "oldVocabularyAndProgressPreserved": true,
+    "privateBooksAndNotesPreserved": true,
+    "allNewCardsPublished": true,
+    "allInsertedFieldsVerified": true,
+    "allSourceBookLessonsVerified": true,
+    "sourceRows": 3359,
+    "processedSourceRows": 3357,
+    "deferredRows": [
+      {
+        "row": 2496,
+        "german": "zumkommen",
+        "reason": "Owner explicitly deferred"
+      },
+      {
+        "row": 2756,
+        "german": "Aufreit",
+        "reason": "Owner explicitly deferred"
+      }
+    ],
+    "newWords": 2093,
+    "reusedWords": 728,
+    "newExamples": 2093,
+    "newWordTranslations": 6279,
+    "newExampleTranslations": 6279,
+    "newDictionaryLinks": 2093,
+    "newCommonBookLinks": 3331,
+    "extendedCommonBookLinks": 28,
+    "sourceBookLessonTriples": 3419,
+    "newByPrimaryBook": {
+      "A1.1 Schritte plus": 220,
+      "A1.2 Schritte plus": 351,
+      "A2.1 Schritte plus": 398,
+      "A2.2 Schritte plus": 367,
+      "B1.1 Schritte plus": 573,
+      "A1 Treffpunkt": 184
+    },
+    "totalCatalogWords": 3734,
+    "dictionaryWords": 3734,
+    "wordProgress": 388,
+    "planHash": "84d6209490bfe62e514b295bbe743ac526888b6844c258eb7c20bd6319d1ed85"
+  },
+  "services": {
+    "readOnly": true,
+    "realDatabase": true,
+    "layer": "Current compiled controllers/services; not an end-to-end VPS browser test",
+    "languages": {
+      "ru": {
+        "dictionaryWords": 3734,
+        "newPublishedWords": 2093,
+        "allNewTranslationsAndExampleTranslationsPresent": true,
+        "allCommonSourceLessonsPresented": true
+      },
+      "en": {
+        "dictionaryWords": 3734,
+        "newPublishedWords": 2093,
+        "allNewTranslationsAndExampleTranslationsPresent": true,
+        "allCommonSourceLessonsPresented": true
+      },
+      "uk": {
+        "dictionaryWords": 3734,
+        "newPublishedWords": 2093,
+        "allNewTranslationsAndExampleTranslationsPresent": true,
+        "allCommonSourceLessonsPresented": true
+      }
+    },
+    "allNewCardsInSharedLibrary": true,
+    "unlinkedDictionaryEmpty": true,
+    "privateBooksNotInPublicSources": true
+  }
+}

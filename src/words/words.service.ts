@@ -14,6 +14,7 @@ function searchWhere(query?: string): Prisma.WordWhereInput {
   return { OR: [
     { german: { contains: query, mode: "insensitive" } },
     { sourceBook: { contains: query, mode: "insensitive" } },
+    { bookSources: { some: { sourceBook: { contains: query, mode: "insensitive" } } } },
     { translation: { contains: query, mode: "insensitive" } },
     { translations: { some: { text: { contains: query, mode: "insensitive" } } } },
   ] };

@@ -57,7 +57,7 @@ function execute(command, args, options = {}) {
     return result.stdout?.toString('utf8') || '';
   } finally { if (output !== undefined) fs.closeSync(output); }
 }
-function verifyExport(directory, expectedHost) {
+function verifyExport(directory, expectedHost, allowOlderTables = false) {
   const files = {};
   for (const name of names) {
     const file = path.join(directory, name);
@@ -67,10 +67,11 @@ function verifyExport(directory, expectedHost) {
   const manifest = JSON.parse(files['manifest.json']);
   const snap = JSON.parse(files['snapshot.json']);
   if (manifest.version !== 1 || snap.version !== 1 || !manifest.readOnly || !snap.readOnly || manifest.host !== expectedHost || snap.host !== expectedHost) fail('export_metadata_mismatch');
-  if (JSON.stringify(Object.keys(manifest.tables).sort()) !== JSON.stringify([...backup.tables].sort()) || JSON.stringify(Object.keys(snap.data).sort()) !== JSON.stringify([...backup.tables].sort())) fail('export_table_set_mismatch');
+  const tableNames = Object.keys(manifest.tables).sort();
+  if (JSON.stringify(Object.keys(snap.data).sort()) !== JSON.stringify(tableNames) || tableNames.some(t => !backup.tables.includes(t)) || !tableNames.includes('words') || !tableNames.includes('users') || !allowOlderTables && JSON.stringify(tableNames) !== JSON.stringify([...backup.tables].sort())) fail('export_table_set_mismatch');
   for (const name of names.filter(n => n !== 'manifest.json')) if (manifest.files[name] !== digest(files[name])) fail('export_file_hash_mismatch');
-  for (const table of backup.tables) if (!Array.isArray(snap.data[table]) || snap.data[table].length !== manifest.tables[table].count || backup.tableHash(snap.data[table]) !== manifest.tables[table].sha256) fail('export_table_hash_mismatch');
-  return { files, counts: Object.fromEntries(backup.tables.map(t => [t, manifest.tables[t].count])) };
+  for (const table of tableNames) if (!Array.isArray(snap.data[table]) || snap.data[table].length !== manifest.tables[table].count || backup.tableHash(snap.data[table]) !== manifest.tables[table].sha256) fail('export_table_hash_mismatch');
+  return { files, counts: Object.fromEntries(tableNames.map(t => [t, manifest.tables[t].count])) };
 }
 function writeStatus(root, name, value) {
   const temp = path.join(root, '.' + name + '.' + randomUUID());

@@ -3,7 +3,7 @@ import { Prisma } from "@prisma/client";
 import { AuthUser } from "../auth/auth.service";
 import { PrismaService } from "../prisma.service";
 
-export const WORD_INCLUDE = { translations: true } satisfies Prisma.WordInclude;
+export const WORD_INCLUDE = { translations: true, bookSources: { select: { sourceBook: true, lessonNumbers: true } } } satisfies Prisma.WordInclude;
 
 export function readableWords(user: AuthUser): Prisma.WordWhereInput {
   return user.role === "ADMIN" ? {} : dictionaryWords(user.id);

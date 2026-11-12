@@ -1,0 +1,4097 @@
+{
+  "schemaVersion": 1,
+  "words": [
+    {
+      "sourceId": "wk1112-3167b",
+      "german": "Vermieterin",
+      "article": "die",
+      "grammaticalNumber": "singular",
+      "pluralForm": "Vermieterinnen",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "арендодательница"
+        },
+        {
+          "language": "en",
+          "text": "landlord"
+        },
+        {
+          "language": "uk",
+          "text": "орендодавець"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 18,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Die Vermieterin übergibt uns die Schlüssel.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Хозяйка дает нам ключи."
+            },
+            {
+              "language": "en",
+              "text": "The landlady gives us the keys."
+            },
+            {
+              "language": "uk",
+              "text": "Господиня дає нам ключі."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3170",
+      "german": "Geburtsdatum",
+      "article": "das",
+      "grammaticalNumber": "singular",
+      "pluralForm": "Geburtsdaten",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "дата рождения"
+        },
+        {
+          "language": "en",
+          "text": "date of birth"
+        },
+        {
+          "language": "uk",
+          "text": "дата народження"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 18,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Bitte tragen Sie Ihr Geburtsdatum ein.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Пожалуйста, введите свою дату рождения."
+            },
+            {
+              "language": "en",
+              "text": "Please enter your date of birth."
+            },
+            {
+              "language": "uk",
+              "text": "Будь ласка, введіть свою дату народження."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3171",
+      "german": "Geburtsjahr",
+      "article": "das",
+      "grammaticalNumber": "singular",
+      "pluralForm": "Geburtsjahre",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "год рождения"
+        },
+        {
+          "language": "en",
+          "text": "year of birth"
+        },
+        {
+          "language": "uk",
+          "text": "рік народження"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 18,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Mein Geburtsjahr steht auf dem Ausweis.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Год моего рождения указан в паспорте."
+            },
+            {
+              "language": "en",
+              "text": "My birth year is on the ID."
+            },
+            {
+              "language": "uk",
+              "text": "Рік мого народження вказано в паспорті."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3174",
+      "german": "Staatsangehörigkeit",
+      "article": "die",
+      "grammaticalNumber": "singular",
+      "pluralForm": "Staatsangehörigkeiten",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "гражданство"
+        },
+        {
+          "language": "en",
+          "text": "citizenship"
+        },
+        {
+          "language": "uk",
+          "text": "громадянство"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 18,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Welche Staatsangehörigkeit haben Sie?",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Какая у вас национальность?"
+            },
+            {
+              "language": "en",
+              "text": "What nationality do you have?"
+            },
+            {
+              "language": "uk",
+              "text": "Яка у вас національність?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3187",
+      "german": "Wann sind Sie geboren?",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Когда вы родились?"
+        },
+        {
+          "language": "en",
+          "text": "when you were born"
+        },
+        {
+          "language": "uk",
+          "text": "коли ви народилися"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 18,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Wann sind Sie geboren?",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Когда ты родился?"
+            },
+            {
+              "language": "en",
+              "text": "When were you born?"
+            },
+            {
+              "language": "uk",
+              "text": "Коли ти народився?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3188",
+      "german": "Wann haben Sie Geburtstag?",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Когда у вас день рождения?"
+        },
+        {
+          "language": "en",
+          "text": "When is your birthday?"
+        },
+        {
+          "language": "uk",
+          "text": "коли у вас день народження"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 18,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Wann hast du Geburtstag?",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Когда у тебя день рождения?"
+            },
+            {
+              "language": "en",
+              "text": "When is your birthday?"
+            },
+            {
+              "language": "uk",
+              "text": "Коли у тебе день народження?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3189",
+      "german": "Ich bin im April/Mai/... geboren.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Я родился(-ась) в апреле/мае/..."
+        },
+        {
+          "language": "en",
+          "text": "I was born in April / May /"
+        },
+        {
+          "language": "uk",
+          "text": "я народився у квітні/маї/"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 18,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Ich bin im April geboren.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Я родился в апреле."
+            },
+            {
+              "language": "en",
+              "text": "I was born in April."
+            },
+            {
+              "language": "uk",
+              "text": "Я народився у квітні."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3190",
+      "german": "Ich habe am 5. Mai / am ... Geburtstag.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "У меня день рождения 5 мая / ..."
+        },
+        {
+          "language": "en",
+          "text": "My birthday is May 5"
+        },
+        {
+          "language": "uk",
+          "text": "у мене день народження 5 травня /"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 18,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Ich habe am fünften Mai Geburtstag.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "У меня день рождения 5 мая."
+            },
+            {
+              "language": "en",
+              "text": "I have a birthday on May 5th."
+            },
+            {
+              "language": "uk",
+              "text": "Я народився 5 травня."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3191",
+      "german": "Der Wievielte ist heute / war gestern?",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Какое сегодня число / какое было число вчера?"
+        },
+        {
+          "language": "en",
+          "text": "What is the number today / what was the number yesterday?"
+        },
+        {
+          "language": "uk",
+          "text": "яке сьогодні число / яке було число вчора"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 18,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Der Wievielte ist heute?",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Сколько их сегодня?"
+            },
+            {
+              "language": "en",
+              "text": "How many is today?"
+            },
+            {
+              "language": "uk",
+              "text": "Скільки їх сьогодні?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3192",
+      "german": "Gestern war / Heute ist der 5. Mai.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Вчера было / Сегодня 5 мая."
+        },
+        {
+          "language": "en",
+          "text": "Yesterday was / Today is May 5"
+        },
+        {
+          "language": "uk",
+          "text": "вчора було / сьогодні 5 травня"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 18,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Heute ist der fünfte Mai.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Сегодня пятое мая."
+            },
+            {
+              "language": "en",
+              "text": "Today is the fifth of May."
+            },
+            {
+              "language": "uk",
+              "text": "Сьогодні п'ятого травня."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3195",
+      "german": "Es regnet.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Идёт дождь."
+        },
+        {
+          "language": "en",
+          "text": "It's raining"
+        },
+        {
+          "language": "uk",
+          "text": "падає дощ"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Es regnet heute den ganzen Tag.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Сегодня весь день идет дождь."
+            },
+            {
+              "language": "en",
+              "text": "It rains all day today."
+            },
+            {
+              "language": "uk",
+              "text": "Сьогодні весь день йде дощ."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3198",
+      "german": "Es schneit.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Идёт снег."
+        },
+        {
+          "language": "en",
+          "text": "It's snowing"
+        },
+        {
+          "language": "uk",
+          "text": "сніг іде"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Im Winter schneit es manchmal.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Иногда зимой идет снег."
+            },
+            {
+              "language": "en",
+              "text": "Sometimes it snows in winter."
+            },
+            {
+              "language": "uk",
+              "text": "Іноді взимку падає сніг."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3201",
+      "german": "Die Sonne scheint.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Светит солнце."
+        },
+        {
+          "language": "en",
+          "text": "The sun shines"
+        },
+        {
+          "language": "uk",
+          "text": "сонце світить"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Heute scheint die Sonne.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Сегодня светит солнце."
+            },
+            {
+              "language": "en",
+              "text": "Today the sun is shining."
+            },
+            {
+              "language": "uk",
+              "text": "Сьогодні світить сонце."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3204",
+      "german": "Es ist windig.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Ветрено."
+        },
+        {
+          "language": "en",
+          "text": "Windy"
+        },
+        {
+          "language": "uk",
+          "text": "ветрено"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Am Meer ist es oft windig.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "По морю часто бывает ветрено."
+            },
+            {
+              "language": "en",
+              "text": "It is often windy by the sea."
+            },
+            {
+              "language": "uk",
+              "text": "На морі часто є шина."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3207",
+      "german": "Es ist bewölkt.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Облачно."
+        },
+        {
+          "language": "en",
+          "text": "Cloud"
+        },
+        {
+          "language": "uk",
+          "text": "хмарно"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Heute ist es bewölkt.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Сегодня облачно."
+            },
+            {
+              "language": "en",
+              "text": "It's cloudy today."
+            },
+            {
+              "language": "uk",
+              "text": "Сьогодні хмарно."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3209",
+      "german": "Es ist heiß.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Жарко."
+        },
+        {
+          "language": "en",
+          "text": "Hot"
+        },
+        {
+          "language": "uk",
+          "text": "жарко"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Im Sommer ist es hier heiß.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Летом здесь жарко."
+            },
+            {
+              "language": "en",
+              "text": "It's hot here in the summer."
+            },
+            {
+              "language": "uk",
+              "text": "Влітку тут жарко."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3211",
+      "german": "Es ist nass.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Мокро."
+        },
+        {
+          "language": "en",
+          "text": "wet"
+        },
+        {
+          "language": "uk",
+          "text": "мокро"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Nach dem Regen ist es draußen nass.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "После дождя на улице мокро."
+            },
+            {
+              "language": "en",
+              "text": "After the rain, it is wet outside."
+            },
+            {
+              "language": "uk",
+              "text": "Після дощу на вулиці мокро."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3213",
+      "german": "Es sind 20 Grad.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Сейчас 20 градусов."
+        },
+        {
+          "language": "en",
+          "text": "It's 20 degrees"
+        },
+        {
+          "language": "uk",
+          "text": "зараз 20 градусів"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Heute sind es zwanzig Grad.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Сегодня это двадцать градусов."
+            },
+            {
+              "language": "en",
+              "text": "Today it is twenty degrees."
+            },
+            {
+              "language": "uk",
+              "text": "Сьогодні це двадцять градусів."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3215",
+      "german": "Es ist minus 1 Grad.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Сейчас минус 1 градус."
+        },
+        {
+          "language": "en",
+          "text": "It is now minus 1 degree"
+        },
+        {
+          "language": "uk",
+          "text": "зараз - 1 градус"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Heute Morgen ist es minus ein Grad.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Сегодня утром минус один градус."
+            },
+            {
+              "language": "en",
+              "text": "This morning it's minus one degree."
+            },
+            {
+              "language": "uk",
+              "text": "Сьогодні вранці - один градус."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3217",
+      "german": "Es ist stark bewölkt.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Сильно облачно, пасмурно."
+        },
+        {
+          "language": "en",
+          "text": "Very cloudy, overcast"
+        },
+        {
+          "language": "uk",
+          "text": "дуже хмарно, пасмунно"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Der Himmel ist stark bewölkt.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Небо очень облачное."
+            },
+            {
+              "language": "en",
+              "text": "The sky is very cloudy."
+            },
+            {
+              "language": "uk",
+              "text": "Небо дуже хмарне."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3227",
+      "german": "abfahren",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "отправляться, отъезжать"
+        },
+        {
+          "language": "en",
+          "text": "to leave, to leave"
+        },
+        {
+          "language": "uk",
+          "text": "відправлятися, від'їжджати"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Der Zug fährt in fünf Minuten ab.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Поезд отправляется через пять минут."
+            },
+            {
+              "language": "en",
+              "text": "The train leaves in five minutes."
+            },
+            {
+              "language": "uk",
+              "text": "Через п’ять хвилин поїзд відправляється."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3231",
+      "german": "Anzeigetafel",
+      "article": "die",
+      "grammaticalNumber": "singular",
+      "pluralForm": "Anzeigetafeln",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "информационное табло"
+        },
+        {
+          "language": "en",
+          "text": "information board"
+        },
+        {
+          "language": "uk",
+          "text": "інформаційні табло"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Die Abfahrtszeit steht auf der Anzeigetafel.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Время отправления на табло."
+            },
+            {
+              "language": "en",
+              "text": "The departure time is on the scoreboard."
+            },
+            {
+              "language": "uk",
+              "text": "Час відправлення на табло."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3233",
+      "german": "Fahrkartenautomat",
+      "article": "der",
+      "grammaticalNumber": "singular",
+      "pluralForm": "Fahrkartenautomaten",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "билетный автомат"
+        },
+        {
+          "language": "en",
+          "text": "ticket machine"
+        },
+        {
+          "language": "uk",
+          "text": "квитковий автомат"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Am Fahrkartenautomaten kaufe ich ein Ticket.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "В автомате я покупаю билет."
+            },
+            {
+              "language": "en",
+              "text": "At the ticket machine I buy a ticket."
+            },
+            {
+              "language": "uk",
+              "text": "У автоматі я купую квиток."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3235",
+      "german": "Halle",
+      "article": "die",
+      "grammaticalNumber": "singular",
+      "pluralForm": "Hallen",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "зал, холл"
+        },
+        {
+          "language": "en",
+          "text": "hall, hall"
+        },
+        {
+          "language": "uk",
+          "text": "зал, хол"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Wir warten in der großen Halle.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Мы ждем вас в большом зале."
+            },
+            {
+              "language": "en",
+              "text": "We are waiting in the big hall."
+            },
+            {
+              "language": "uk",
+              "text": "Ми чекаємо вас у великому залі."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3236",
+      "german": "Hinfahrt",
+      "article": "die",
+      "grammaticalNumber": "singular",
+      "pluralForm": "Hinfahrten",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "поездка туда"
+        },
+        {
+          "language": "en",
+          "text": "a trip there"
+        },
+        {
+          "language": "uk",
+          "text": "поїздка туди"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Für die Hinfahrt nehme ich den frühen Zug.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Во время путешествия я езжу ранним поездом."
+            },
+            {
+              "language": "en",
+              "text": "For the outward journey I take the early train."
+            },
+            {
+              "language": "uk",
+              "text": "Під час подорожі я їжджу першим поїздом."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3237",
+      "german": "Rückfahrt",
+      "article": "die",
+      "grammaticalNumber": "singular",
+      "pluralForm": "Rückfahrten",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "поездка обратно"
+        },
+        {
+          "language": "en",
+          "text": "travel back"
+        },
+        {
+          "language": "uk",
+          "text": "поїздка назад"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Die Rückfahrt ist am Sonntag.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Обратная поездка в воскресенье."
+            },
+            {
+              "language": "en",
+              "text": "The return trip is on Sunday."
+            },
+            {
+              "language": "uk",
+              "text": "Знову в неділю."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3238",
+      "german": "nach Deutschland",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "в Германию"
+        },
+        {
+          "language": "en",
+          "text": "to Germany"
+        },
+        {
+          "language": "uk",
+          "text": "в германію"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Nächste Woche fahre ich nach Deutschland.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "На следующей неделе я отправлюсь в Германию."
+            },
+            {
+              "language": "en",
+              "text": "Next week I will go to Germany."
+            },
+            {
+              "language": "uk",
+              "text": "Наступного тижня я поїду до Німеччини."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3240",
+      "german": "eine einfache Fahrt",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "поездка в один конец"
+        },
+        {
+          "language": "en",
+          "text": "one-way trip"
+        },
+        {
+          "language": "uk",
+          "text": "подорож в один кінець"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Ich möchte eine einfache Fahrt nach Hamburg.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Я хочу легкой поездки в Гамбург."
+            },
+            {
+              "language": "en",
+              "text": "I want an easy trip to Hamburg."
+            },
+            {
+              "language": "uk",
+              "text": "Я хочу легкої поїздки до Гамбурга."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3243",
+      "german": "Hat der Zug nach ... Verspätung?",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "У поезда на / до ... есть задержка?"
+        },
+        {
+          "language": "en",
+          "text": "Is the train to … delayed?"
+        },
+        {
+          "language": "uk",
+          "text": "Чи запізнюється поїзд до …?"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Hat der Zug nach Berlin Verspätung?",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Поезд в Берлин задерживается?"
+            },
+            {
+              "language": "en",
+              "text": "Is the train to Berlin delayed?"
+            },
+            {
+              "language": "uk",
+              "text": "Поїзд в Берлін затримується?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3244",
+      "german": "Wann fährt der Zug nach ... ab?",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Когда отправляется поезд на / до ...?"
+        },
+        {
+          "language": "en",
+          "text": "When does the train to … depart?"
+        },
+        {
+          "language": "uk",
+          "text": "Коли відправляється поїзд до …?"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Wann fährt der Zug nach Köln ab?",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Когда поезд отправляется в Кельн?"
+            },
+            {
+              "language": "en",
+              "text": "When does the train leave for Cologne?"
+            },
+            {
+              "language": "uk",
+              "text": "Коли поїзд відправляється до Кельни?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3245",
+      "german": "Von welchem Gleis fährt der Zug nach ... ab?",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "С какого пути отправляется поезд на / до ...?"
+        },
+        {
+          "language": "en",
+          "text": "From which platform does the train to … depart?"
+        },
+        {
+          "language": "uk",
+          "text": "З якої колії відправляється поїзд до …?"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Von welchem Gleis fährt der Zug nach Hamburg ab?",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "С какой дороги отправляется поезд до Гамбурга?"
+            },
+            {
+              "language": "en",
+              "text": "From which track does the train to Hamburg depart?"
+            },
+            {
+              "language": "uk",
+              "text": "З якої дороги відправляється поїзд до Гамбурга?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3246",
+      "german": "Die Fahrkarte gilt für fünf Personen.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Билет действителен на пять человек."
+        },
+        {
+          "language": "en",
+          "text": "The ticket is valid for five people"
+        },
+        {
+          "language": "uk",
+          "text": "квиток дійсний на п'ять чоловік"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Diese Fahrkarte gilt für fünf Personen.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Этот билет действителен для пяти человек."
+            },
+            {
+              "language": "en",
+              "text": "This ticket is valid for five people."
+            },
+            {
+              "language": "uk",
+              "text": "Цей квиток дійсний для п'яти чоловік."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3247",
+      "german": "Die Fahrkarte gilt für die Hin- und Rückfahrt.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Билет действителен на поездку туда и обратно."
+        },
+        {
+          "language": "en",
+          "text": "The ticket is valid for the outward and return journeys."
+        },
+        {
+          "language": "uk",
+          "text": "Квиток дійсний на поїздку туди й назад."
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Die Fahrkarte gilt für die Hin- und Rückfahrt.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Билет действителен для выезда и обратного путешествия."
+            },
+            {
+              "language": "en",
+              "text": "The ticket is valid for the outward and return journey."
+            },
+            {
+              "language": "uk",
+              "text": "Білет дійсний для виїзду і повернення."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3248",
+      "german": "Einfach oder hin und zurück?",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "В одну сторону или туда и обратно?"
+        },
+        {
+          "language": "en",
+          "text": "one way or there and back"
+        },
+        {
+          "language": "uk",
+          "text": "в одну сторону або в одну сторону і назад"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Möchten Sie einfach oder hin und zurück fahren?",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Вы хотите ехать просто или туда-сюда?"
+            },
+            {
+              "language": "en",
+              "text": "Do you want to drive simply or back and forth?"
+            },
+            {
+              "language": "uk",
+              "text": "Ви хочете їхати просто чи туди-сюди?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3249",
+      "german": "Ich hätte gern eine Fahrkarte nach ...",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Я хотел(а) бы билет до ..."
+        },
+        {
+          "language": "en",
+          "text": "I would like a ticket to …"
+        },
+        {
+          "language": "uk",
+          "text": "Я хотів би квиток до …"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Ich hätte gern eine Fahrkarte nach München.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Я хотел бы получить билет в Мюнхен."
+            },
+            {
+              "language": "en",
+              "text": "I would like to have a ticket to Munich."
+            },
+            {
+              "language": "uk",
+              "text": "Я хотів би отримати квиток в Мюнхен."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3250",
+      "german": "Was kann ich für Sie tun?",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Чем я могу вам помочь?"
+        },
+        {
+          "language": "en",
+          "text": "How can I help you?"
+        },
+        {
+          "language": "uk",
+          "text": "чим я можу вам допомогти"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Guten Tag, was kann ich für Sie tun?",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Здравствуйте, что я могу для вас сделать?"
+            },
+            {
+              "language": "en",
+              "text": "Hello, what can I do for you?"
+            },
+            {
+              "language": "uk",
+              "text": "Привіт, що я можу для вас зробити?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3255",
+      "german": "hin",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "туда"
+        },
+        {
+          "language": "en",
+          "text": "there"
+        },
+        {
+          "language": "uk",
+          "text": "туди"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Ich fahre mit dem Bus hin und gehe zu Fuß zurück.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Я еду на автобусе и возвращаюсь пешком."
+            },
+            {
+              "language": "en",
+              "text": "I take the bus and go back on foot."
+            },
+            {
+              "language": "uk",
+              "text": "Я їду автобусом і повертаюся пішки."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3262",
+      "german": "Nähe",
+      "article": "die",
+      "grammaticalNumber": "singular",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "близость"
+        },
+        {
+          "language": "en",
+          "text": "proximity; vicinity"
+        },
+        {
+          "language": "uk",
+          "text": "близькість; околиці"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Gibt es in der Nähe eine Apotheke?",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Есть ли поблизости аптека?"
+            },
+            {
+              "language": "en",
+              "text": "Is there a pharmacy nearby?"
+            },
+            {
+              "language": "uk",
+              "text": "Чи є поблизу аптека?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3267",
+      "german": "Norden",
+      "article": "der",
+      "grammaticalNumber": "singular",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "север"
+        },
+        {
+          "language": "en",
+          "text": "north"
+        },
+        {
+          "language": "uk",
+          "text": "північ"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Hamburg liegt im Norden Deutschlands.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Гамбург расположен на севере Германии."
+            },
+            {
+              "language": "en",
+              "text": "Hamburg is located in northern Germany."
+            },
+            {
+              "language": "uk",
+              "text": "Гамбург лежить на півночі Німеччини."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3268",
+      "german": "Osten",
+      "article": "der",
+      "grammaticalNumber": "singular",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "восток"
+        },
+        {
+          "language": "en",
+          "text": "east"
+        },
+        {
+          "language": "uk",
+          "text": "схід"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Dresden liegt im Osten Deutschlands.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Дрезден расположен в восточной Германии."
+            },
+            {
+              "language": "en",
+              "text": "Dresden is located in eastern Germany."
+            },
+            {
+              "language": "uk",
+              "text": "Дрезден розташований у східній Німеччині."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3269",
+      "german": "Süden",
+      "article": "der",
+      "grammaticalNumber": "singular",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "юг"
+        },
+        {
+          "language": "en",
+          "text": "south"
+        },
+        {
+          "language": "uk",
+          "text": "південь"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "München liegt im Süden Deutschlands.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Мюнхен расположен на юге Германии."
+            },
+            {
+              "language": "en",
+              "text": "Munich is located in the south of Germany."
+            },
+            {
+              "language": "uk",
+              "text": "Мюнхен розташований на півдні Німеччини."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3270",
+      "german": "Westen",
+      "article": "der",
+      "grammaticalNumber": "singular",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "запад"
+        },
+        {
+          "language": "en",
+          "text": "west"
+        },
+        {
+          "language": "uk",
+          "text": "Захід"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Köln liegt im Westen Deutschlands.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Кельн расположен на западе Германии."
+            },
+            {
+              "language": "en",
+              "text": "Cologne is located in the west of Germany."
+            },
+            {
+              "language": "uk",
+              "text": "Кельн лежить на заході Німеччини."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3272",
+      "german": "besonders",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "особенно"
+        },
+        {
+          "language": "en",
+          "text": "especially"
+        },
+        {
+          "language": "uk",
+          "text": "особливо"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Dieses Buch gefällt mir besonders gut.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Особенно мне нравится эта книга."
+            },
+            {
+              "language": "en",
+              "text": "I particularly like this book."
+            },
+            {
+              "language": "uk",
+              "text": "Особливо мені подобається ця книжка."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3279",
+      "german": "Die Stadt liegt im Norden von Deutschland.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Город находится на севере Германии."
+        },
+        {
+          "language": "en",
+          "text": "The city is located in the north of Germany"
+        },
+        {
+          "language": "uk",
+          "text": "місто лежить на півночі германії"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Hamburg liegt im Norden von Deutschland.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Гамбург расположен на севере Германии."
+            },
+            {
+              "language": "en",
+              "text": "Hamburg is located in the north of Germany."
+            },
+            {
+              "language": "uk",
+              "text": "Гамбург лежить на півночі Німеччини."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3280",
+      "german": "Die Stadt liegt im Osten von Deutschland.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Город находится на востоке Германии."
+        },
+        {
+          "language": "en",
+          "text": "The city is located in the east of Germany"
+        },
+        {
+          "language": "uk",
+          "text": "місто лежить на сході германії"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Dresden liegt im Osten von Deutschland.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Дрезден расположен на востоке Германии."
+            },
+            {
+              "language": "en",
+              "text": "Dresden is located in the east of Germany."
+            },
+            {
+              "language": "uk",
+              "text": "Дрезден розташований на сході Німеччини."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3281",
+      "german": "Die Stadt liegt im Süden von Deutschland.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Город находится на юге Германии."
+        },
+        {
+          "language": "en",
+          "text": "The city is in the south of Germany"
+        },
+        {
+          "language": "uk",
+          "text": "місто лежить на півдні Німеччини"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "München liegt im Süden von Deutschland.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Мюнхен расположен на юге Германии."
+            },
+            {
+              "language": "en",
+              "text": "Munich is located in the south of Germany."
+            },
+            {
+              "language": "uk",
+              "text": "Мюнхен розташований на півдні Німеччини."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3282",
+      "german": "Die Stadt liegt im Westen von Deutschland.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Город находится на западе Германии."
+        },
+        {
+          "language": "en",
+          "text": "The city is located in the west of Germany"
+        },
+        {
+          "language": "uk",
+          "text": "місто лежить на заході германії"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Köln liegt im Westen von Deutschland.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Кельн расположен на западе Германии."
+            },
+            {
+              "language": "en",
+              "text": "Cologne is located in the west of Germany."
+            },
+            {
+              "language": "uk",
+              "text": "Кельн лежить на заході Німеччини."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3283",
+      "german": "Die Stadt liegt in der Mitte von Deutschland.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Город находится в центре Германии."
+        },
+        {
+          "language": "en",
+          "text": "The city is located in the center of Germany"
+        },
+        {
+          "language": "uk",
+          "text": "місто знаходиться в центрі германії"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Kassel liegt ungefähr in der Mitte von Deutschland.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Кассель расположен примерно в центре Германии."
+            },
+            {
+              "language": "en",
+              "text": "Kassel is located approximately in the middle of Germany."
+            },
+            {
+              "language": "uk",
+              "text": "Кассель розташований у центрі Німеччини."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3284",
+      "german": "Das Meer liegt im Norden von Deutschland.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Море находится на севере Германии."
+        },
+        {
+          "language": "en",
+          "text": "The sea is in northern Germany"
+        },
+        {
+          "language": "uk",
+          "text": "море лежить на півночі германії"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 19,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Die Nordsee liegt im Norden von Deutschland.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Северное море находится на севере Германии."
+            },
+            {
+              "language": "en",
+              "text": "The North Sea is in the north of Germany."
+            },
+            {
+              "language": "uk",
+              "text": "Північне море лежить на півночі Німеччини."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3286",
+      "german": "Geburt",
+      "article": "die",
+      "grammaticalNumber": "singular",
+      "pluralForm": "Geburten",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "рождение"
+        },
+        {
+          "language": "en",
+          "text": "birth"
+        },
+        {
+          "language": "uk",
+          "text": "народження"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Die Familie freut sich über die Geburt des Kindes.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Семья радуется рождению ребенка."
+            },
+            {
+              "language": "en",
+              "text": "The family is happy about the birth of the child."
+            },
+            {
+              "language": "uk",
+              "text": "Сім’я радіє народженню дитини."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3288",
+      "german": "Ganz liebe Grüße",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Самые тёплые приветы / С любовью"
+        },
+        {
+          "language": "en",
+          "text": "Warmest regards; With love"
+        },
+        {
+          "language": "uk",
+          "text": "Найтепліші вітання; з любов'ю"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Ganz liebe Grüße aus Berlin!",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Привет из Берлина!"
+            },
+            {
+              "language": "en",
+              "text": "Greetings from Berlin!"
+            },
+            {
+              "language": "uk",
+              "text": "Привіт з Берліна!"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3294",
+      "german": "eine Prüfung schaffen",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "сдать экзамен"
+        },
+        {
+          "language": "en",
+          "text": "to pass an exam"
+        },
+        {
+          "language": "uk",
+          "text": "здати іспит"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Ich möchte die Prüfung im Juni schaffen.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Я хочу сдать экзамен в июне."
+            },
+            {
+              "language": "en",
+              "text": "I want to do the exam in June."
+            },
+            {
+              "language": "uk",
+              "text": "Я хочу здати іспит в червні."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3296",
+      "german": "Viel Glück!",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Удачи!"
+        },
+        {
+          "language": "en",
+          "text": "good luck"
+        },
+        {
+          "language": "uk",
+          "text": "удачі"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Viel Glück bei der Prüfung!",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Удачи на экзамене!"
+            },
+            {
+              "language": "en",
+              "text": "Good luck on the exam!"
+            },
+            {
+              "language": "uk",
+              "text": "Удачі на екзамені!"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3298",
+      "german": "Viel Spaß!",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Хорошо провести время! / Удачи и веселья!"
+        },
+        {
+          "language": "en",
+          "text": "Have a good time! / Good luck and fun"
+        },
+        {
+          "language": "uk",
+          "text": "добре провести час, / удачі і веселощі"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Viel Spaß im Urlaub!",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Веселитесь в отпуске!"
+            },
+            {
+              "language": "en",
+              "text": "Have fun on vacation!"
+            },
+            {
+              "language": "uk",
+              "text": "Радійте у відпустці!"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3299",
+      "german": "Tag und Nacht",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "день и ночь"
+        },
+        {
+          "language": "en",
+          "text": "day and night"
+        },
+        {
+          "language": "uk",
+          "text": "день і ніч"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Die Tankstelle ist Tag und Nacht geöffnet.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Заправочная станция открыта днем и ночью."
+            },
+            {
+              "language": "en",
+              "text": "The gas station is open day and night."
+            },
+            {
+              "language": "uk",
+              "text": "Заправна станція відкрита вдень і вночі."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3302",
+      "german": "wünschen",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "желать"
+        },
+        {
+          "language": "en",
+          "text": "to desire"
+        },
+        {
+          "language": "uk",
+          "text": "бажати"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Ich wünsche dir einen schönen Tag.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Желаю вам отличного дня."
+            },
+            {
+              "language": "en",
+              "text": "I wish you a great day."
+            },
+            {
+              "language": "uk",
+              "text": "Бажаю вам гарного дня."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3307",
+      "german": "Das ist lieb.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Это мило. / Это очень любезно."
+        },
+        {
+          "language": "en",
+          "text": "'That's cute.' / That's very kind"
+        },
+        {
+          "language": "uk",
+          "text": "це мило. / це дуже люб'язно"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Du hilfst mir? Das ist lieb.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Ты помогаешь мне? Это мило."
+            },
+            {
+              "language": "en",
+              "text": "You're helping me? That's nice."
+            },
+            {
+              "language": "uk",
+              "text": "Ти допомагаєш мені?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3308",
+      "german": "Herzlichen Glückwunsch zum Geburtstag!",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Сердечные поздравления с днём рождения!"
+        },
+        {
+          "language": "en",
+          "text": "Heartfelt congratulations on your birthday"
+        },
+        {
+          "language": "uk",
+          "text": "щиро вітаючи з днем народження"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Herzlichen Glückwunsch zum Geburtstag!",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Поздравляю с днем рождения!"
+            },
+            {
+              "language": "en",
+              "text": "Congratulations on your birthday!"
+            },
+            {
+              "language": "uk",
+              "text": "Вітаю з днем народження!"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3309",
+      "german": "Herzlichen Glückwunsch zur Hochzeit!",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Сердечные поздравления со свадьбой!"
+        },
+        {
+          "language": "en",
+          "text": "Heartfelt congratulations on the wedding"
+        },
+        {
+          "language": "uk",
+          "text": "щиро вітаючи з весіллям"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Herzlichen Glückwunsch zur Hochzeit!",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Поздравляем со свадьбой!"
+            },
+            {
+              "language": "en",
+              "text": "Congratulations on the wedding!"
+            },
+            {
+              "language": "uk",
+              "text": "Вітаємо з весіллям!"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3310",
+      "german": "Ich gratuliere dir zum Geburtstag.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Я поздравляю тебя с днём рождения."
+        },
+        {
+          "language": "en",
+          "text": "I congratulate you on your birthday"
+        },
+        {
+          "language": "uk",
+          "text": "я вітаю тебе з днем народження"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Ich gratuliere dir zum Geburtstag.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Поздравляю с днем рождения."
+            },
+            {
+              "language": "en",
+              "text": "Congratulations on your birthday."
+            },
+            {
+              "language": "uk",
+              "text": "Вітаю з днем народження."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3311",
+      "german": "Ich gratuliere dir zur Hochzeit.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Я поздравляю тебя со свадьбой."
+        },
+        {
+          "language": "en",
+          "text": "I congratulate you on your wedding"
+        },
+        {
+          "language": "uk",
+          "text": "я вітаю тебе з весіллям"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Ich gratuliere dir zur Hochzeit.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Поздравляю с свадьбой."
+            },
+            {
+              "language": "en",
+              "text": "Congratulations on your wedding."
+            },
+            {
+              "language": "uk",
+              "text": "Вітаю з весіллям."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3312",
+      "german": "Ich wünsche dir alles Liebe und Gute!",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Желаю тебе всего самого доброго и хорошего!"
+        },
+        {
+          "language": "en",
+          "text": "I wish you all the best!"
+        },
+        {
+          "language": "uk",
+          "text": "Бажаю тобі всього найкращого!"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Ich wünsche dir alles Liebe und Gute!",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Желаю вам всего самого лучшего и всего самого лучшего!"
+            },
+            {
+              "language": "en",
+              "text": "I wish you all the best and all the best!"
+            },
+            {
+              "language": "uk",
+              "text": "Бажаю вам найкращого і найкращого!"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3313",
+      "german": "Alles Liebe und Gute zum/zur ...!",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Всего самого доброго и хорошего к / на ...!"
+        },
+        {
+          "language": "en",
+          "text": "All the best for …!"
+        },
+        {
+          "language": "uk",
+          "text": "Усього найкращого з нагоди …!"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Alles Liebe und Gute zum neuen Jahr!",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Все самое лучшее и самое лучшее к Новому году!"
+            },
+            {
+              "language": "en",
+              "text": "All the best and all the best for the New Year!"
+            },
+            {
+              "language": "uk",
+              "text": "Все найкраще і найкраще до Нового року!"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3314",
+      "german": "Das ist aber nett.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Это очень мило. / Как это мило."
+        },
+        {
+          "language": "en",
+          "text": "That's very nice. / That's cute"
+        },
+        {
+          "language": "uk",
+          "text": "це дуже мило. / як це мило"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Du hast Blumen mitgebracht? Das ist aber nett.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Ты принесла цветы?"
+            },
+            {
+              "language": "en",
+              "text": "You brought flowers? That's nice."
+            },
+            {
+              "language": "uk",
+              "text": "Ти принесла квіти?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3315",
+      "german": "Herzlichen Dank!",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Сердечное спасибо!"
+        },
+        {
+          "language": "en",
+          "text": "Thank you heartily"
+        },
+        {
+          "language": "uk",
+          "text": "Щиро дякую"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Herzlichen Dank für deine Hilfe!",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Большое спасибо за помощь!"
+            },
+            {
+              "language": "en",
+              "text": "Thank you very much for your help!"
+            },
+            {
+              "language": "uk",
+              "text": "Щиро дякую за допомогу!"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3316",
+      "german": "Danke schön!",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Большое спасибо!"
+        },
+        {
+          "language": "en",
+          "text": "Thank you very much"
+        },
+        {
+          "language": "uk",
+          "text": "Щиро дякую"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Danke schön für das Geschenk!",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Большое спасибо за подарок!"
+            },
+            {
+              "language": "en",
+              "text": "Thank you very much for the gift!"
+            },
+            {
+              "language": "uk",
+              "text": "Дуже дякую за цей подарунок!"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3318",
+      "german": "Der / Das / Die ... gefällt mir sehr.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Мне очень нравится этот / эта / это ..."
+        },
+        {
+          "language": "en",
+          "text": "I really like this/this/this"
+        },
+        {
+          "language": "uk",
+          "text": "мені дуже подобається цей / ця / це"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Das Kleid gefällt mir sehr.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Мне очень нравится платье."
+            },
+            {
+              "language": "en",
+              "text": "I really like the dress."
+            },
+            {
+              "language": "uk",
+              "text": "Мені дуже подобається плаття."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3320",
+      "german": "ein paar Getränke",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "несколько напитков"
+        },
+        {
+          "language": "en",
+          "text": "several drinks"
+        },
+        {
+          "language": "uk",
+          "text": "кілька напоїв"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Ich bringe ein paar Getränke mit.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Я принесу выпить."
+            },
+            {
+              "language": "en",
+              "text": "I'll bring some drinks."
+            },
+            {
+              "language": "uk",
+              "text": "Я принесу випити."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3324",
+      "german": "Ja, das mache ich gerne.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Да, я охотно это сделаю."
+        },
+        {
+          "language": "en",
+          "text": "Yes, I will willingly do it"
+        },
+        {
+          "language": "uk",
+          "text": "так, я охоче це зроблю"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Ja, das mache ich gerne.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Да, мне нравится это делать."
+            },
+            {
+              "language": "en",
+              "text": "Yeah, I like to do that."
+            },
+            {
+              "language": "uk",
+              "text": "Так, мені подобається це робити."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3325",
+      "german": "Okay, ich mache das.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Хорошо, я это сделаю."
+        },
+        {
+          "language": "en",
+          "text": "OK, I'll do it"
+        },
+        {
+          "language": "uk",
+          "text": "добре, я це зроблю"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Okay, ich mache das morgen.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Ладно, я сделаю это завтра."
+            },
+            {
+              "language": "en",
+              "text": "Okay, I'll do this tomorrow."
+            },
+            {
+              "language": "uk",
+              "text": "Гаразд, я зроблю це завтра."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3326",
+      "german": "In Ordnung, ich kann ...",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Хорошо, я могу ..."
+        },
+        {
+          "language": "en",
+          "text": "OK, I can"
+        },
+        {
+          "language": "uk",
+          "text": "добре, я можу"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "In Ordnung, ich kann am Samstag helfen.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Хорошо, я могу помочь в субботу."
+            },
+            {
+              "language": "en",
+              "text": "All right, I can help on Saturday."
+            },
+            {
+              "language": "uk",
+              "text": "Добре, я можу допомогти в суботу."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3327",
+      "german": "Tut mir leid, das kann ich nicht so gut.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Извини, у меня это не очень хорошо получается."
+        },
+        {
+          "language": "en",
+          "text": "Sorry, I'm not very good at it"
+        },
+        {
+          "language": "uk",
+          "text": "вибач, у мене це не дуже добре виходить"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Tut mir leid, das kann ich nicht so gut.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Извините, я не могу сделать это очень хорошо."
+            },
+            {
+              "language": "en",
+              "text": "Sorry, I can't do that very well."
+            },
+            {
+              "language": "uk",
+              "text": "Вибачте, я не можу зробити це дуже добре."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3328",
+      "german": "Oh, das mache ich nicht so gerne.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "О, я не очень люблю это делать."
+        },
+        {
+          "language": "en",
+          "text": "Oh, I don't really like doing that"
+        },
+        {
+          "language": "uk",
+          "text": "о, я не дуже люблю це робити"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Das mache ich nicht so gerne.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Я не люблю это делать."
+            },
+            {
+              "language": "en",
+              "text": "I don't like to do that."
+            },
+            {
+              "language": "uk",
+              "text": "Я не люблю це робити."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3329",
+      "german": "Hm, das möchte ich nicht machen.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Хм, я не хочу это делать."
+        },
+        {
+          "language": "en",
+          "text": "'Hmm, I don't want to do that"
+        },
+        {
+          "language": "uk",
+          "text": "хм, я не хочу це робити"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Das möchte ich nicht machen.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Я не хочу этого делать."
+            },
+            {
+              "language": "en",
+              "text": "I don't want to do that."
+            },
+            {
+              "language": "uk",
+              "text": "Я не хочу цього робити."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3330",
+      "german": "Ich möchte lieber ...",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Я бы лучше хотел(а) ..."
+        },
+        {
+          "language": "en",
+          "text": "I would rather …"
+        },
+        {
+          "language": "uk",
+          "text": "Я б краще …"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Ich möchte lieber zu Hause bleiben.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Я бы предпочел остаться дома."
+            },
+            {
+              "language": "en",
+              "text": "I would rather stay at home."
+            },
+            {
+              "language": "uk",
+              "text": "Я б волів залишитися вдома."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3333",
+      "german": "Ende",
+      "article": "das",
+      "grammaticalNumber": "singular",
+      "pluralForm": "Enden",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "конец"
+        },
+        {
+          "language": "en",
+          "text": "the end"
+        },
+        {
+          "language": "uk",
+          "text": "кінець"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Am Ende des Kurses machen wir einen Test.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "В конце курса мы сдаём тест."
+            },
+            {
+              "language": "en",
+              "text": "At the end of the course, we take a test."
+            },
+            {
+              "language": "uk",
+              "text": "В кінці курсу ми здаємо тест."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3334",
+      "german": "fest",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "твёрдый; установленный, фиксированный"
+        },
+        {
+          "language": "en",
+          "text": "solid, fixed, fixed"
+        },
+        {
+          "language": "uk",
+          "text": "твердий; встановлений, фіксований"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Der Tisch steht fest auf dem Boden.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Стол прочно стоит на полу."
+            },
+            {
+              "language": "en",
+              "text": "The table is firmly on the floor."
+            },
+            {
+              "language": "uk",
+              "text": "Стіл міцно стоїть на підлозі."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3335",
+      "german": "ein festes Datum",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "фиксированная дата"
+        },
+        {
+          "language": "en",
+          "text": "a fixed date"
+        },
+        {
+          "language": "uk",
+          "text": "фіксована дата"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Wir brauchen ein festes Datum für das Fest.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Нужна фиксированная дата проведения фестиваля."
+            },
+            {
+              "language": "en",
+              "text": "We need a fixed date for the festival."
+            },
+            {
+              "language": "uk",
+              "text": "Потрібна фіксована дата проведення фестивалю."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3336",
+      "german": "Feuerwerk",
+      "article": "das",
+      "grammaticalNumber": "singular",
+      "pluralForm": "Feuerwerke",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "фейерверк"
+        },
+        {
+          "language": "en",
+          "text": "fireworks"
+        },
+        {
+          "language": "uk",
+          "text": "феєрверки"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "An Silvester gibt es ein Feuerwerk.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "В канун Нового года здесь проходят фейерверки."
+            },
+            {
+              "language": "en",
+              "text": "On New Year's Eve, there is fireworks."
+            },
+            {
+              "language": "uk",
+              "text": "У Новий рік тут відбуваються феєрверки."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3346",
+      "german": "Heiligabend",
+      "article": "der",
+      "grammaticalNumber": "singular",
+      "pluralForm": "Heiligabende",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Сочельник, канун Рождества"
+        },
+        {
+          "language": "en",
+          "text": "Christmas Eve"
+        },
+        {
+          "language": "uk",
+          "text": "Святвечір; переддень Різдва"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "An Heiligabend besuchen wir unsere Familie.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "В канун Рождества мы навещаем нашу семью."
+            },
+            {
+              "language": "en",
+              "text": "On Christmas Eve we visit our family."
+            },
+            {
+              "language": "uk",
+              "text": "У час Різдва ми відвідуємо нашу сім’ю."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3348",
+      "german": "lieben",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "любить"
+        },
+        {
+          "language": "en",
+          "text": "love"
+        },
+        {
+          "language": "uk",
+          "text": "любити"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Ich liebe meine Familie.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Я люблю свою семью."
+            },
+            {
+              "language": "en",
+              "text": "I love my family."
+            },
+            {
+              "language": "uk",
+              "text": "Я люблю свою сім'ю."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3349",
+      "german": "Moschee",
+      "article": "die",
+      "grammaticalNumber": "singular",
+      "pluralForm": "Moscheen",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "мечеть"
+        },
+        {
+          "language": "en",
+          "text": "mosque"
+        },
+        {
+          "language": "uk",
+          "text": "мечеть"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Die Moschee liegt im Zentrum.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Мечеть находится в центре."
+            },
+            {
+              "language": "en",
+              "text": "The mosque is in the center."
+            },
+            {
+              "language": "uk",
+              "text": "Мечеть знаходиться в центрі."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3350",
+      "german": "Ramadanfest",
+      "article": "das",
+      "grammaticalNumber": "singular",
+      "pluralForm": "Ramadanfeste",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "праздник окончания Рамадана, Ураза-байрам"
+        },
+        {
+          "language": "en",
+          "text": "the feast of the end of Ramadan, Uraza Bayram"
+        },
+        {
+          "language": "uk",
+          "text": "свято закінчення рамадану, уразу-байрам"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Zum Ramadanfest besucht die Familie ihre Freunde.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "В Рамадан семья навещает своих друзей."
+            },
+            {
+              "language": "en",
+              "text": "For Ramadan, the family visits their friends."
+            },
+            {
+              "language": "uk",
+              "text": "У Рамадан сім’я відвідує своїх друзів."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3351",
+      "german": "Ramadan",
+      "article": "der",
+      "grammaticalNumber": "singular",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Рамадан"
+        },
+        {
+          "language": "en",
+          "text": "Ramadan"
+        },
+        {
+          "language": "uk",
+          "text": "рамадан"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Im Ramadan fasten viele Muslime.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Во время Рамадана многие мусульмане постятся."
+            },
+            {
+              "language": "en",
+              "text": "During Ramadan, many Muslims fast."
+            },
+            {
+              "language": "uk",
+              "text": "Під час Рамадану багато мусульман постили."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3353",
+      "german": "schmücken",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "украшать"
+        },
+        {
+          "language": "en",
+          "text": "to decorate"
+        },
+        {
+          "language": "uk",
+          "text": "прикрашати"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Wir schmücken den Raum mit Blumen.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Мы украшаем комнату цветами."
+            },
+            {
+              "language": "en",
+              "text": "We decorate the room with flowers."
+            },
+            {
+              "language": "uk",
+              "text": "Ми прикрашаємо кімнату квітами."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3354",
+      "german": "Sekt",
+      "article": "der",
+      "grammaticalNumber": "singular",
+      "pluralForm": "Sekte",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "игристое вино"
+        },
+        {
+          "language": "en",
+          "text": "sparkling wine"
+        },
+        {
+          "language": "uk",
+          "text": "ігристе вино"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Zum Geburtstag trinken wir ein Glas Sekt.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "На день рождения мы пьем бокал игристого вина."
+            },
+            {
+              "language": "en",
+              "text": "For our birthday we drink a glass of sparkling wine."
+            },
+            {
+              "language": "uk",
+              "text": "На день народження ми п'ємо келих гристого вина."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3356",
+      "german": "traditionell",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "традиционный"
+        },
+        {
+          "language": "en",
+          "text": "traditional"
+        },
+        {
+          "language": "uk",
+          "text": "традиційна"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Dieses Gericht wird traditionell im Winter gekocht.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Это блюдо традиционно готовят зимой."
+            },
+            {
+              "language": "en",
+              "text": "This dish is traditionally cooked in winter."
+            },
+            {
+              "language": "uk",
+              "text": "Ці страви традиційно готують взимку."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3358",
+      "german": "Weihnachtsbaum",
+      "article": "der",
+      "grammaticalNumber": "singular",
+      "pluralForm": "Weihnachtsbäume",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "рождественская ёлка"
+        },
+        {
+          "language": "en",
+          "text": "a Christmas tree"
+        },
+        {
+          "language": "uk",
+          "text": "різдвяна ялинка"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Wir schmücken den Weihnachtsbaum.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Мы украшаем рождественскую елку."
+            },
+            {
+              "language": "en",
+              "text": "We decorate the Christmas tree."
+            },
+            {
+              "language": "uk",
+              "text": "Ми прикрашаємо різдвяну ялинку."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3360",
+      "german": "Das habe ich nicht gewusst.",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Я этого не знал(а)."
+        },
+        {
+          "language": "en",
+          "text": "I did not know this"
+        },
+        {
+          "language": "uk",
+          "text": "я цього не знав"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Danke für die Information, das habe ich nicht gewusst.",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Спасибо за информацию, я не знал."
+            },
+            {
+              "language": "en",
+              "text": "Thanks for the information, I did not know."
+            },
+            {
+              "language": "uk",
+              "text": "Дякую за інформацію, я не знав."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3362",
+      "german": "Kommst du nicht? Doch!",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Ты не придёшь? Нет, приду!"
+        },
+        {
+          "language": "en",
+          "text": "Aren't you coming? Yes, I am!"
+        },
+        {
+          "language": "uk",
+          "text": "Ти не прийдеш? Прийду!"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Kommst du nicht mit? Doch, ich komme mit!",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Ты не пойдешь со мной? Я пойду с тобой!"
+            },
+            {
+              "language": "en",
+              "text": "Don't you come with me? I'll come with you!"
+            },
+            {
+              "language": "uk",
+              "text": "Ти не підеш зі мною?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3363",
+      "german": "Frohe Weihnachten!",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "С Рождеством!"
+        },
+        {
+          "language": "en",
+          "text": "Merry Christmas"
+        },
+        {
+          "language": "uk",
+          "text": "з Різдвом"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Ich wünsche dir frohe Weihnachten!",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Желаю вам счастливого Рождества!"
+            },
+            {
+              "language": "en",
+              "text": "I wish you a Merry Christmas!"
+            },
+            {
+              "language": "uk",
+              "text": "Бажаю вам щасливого Різдва!"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3364",
+      "german": "Fröhliches Fest!",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "Весёлого праздника!"
+        },
+        {
+          "language": "en",
+          "text": "Happy holiday"
+        },
+        {
+          "language": "uk",
+          "text": "веселе свято"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Wir wünschen euch ein fröhliches Fest!",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "Желаем вам счастливой вечеринки!"
+            },
+            {
+              "language": "en",
+              "text": "We wish you a happy party!"
+            },
+            {
+              "language": "uk",
+              "text": "Бажаємо вам щасливої вечірки!"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sourceId": "wk1112-3365",
+      "german": "Frohes neues Jahr!",
+      "article": "none",
+      "grammaticalNumber": "not_applicable",
+      "pluralForm": null,
+      "translations": [
+        {
+          "language": "ru",
+          "text": "С Новым годом!"
+        },
+        {
+          "language": "en",
+          "text": "Happy New Year"
+        },
+        {
+          "language": "uk",
+          "text": "з новим роком"
+        }
+      ],
+      "level": "A1",
+      "sourceBook": "A1 Treffpunkt",
+      "lessonNumber": 20,
+      "notes": null,
+      "examples": [
+        {
+          "german": "Frohes neues Jahr!",
+          "translations": [
+            {
+              "language": "ru",
+              "text": "С Новым годом!"
+            },
+            {
+              "language": "en",
+              "text": "Happy New Year!"
+            },
+            {
+              "language": "uk",
+              "text": "З Новим роком!"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

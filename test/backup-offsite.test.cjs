@@ -13,12 +13,12 @@ function fixture() {
   const env = { ...process.env, DATABASE_URL: `postgresql://user:${secret}@db.invalid/neondb`, RESTIC_PASSWORD_FILE: password, RCLONE_CONFIG: rclone, RESTIC_REPOSITORY: 'rclone:wk-drive:WortkartenBackups/production', WORTKARTEN_BACKUP_ROOT: path.join(root, 'runs'), WORTKARTEN_BACKUP_EXPECT_HOST: 'db.invalid', WORTKARTEN_BACKUP_REPOSITORY_ID: 'a'.repeat(64), WORTKARTEN_BACKUP_RETENTION: 'true' };
   return { root, env, config: () => configuration(env), close() { assert.equal(path.dirname(fs.realpathSync(root)), fs.realpathSync(os.tmpdir())); assert.match(path.basename(root), /^wk-offsite-test-/); fs.rmSync(root, { recursive: true }); } };
 }
-function writeFixture(directory, host) {
+function writeFixture(directory, host, tableNames = tables) {
   fs.mkdirSync(directory, { mode: 0o700 });
-  const data = Object.fromEntries(tables.map(t => [t, []]));
+  const data = Object.fromEntries(tableNames.map(t => [t, []]));
   data.words = [{ id: 'test-word', german: 'Apfel', translation: 'яблоко' }];
   const files = { 'snapshot.json': JSON.stringify({ version: 1, host, readOnly: true, data }), 'schema.sql': 'CREATE TABLE test ();', 'restore-empty-database.sql': 'BEGIN; COMMIT;' };
-  files['manifest.json'] = JSON.stringify({ version: 1, host, readOnly: true, files: Object.fromEntries(Object.entries(files).map(([n, v]) => [n, digest(v)])), tables: Object.fromEntries(tables.map(t => [t, { count: data[t].length, sha256: tableHash(data[t]) }])) });
+  files['manifest.json'] = JSON.stringify({ version: 1, host, readOnly: true, files: Object.fromEntries(Object.entries(files).map(([n, v]) => [n, digest(v)])), tables: Object.fromEntries(tableNames.map(t => [t, { count: data[t].length, sha256: tableHash(data[t]) }])) });
   for (const [name, value] of Object.entries(files)) fs.writeFileSync(path.join(directory, name), value, { mode: 0o600 });
 }
 function transport(config, options = {}) {
@@ -112,4 +112,20 @@ test('unpack refuses existing destinations and arbitrary filenames, verifies has
 test('child errors cannot expose private stderr or supplied credentials', () => {
   const { execute } = require('../scripts/backup-offsite.cjs');
   assert.throws(() => execute(process.execPath, ['-e', `console.error('${secret}');process.exit(1)`]), error => error.message === 'child_command_failed' && !String(error).includes(secret));
+});
+
+test('historical 18-table archives remain unpackable, but new exports must include common book sources', () => {
+  const { verifyExport } = require('../scripts/backup-offsite.cjs');
+  const f = fixture(); try {
+    const source = path.join(f.root, 'old-source');
+    writeFixture(source, 'db.invalid', tables.filter(t => t !== 'word_source_books'));
+    assert.throws(() => verifyExport(source, 'db.invalid'), /table_set/);
+    const files = Object.fromEntries(names.map(n => [n, fs.readFileSync(path.join(source, n), 'utf8')]));
+    const archive = path.join(f.root, 'old-archive.json');
+    fs.writeFileSync(archive, JSON.stringify({ version: 1, files }));
+    const result = unpack(archive, path.join(f.root, 'old-restore'), 'db.invalid');
+    assert.equal(result.databaseRestored, false);
+    assert.equal(result.counts.words, 1);
+    assert.equal(Object.keys(result.counts).length, tables.length - 1);
+  } finally { f.close(); }
 });

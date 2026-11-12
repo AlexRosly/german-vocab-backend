@@ -129,6 +129,7 @@ model Word {
   updatedAt         DateTime              @updatedAt
 
   creator      User?              @relation("WordCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  bookSources WordSourceBook[]
   translations WordTranslation[]
   examples     WordExample[]
   userWords    UserWord[]
@@ -366,4 +367,17 @@ model WordCorrection {
   @@index([reporterId, status, createdAt])
   @@index([wordId])
   @@map("word_corrections")
+}
+
+// Shared book/lesson provenance; private book titles stay in PersonalWordBooks.
+model WordSourceBook {
+  wordId String
+  sourceBook String @db.VarChar(120)
+  lessonNumbers Int[] @default([])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  word Word @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  @@id([wordId, sourceBook])
+  @@index([sourceBook])
+  @@map("word_source_books")
 }

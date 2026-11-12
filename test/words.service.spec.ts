@@ -218,3 +218,17 @@ describe("Personal dictionaries and word permissions (in-memory Prisma)", () => 
   });
 
 });
+
+describe("Shared book sources preserve primary source and separate lessons by book", () => {
+  const { presentBookSources } = require("../src/words/book-sources");
+  it("merges primary and imported occurrences, sorting unique lessons", () => {
+    expect(presentBookSources({ sourceBook: "A1 Treffpunkt", lessonNumber: 9, bookSources: [{ sourceBook: "A1 Treffpunkt", lessonNumbers: [10,9,10] }, { sourceBook: "A1.1 Schritte plus", lessonNumbers: [2,1] }] })).toEqual([{ sourceBook: "A1 Treffpunkt", lessonNumbers: [9,10] }, { sourceBook: "A1.1 Schritte plus", lessonNumbers: [1,2] }]);
+  });
+  it("does not turn private books into shared provenance or invent unknown lessons", () => {
+    expect(presentBookSources({ sourceBook: "A1 Treffpunkt", lessonNumber: null, personalBooks: ["Private title"] })).toEqual([{ sourceBook: "A1 Treffpunkt", lessonNumbers: [] }]);
+    expect(presentBookSources({ sourceBook: null, lessonNumber: 1 })).toEqual([]);
+  });
+  it("keeps imported sources when the legacy primary source is edited", () => {
+    expect(presentBookSources({ sourceBook: "New source", lessonNumber: 3, bookSources: [{ sourceBook: "Original source", lessonNumbers: [1] }] })).toEqual([{ sourceBook: "New source", lessonNumbers: [3] }, { sourceBook: "Original source", lessonNumbers: [1] }]);
+  });
+});

@@ -45,6 +45,9 @@ export function makeWordsDatabase() {
         if (!condition.some((item: Row) => matches(row, item))) return false;
       } else if (field === "word") {
         const word = words.get(row.wordId); if (!word || !matches(word, condition)) return false;
+      } else if (field === "bookSources") {
+        if (!Object.hasOwn(condition, "some")) throw new Error("Unsupported book source filter");
+        if (!(row.bookSources ?? []).some((item: Row) => matches(item, condition.some))) return false;
       } else if (field === "userWords" || field === "translations") {
         const table = field === "userWords" ? links : translations;
         const related = [...table.values()].filter((item) => item.wordId === row.id);
@@ -64,6 +67,7 @@ export function makeWordsDatabase() {
       const table = row.wordId ? exampleTranslations : translations;
       result.translations = [...table.values()].filter((item) => row.wordId ? item.exampleId === row.id : item.wordId === row.id).map((item) => structuredClone(item));
     }
+    if (args.include?.bookSources) result.bookSources = structuredClone(row.bookSources ?? []);
     if (args.include?.userWords) {
       const nested = args.include.userWords;
       result.userWords = [...links.values()].filter(item => item.wordId === row.id && matches(item, nested.where)).map(item => project(item, { select: nested.select }));
