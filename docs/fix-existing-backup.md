@@ -36,6 +36,72 @@ sudo -iu wortkarten /home/wortkarten/.local/bin/rclone config redacted wortkarte
 [официальной инструкции rclone](https://rclone.org/drive/#making-your-own-client-id).
 Ограничения `drive.file`: [документация Google](https://developers.google.com/workspace/drive/api/guides/api-specific-auth).
 
+## Собственный OAuth-клиент: перенос подтверждён
+
+Владелец перевёл проект Google OAuth в In production, создал отдельный Desktop
+client и сохранил новое подключение `wortkarten-drive-own` с `drive.file`.
+Проверочный файл прошёл upload → download → `cmp` (`UPLOAD_DOWNLOAD_OK`).
+Старые архивы скопированы через приватную папку VPS в
+`wortkarten-drive-own:WortkartenBackups-own/production`.
+Проверки `rclone check --download` подтвердили **4 matching files, 0 differences**
+для старого Drive → локальная копия и локальная копия → новый Drive.
+Это проверка содержимого файлов, ещё не восстановление PostgreSQL.
+
+Команды рабочего скрипта проверены: загрузка идёт в `$REMOTE/database` и
+`$REMOTE/project`; ротация ограничена этими папками с `--min-age 30d`.
+`rmdirs "$REMOTE" --leave-root` убирает пустые вложенные папки этого назначения.
+Общий родитель с тестовыми файлами в назначение production не входит.
+Исходное подключение и его архивы сохраняются.
+
+### Следующий шаг: заменить только REMOTE
+
+Пока владелец **не подтвердил** выполнение следующего шага, рабочая задача
+по-прежнему использует старый клиент. Под пользователем wortkarten выполнить
+одним блоком после успешного переноса:
+
+```bash
+(
+set -euo pipefail
+umask 077
+wk_script="$HOME/scripts/backup-german-vocab.sh"
+test -f "$wk_script"
+test ! -L "$wk_script"
+test "$(grep -Fxc 'REMOTE="wortkarten-drive:wortkarten-backups"' "$wk_script")" = 1
+install -d -m 700 "$HOME/backups/backup-script-config"
+wk_before=$(mktemp "$HOME/backups/backup-script-config/before-drive-own.XXXXXXXX.sh")
+cat "$wk_script" > "$wk_before"
+wk_new=$(mktemp "$HOME/scripts/.backup-remote.XXXXXXXX")
+sed 's|^REMOTE="wortkarten-drive:wortkarten-backups"$|REMOTE="wortkarten-drive-own:WortkartenBackups-own/production"|' "$wk_before" > "$wk_new"
+bash -n "$wk_new"
+test "$(grep -Fxc 'REMOTE="wortkarten-drive-own:WortkartenBackups-own/production"' "$wk_new")" = 1
+cmp -s "$wk_script" "$wk_before"
+chmod 700 "$wk_new"
+mv -T -- "$wk_new" "$wk_script"
+echo SCRIPT_SWITCHED
+echo "Previous script: $wk_before"
+)
+```
+
+Блок отказывается заменять неожиданный REMOTE или символическую ссылку,
+сохраняет исходный скрипт в приватном файле, проверяет bash-синтаксис новой
+версии и отсутствие параллельного изменения оригинала, затем атомарно заменяет
+файл. При ошибке остановиться; не запускать следующие команды. Копии БД и
+архивов в этом шаге не меняются. Повторять блок после SCRIPT_SWITCHED не нужно.
+
+После `SCRIPT_SWITCHED` из root запустить и проверить новую полную пару:
+
+```bash
+systemctl start wortkarten-script-backup.service
+systemctl show wortkarten-script-backup.service -p Result -p ExecMainStatus
+journalctl -u wortkarten-script-backup.service -n 35 --no-pager
+```
+
+Нужны успешный последний запуск, новая пара файлов в destination production
+и отсутствие предупреждения об общем Google client_id именно в новом запуске.
+Таймер 03:30 Europe/Berlin использует тот же путь скрипта; переустановка или
+перезапуск приложения не требуется. В журнале могут оставаться старые запуски
+с прежним предупреждением — сверять время последнего запуска.
+
 ## Подтверждённая причина
 
 Cron пользователя `wortkarten` запустился 12.11 в 03:30 по серверу (13:30
@@ -115,7 +181,7 @@ systemctl show wortkarten-script-backup.service -p Result -p ExecMainStatus
 
 ## Что ещё нужно для закрытия R02
 
-Принять первый автоматический запуск timer; заменить общий Google Client ID; независимое уведомление
+Завершить переключение скрипта и принять полный запуск с новым клиентом; принять первый автоматический запуск timer; независимое уведомление
 при ошибке/пропуске backup; скачивание пары из Drive и восстановление dump в отдельный
 PostgreSQL (не в рабочую Neon). Для настройки проверки/уведомлений сначала нужен
 существующий скрипт с удалёнными секретами, чтобы проверять успех после обоих upload
