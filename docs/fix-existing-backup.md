@@ -8,8 +8,10 @@ Europe/Berlin (в журнале VPS 11:32 UTC−9): dump, архив, upload, �
 `Result=success`, `ExecMainStatus=0`; нового предупреждения об общем client_id нет.
 Старые предупреждения в journal относятся к прошлому запуску.
 Повторять замену REMOTE ниже не нужно — этап пройден.
-Владелец создал Healthchecks-проверку. [Подключение уведомлений](script-backup-monitoring.md)
-подготовлено; его установка и реальная доставка уведомления ещё не подтверждены.
+[Обёртка уведомлений](script-backup-monitoring.md) установлена владельцем:
+полный backup и доставка success подтверждены, Healthchecks зелёный.
+Остаётся поправить в Healthchecks Period 1 day на Cron 03:30 Europe/Berlin,
+подтвердить тестовое письмо и первый автоматический запуск.
 
 - Ручной запуск `wortkarten-script-backup.service`: `Result=success`,
   `ExecMainStatus=0`; журнал подтвердил dump, архив, `Upload finished`, обе
