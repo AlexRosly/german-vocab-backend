@@ -1,3 +1,4 @@
+import { OperationsModule } from "./operations/operations.module";
 import { CorrectionsController } from "./corrections/corrections.controller";
 import { CorrectionsService } from "./corrections/corrections.service";
 import { PersonalBooksController } from "./words/personal-books.controller";
@@ -24,7 +25,7 @@ import { WordTranslationsController } from "./words/word-translations.controller
 import { WordTranslationsService } from "./words/word-translations.service";
 
 @Module({
-  imports: [AuthModule, StudyModule, ModerationModule, PreferencesModule],
+  imports: [OperationsModule, AuthModule, StudyModule, ModerationModule, PreferencesModule],
   controllers: [CorrectionsController, PersonalBooksController, PersonalTranslationsController, WordRelationsController, PersonalNotesController, HealthController, WordsController, WordExamplesController, WordTranslationsController],
   providers: [CorrectionsService, PersonalBooksService, PersonalTranslationsService, WordRelationsService, PersonalNotesService, PrismaService, WordsService, WordExamplesService, WordAccessService, WordTranslationsService],
 })

@@ -20,7 +20,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "test:backup": "node --test test/backup-database.test.cjs test/backup-offsite.test.cjs",
-    "test:corrections": "jest --config jest.corrections.config.cjs --runInBand"
+    "test:corrections": "jest --config jest.corrections.config.cjs --runInBand",
+    "test:operations": "jest --config jest.operations.config.cjs --runInBand && node --test test/availability.test.cjs"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",
