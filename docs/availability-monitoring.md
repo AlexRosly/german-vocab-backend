@@ -120,3 +120,13 @@ systemctl list-timers --all wortkarten-availability.timer
 Считаем эксплуатационную часть принятой после успешного ручного и автоматического запуска на VPS, зелёной отдельной проверки и включённых Email-уведомлений. Локальные тесты не подменяют этот результат.
 
 Основание: [Healthchecks: расписания и grace](https://healthchecks.io/docs/configuring_checks/), [PM2: управление через ecosystem и --only](https://pm2.keymetrics.io/docs/usage/application-declaration/), [Neon: scale to zero](https://neon.com/docs/introduction/scale-to-zero).
+
+
+## Подтверждённая приёмка 13.11.2026
+
+- Публичный API через Netlify отдаёт monitoring:v1 и instanceId текущего backend.
+- Приватная конфигурация прошла --check-config. При первом вводе по ошибке использован URL backup; защита separate_check_required корректно отказала. После создания отдельной проверки сохранён её собственный URL. Настройки backup сохранены.
+- В журнале VPS ручной запуск 11:11 и последующие запуски 11:12 и 11:17 (локальное время UTC−9) успешны: ok:true/reasons:[], Result=success, ExecMainStatus=0. Интервал повторных запусков — пять минут.
+- Скриншот владельца: Wortkarten API зелёная, свежий ping, Period 5 minutes, Grace 5 minutes и Email integration. Ежедневная проверка backup также зелёная и с отдельным расписанием.
+
+Установка и эксплуатационная приёмка R04 завершены. Это не проверка всех пользовательских сценариев R01 и не восстановление Drive-копии R02. Полные Ping URL и секреты в отчёт не включаются.
