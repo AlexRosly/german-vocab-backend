@@ -14,7 +14,7 @@ export class CreateCorrectionDto {
  @ValidateIf((_object,value) => value !== undefined) @Transform(trim) @IsString() @MinLength(1) @MaxLength(2000) suggestion?: string;
 }
 export class CorrectionQueryDto {
- @IsOptional() @IsEnum(CorrectionStatus) status?: CorrectionStatus;
+ @IsOptional() @IsIn([...Object.values(CorrectionStatus), "ALL"]) status?: CorrectionStatus | "ALL";
  @IsOptional() @Type(() => Number) @IsInt() @Min(0) @Max(1000000) page?: number;
 }
 export class ReviewCorrectionDto {

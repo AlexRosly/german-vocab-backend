@@ -41,7 +41,8 @@ export class CorrectionsService {
  }
  async list(user:AuthUser,query:CorrectionQueryDto,admin=false) {
   if(admin) this.admin(user); await this.enabled();
-  const where:Prisma.WordCorrectionWhereInput={...(admin?{}:{reporterId:user.id}),status:query.status ?? "OPEN"};
+  const status=query.status ?? "OPEN";
+  const where:Prisma.WordCorrectionWhereInput={...(admin?{}:{reporterId:user.id}),...(status==="ALL"?{}:{status})};
   const page=query.page ?? 0,pageSize=30;
   return this.prisma.$transaction(async tx=>({items:await tx.wordCorrection.findMany({where,select:correctionSelect,orderBy:[{createdAt:"asc"},{id:"asc"}],skip:page*pageSize,take:pageSize}),total:await tx.wordCorrection.count({where}),page,pageSize}),{isolationLevel:"RepeatableRead"});
  }

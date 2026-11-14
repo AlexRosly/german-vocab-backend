@@ -50,7 +50,7 @@ describe("Correction HTTP boundary (real services, test persistence)",()=>{
  });
  it("validates categories, text, identifiers, pagination and prevents status/identity/snapshot injection",async()=>{
   for(const data of [{...payload,category:"BAD"},{...payload,description:"short"},{...payload,description:"x".repeat(2001)},{...payload,suggestion:null},{...payload,description:null},...['reporterId','status','snapshot','reviewerId'].map(key=>({...payload,[key]:"injected"}))])expect((await req("/words/published/corrections","POST",data)).status).toBe(400);
-  for(const query of ['page=-1','page=1.5','status=BAD','reporterId=user-b','page=1&page=2'])expect((await req('/corrections/mine?'+query)).status).toBe(400);
+  for(const query of ['page=-1','page=1.5','status=BAD','status=all','status=ALL&status=OPEN','reporterId=user-b','page=1&page=2'])expect((await req('/corrections/mine?'+query)).status).toBe(400);
   expect(db.wordCorrection.create).not.toHaveBeenCalled();
  });
  it("isolates personal history while administrators see both reporters",async()=>{
@@ -59,6 +59,25 @@ describe("Correction HTTP boundary (real services, test persistence)",()=>{
   expect((await req('/corrections/mine/'+b.id)).status).toBe(404);
   expect((await (await req('/moderation/corrections','GET',undefined,'c')).json()).total).toBe(2);
   const detail=await (await req('/moderation/corrections/'+a.id,'GET',undefined,'c')).json();expect(detail.cardChanged).toBe(false);expect(detail.current.german).toBe('Tisch');
+ });
+ it("lists every status without exposing another reporter and keeps OPEN as the default",async()=>{
+  const rejected=await create();
+  expect((await req('/moderation/corrections/'+rejected.id,'PATCH',{status:'REJECTED',expectedRevision:rejected.revision,comment:'Test rejected'},'c')).status).toBe(200);
+  const resolved=await create();
+  expect((await req('/moderation/corrections/'+resolved.id,'PATCH',{status:'RESOLVED',expectedRevision:resolved.revision,comment:'Test resolved'},'c')).status).toBe(200);
+  const open=await create(),foreign=await create('b');
+  const list=async(path:string,actor='a')=>{const response=await req(path,'GET',undefined,actor);expect(response.status).toBe(200);return response.json();};
+  const mine=await list('/corrections/mine?status=ALL&page=0');
+  expect(mine).toMatchObject({total:3,page:0,pageSize:30});
+  expect(mine.items.map((r:any)=>r.id)).toEqual([rejected.id,resolved.id,open.id]);
+  expect(mine.items.map((r:any)=>r.status)).toEqual(['REJECTED','RESOLVED','OPEN']);
+  expect((await list('/corrections/mine?status=ALL','b')).items.map((r:any)=>r.id)).toEqual([foreign.id]);
+  expect((await list('/moderation/corrections?status=ALL','c')).total).toBe(4);
+  expect((await req('/moderation/corrections?status=ALL')).status).toBe(403);
+  expect((await list('/corrections/mine')).items.map((r:any)=>r.id)).toEqual([open.id]);
+  expect((await list('/corrections/mine?status=RESOLVED')).items.map((r:any)=>r.id)).toEqual([resolved.id]);
+  expect(await list('/corrections/mine?status=ALL&page=1')).toMatchObject({items:[],total:3,page:1,pageSize:30});
+  expect((await req('/moderation/corrections/'+open.id,'PATCH',{status:'ALL',expectedRevision:open.revision,comment:'Not a decision'},'c')).status).toBe(400);
  });
  it("prevents a second open report and closes only with an administrator comment",async()=>{
   const report=await create();expect((await req('/words/published/corrections','POST',payload)).status).toBe(409);
