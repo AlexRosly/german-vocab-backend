@@ -1,3 +1,4 @@
+import { VerbsService } from "../src/words/verbs.service";
 import { VerbsController } from "../src/words/verbs.controller";
 import { WordRelationsService } from "../src/words/word-relations.service";
 import { WordRelationsController } from "../src/words/word-relations.controller";
@@ -31,7 +32,7 @@ describe("Dictionary HTTP boundary (real services, mocked persistence)", () => {
     const module = await Test.createTestingModule({
       imports: [AuthModule],
       controllers: [VerbsController, WordsController, WordExamplesController, WordRelationsController],
-      providers: [WordRelationsService, PersonalTranslationsService, PrismaService, WordsService, WordAccessService, WordExamplesService],
+      providers: [VerbsService, WordRelationsService, PersonalTranslationsService, PrismaService, WordsService, WordAccessService, WordExamplesService],
     })
       .overrideProvider(PrismaService).useValue({ ...fixture.db, $queryRaw: async () => [{ enabled: true }] })
       .overrideProvider(AuthService).useValue({ authenticate: async (token: string) => {
@@ -355,7 +356,7 @@ describe("Dictionary HTTP boundary (real services, mocked persistence)", () => {
     const response = await request("/../verbs/config");
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toBe("no-store");
-    expect(await response.json()).toEqual({ enabled: true, version: 1 });
+    expect(await response.json()).toEqual({ enabled: true, version: 1, catalog: true });
   });
 
 });

@@ -45,6 +45,9 @@ export function makeWordsDatabase() {
         if (!condition.some((item: Row) => matches(row, item))) return false;
       } else if (field === "word") {
         const word = words.get(row.wordId); if (!word || !matches(word, condition)) return false;
+      } else if (field === "verbForms") {
+        if (!Object.hasOwn(condition, "some")) throw new Error("Unsupported verb form filter");
+        if (!(row.verbForms ?? []).some((item: Row) => matches(item, condition.some))) return false;
       } else if (field === "bookSources") {
         if (!Object.hasOwn(condition, "some")) throw new Error("Unsupported book source filter");
         if (!(row.bookSources ?? []).some((item: Row) => matches(item, condition.some))) return false;
