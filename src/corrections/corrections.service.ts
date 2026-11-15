@@ -19,11 +19,12 @@ export class CorrectionsService {
  private async enabled() { if (!(await this.config()).enabled) throw new ServiceUnavailableException("Предложения исправлений пока недоступны"); }
  private admin(user: AuthUser) { if(user.role !== "ADMIN") throw new ForbiddenException("Требуются права администратора"); }
  private async snapshot(tx: Prisma.TransactionClient, wordId: string) {
-  const word=await tx.word.findUnique({where:{id:wordId},include:{translations:{orderBy:{language:"asc"}},examples:{include:{translations:{orderBy:{language:"asc"}}},orderBy:{id:"asc"}}}});
+  const word=await tx.word.findUnique({where:{id:wordId},include:{verbForms:{orderBy:{position:"asc"}},translations:{orderBy:{language:"asc"}},examples:{include:{translations:{orderBy:{language:"asc"}}},orderBy:{id:"asc"}}}});
   if(!word) throw new NotFoundException("Карточка не найдена");
   const edges=await tx.wordRelation.findMany({where:{OR:[{leftWordId:wordId},{rightWordId:wordId}],leftWord:{publicationStatus:"PUBLISHED"},rightWord:{publicationStatus:"PUBLISHED"}},select:{leftWord:{select:{id:true,german:true,article:true}},rightWord:{select:{id:true,german:true,article:true}}}});
   return { id:word.id,german:word.german,translation:word.translation,article:word.article,grammaticalNumber:word.grammaticalNumber,pluralForm:word.pluralForm,
    publicationStatus:word.publicationStatus,sourceBook:word.sourceBook,level:word.level,lessonNumber:word.lessonNumber,notes:word.notes,
+   ...(word.verbForms?.length ? {verbForms:word.verbForms.map(({praeteritum,participle2,auxiliary,reflexive,usage})=>({praeteritum,participle2,auxiliary,reflexive,usage}))} : {}),
    translations:word.translations.map(t=>({language:t.language,text:t.text})),
    examples:word.examples.map(e=>({id:e.id,german:e.german,translations:e.translations.map(t=>({language:t.language,text:t.text}))})),
    relatedWords:edges.map(e=>e.leftWord.id===wordId?e.rightWord:e.leftWord).sort((a,b)=>a.id.localeCompare(b.id)) };

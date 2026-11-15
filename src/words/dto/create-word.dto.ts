@@ -1,7 +1,8 @@
+import { VerbFormDto } from "./verb-form.dto";
 import { TRANSLATION_LANGUAGE_CODES } from "../../languages/language-options";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Transform, Type } from "class-transformer";
-import { ArrayMaxSize, ArrayUnique, IsArray, ValidateIf, ValidateNested, IsEnum, IsInt, IsOptional, IsString, Max, MaxLength, Matches, Min, MinLength } from "class-validator";
+import { ArrayMaxSize, ArrayUnique, IsBoolean, IsArray, ValidateIf, ValidateNested, IsEnum, IsInt, IsOptional, IsString, Max, MaxLength, Matches, Min, MinLength } from "class-validator";
 
 import { TranslationInputDto } from "./translation-input.dto";
 import { CreateWordExampleDto } from "./create-word-example.dto";
@@ -23,6 +24,15 @@ export enum CefrLevelDto {
 }
 
 export class CreateWordDto {
+  @ApiPropertyOptional({ description: "Explicit verb declaration; requires complete verbForms" })
+  @ValidateIf((_object, value) => value !== undefined) @IsBoolean()
+  isVerb?: boolean;
+
+  @ApiPropertyOptional({ type: [VerbFormDto], maxItems: 4 })
+  @ValidateIf((_object, value) => value !== undefined)
+  @IsArray() @ArrayMaxSize(4) @ValidateNested({ each: true }) @Type(() => VerbFormDto)
+  verbForms?: VerbFormDto[];
+
   @ApiProperty({ example: "Tisch" })
   @Transform(trimText)
   @IsString()

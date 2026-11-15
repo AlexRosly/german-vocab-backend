@@ -1,3 +1,4 @@
+import { verbData } from "./verb-data";
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { randomUUID } from "node:crypto";
 import { SaveDictionaryEntryDto } from "./dto/dictionary-entry.dto";
@@ -92,6 +93,7 @@ export class WordsService {
       const created = await tx.word.create({
         data: {
           ...data,
+          verbForms: verbData(dto, data, [], true),
           publicationStatus: "PENDING_REVIEW",
           createdByUserId: user.id,
           translations: { create: entries },
@@ -128,7 +130,7 @@ export class WordsService {
         notes: dto.notes === undefined ? current.notes : dto.notes,
       });
       await this.ensureNoDuplicate(tx, user, data, entries, id);
-      await tx.word.update({ where: { id }, data });
+      await tx.word.update({ where: { id }, data: { ...data, verbForms: verbData(dto, data, current.verbForms) } });
       for (const language of (dto.translations ?? []).filter((entry) => entry.text === null).map((entry) => entry.language)) {
         await tx.wordTranslation.deleteMany({ where: { wordId: id, language } });
       }

@@ -67,6 +67,7 @@ export function makeWordsDatabase() {
       const table = row.wordId ? exampleTranslations : translations;
       result.translations = [...table.values()].filter((item) => row.wordId ? item.exampleId === row.id : item.wordId === row.id).map((item) => structuredClone(item));
     }
+    if (args.include?.verbForms) result.verbForms = structuredClone(row.verbForms ?? []);
     if (args.include?.bookSources) result.bookSources = structuredClone(row.bookSources ?? []);
     if (args.include?.userWords) {
       const nested = args.include.userWords;
@@ -111,9 +112,9 @@ export function makeWordsDatabase() {
       findMany: jest.fn(async (args: Args = {}) => [...words.values()].filter((row) => matches(row, args.where)).map((row) => project(row, args))),
       findFirst: jest.fn(async (args: Args) => project([...words.values()].find((row) => matches(row, args.where)), args)),
       create: jest.fn(async (args: Args) => {
-        const { translations: nestedTranslations, examples: nestedExamples, userWords: nestedLinks, ...data } = args.data!;
+        const { verbForms: nestedForms, translations: nestedTranslations, examples: nestedExamples, userWords: nestedLinks, ...data } = args.data!;
         const id = `word-${++sequence}`;
-        const row = seedWord(id, data);
+        const row = seedWord(id, { ...data, verbForms: nestedForms?.create ?? [] });
         if (nestedTranslations) {
           for (const entry of (Array.isArray(nestedTranslations.create) ? nestedTranslations.create : [nestedTranslations.create])) {
             const translation = { id: `translation-${++sequence}`, wordId: id, ...entry };
@@ -135,7 +136,9 @@ export function makeWordsDatabase() {
       update: jest.fn(async (args: Args) => {
         const row = [...words.values()].find((item) => matches(item, args.where));
         if (!row) throw new Error("Missing word");
-        Object.assign(row, args.data, { updatedAt: new Date() });
+        const { verbForms, ...data } = args.data!;
+        Object.assign(row, data, { updatedAt: new Date() });
+        if (verbForms) row.verbForms = structuredClone(verbForms.create);
         return project(row, args);
       }),
       delete: jest.fn(() => { throw new Error("Global word deletion is forbidden in this stage"); }),

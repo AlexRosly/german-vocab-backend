@@ -1,3 +1,4 @@
+import { VerbsController } from "./words/verbs.controller";
 import { OperationsModule } from "./operations/operations.module";
 import { CorrectionsController } from "./corrections/corrections.controller";
 import { CorrectionsService } from "./corrections/corrections.service";
@@ -26,7 +27,7 @@ import { WordTranslationsService } from "./words/word-translations.service";
 
 @Module({
   imports: [OperationsModule, AuthModule, StudyModule, ModerationModule, PreferencesModule],
-  controllers: [CorrectionsController, PersonalBooksController, PersonalTranslationsController, WordRelationsController, PersonalNotesController, HealthController, WordsController, WordExamplesController, WordTranslationsController],
+  controllers: [VerbsController, CorrectionsController, PersonalBooksController, PersonalTranslationsController, WordRelationsController, PersonalNotesController, HealthController, WordsController, WordExamplesController, WordTranslationsController],
   providers: [CorrectionsService, PersonalBooksService, PersonalTranslationsService, WordRelationsService, PersonalNotesService, PrismaService, WordsService, WordExamplesService, WordAccessService, WordTranslationsService],
 })
 export class AppModule {}

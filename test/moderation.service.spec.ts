@@ -222,4 +222,13 @@ describe("Administrative moderation (in-memory Prisma)", () => {
     expect(fixture.words.get("pending")!.publicationStatus).toBe("PENDING_REVIEW");
     expect(fixture.links.has("author-link")).toBe(true);
   });
+  it("invalidates an existing review when verb forms change, even without changing word timestamps", async () => {
+    const before = await moderation.findOne(admin, "pending");
+    fixture.words.get("pending")!.verbForms = [{ position: 0, praeteritum: "ging", participle2: "gegangen", auxiliary: "SEIN", reflexive: false, usage: null }];
+    const after = await moderation.findOne(admin, "pending");
+    expect(after.verbForms).toHaveLength(1);
+    expect(after.revision).not.toBe(before.revision);
+    await expect(moderation.changeStatus(admin, "pending", { publicationStatus: "PUBLISHED" as any, expectedRevision: before.revision })).rejects.toBeInstanceOf(ConflictException);
+  });
+
 });

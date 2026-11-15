@@ -1,3 +1,4 @@
+import { VerbsController } from "../src/words/verbs.controller";
 import { WordRelationsService } from "../src/words/word-relations.service";
 import { WordRelationsController } from "../src/words/word-relations.controller";
 import { TRANSLATION_LANGUAGE_CODES } from "../src/languages/language-options";
@@ -29,10 +30,10 @@ describe("Dictionary HTTP boundary (real services, mocked persistence)", () => {
     fixture.seedWord("private", { publicationStatus: "PENDING_REVIEW", createdByUserId: userA.id });
     const module = await Test.createTestingModule({
       imports: [AuthModule],
-      controllers: [WordsController, WordExamplesController, WordRelationsController],
+      controllers: [VerbsController, WordsController, WordExamplesController, WordRelationsController],
       providers: [WordRelationsService, PersonalTranslationsService, PrismaService, WordsService, WordAccessService, WordExamplesService],
     })
-      .overrideProvider(PrismaService).useValue(fixture.db)
+      .overrideProvider(PrismaService).useValue({ ...fixture.db, $queryRaw: async () => [{ enabled: true }] })
       .overrideProvider(AuthService).useValue({ authenticate: async (token: string) => {
         const user = token === "a".repeat(43) ? userA : token === "b".repeat(43) ? userB : token === "c".repeat(43) ? admin : null;
         if (!user) throw new UnauthorizedException();
@@ -295,6 +296,66 @@ describe("Dictionary HTTP boundary (real services, mocked persistence)", () => {
     expect(fixture.words.size).toBe(2); expect(fixture.links.size).toBe(0);
     expect(fixture.examples.size).toBe(0); expect(fixture.translations.size).toBe(0);
     expect(fixture.relations.size).toBe(0);
+  });
+
+  const verb = { german: "gehen", article: "none", grammaticalNumber: "not_applicable", isVerb: true,
+    verbForms: [{ praeteritum: "ging", participle2: "gegangen", auxiliary: "SEIN" }] };
+
+  it("creates a pending verb with normalized forms, examples and the author's dictionary link", async () => {
+    const response = await request("", "POST", { ...verb, verbForms: [{ ...verb.verbForms[0], praeteritum: "  ging  " }], examples: [{ german: "Ich gehe nach Hause." }] });
+    expect(response.status).toBe(201);
+    const created = await response.json();
+    expect(created.publicationStatus).toBe("PENDING_REVIEW");
+    expect(created.verbForms).toEqual([{ position: 0, praeteritum: "ging", participle2: "gegangen", auxiliary: "SEIN", reflexive: false, usage: null }]);
+    expect((await (await request("/mine")).json()).find((word: any) => word.id === created.id).verbForms).toEqual(created.verbForms);
+    expect((await request(`/${created.id}`, "GET", undefined, "b")).status).toBe(404);
+    expect(fixture.examples.size).toBe(1);
+  });
+
+  it("rejects incomplete, incompatible and duplicate verb forms without writing a card", async () => {
+    for (const body of [
+      { ...verb, verbForms: undefined }, { ...verb, verbForms: [] },
+      { ...verb, verbForms: [{ praeteritum: "ging", auxiliary: "SEIN" }] },
+      { ...verb, verbForms: [{ ...verb.verbForms[0], participle2: "  " }] },
+      { ...verb, verbForms: [{ ...verb.verbForms[0], auxiliary: "BOTH" }] },
+      { ...verb, verbForms: Array(5).fill(verb.verbForms[0]) },
+      { ...verb, verbForms: [verb.verbForms[0], verb.verbForms[0]] },
+      { ...verb, article: "der" }, { ...verb, pluralForm: "Gänge" },
+      { ...verb, isVerb: false }, { ...verb, isVerb: null }, { ...verb, verbForms: null },
+    ]) expect((await request("", "POST", body)).status).toBe(400);
+    expect(fixture.words.size).toBe(2);
+    expect(fixture.links.size).toBe(0);
+  });
+
+  it("preserves forms on unrelated edits, protects published cards, and permits explicit removal", async () => {
+    const created = await (await request("", "POST", verb)).json();
+    const patched = await (await request(`/${created.id}`, "PATCH", { notes: "Контекст" })).json();
+    expect(patched.verbForms).toEqual(created.verbForms);
+    expect((await request(`/${created.id}`, "PATCH", { article: "der" })).status).toBe(400);
+    expect((await request(`/${created.id}`, "PATCH", { verbForms: [] })).status).toBe(400);
+    fixture.words.get(created.id)!.publicationStatus = "PUBLISHED";
+    expect((await request(`/${created.id}`, "PATCH", { isVerb: false })).status).toBe(403);
+    const updated = await (await request(`/${created.id}`, "PATCH", { verbForms: [{ praeteritum: "ging", participle2: "gegangen", auxiliary: "SEIN", usage: "Bewegung" }] }, "c")).json();
+    expect(updated.verbForms[0].usage).toBe("Bewegung");
+    const cleared = await (await request(`/${created.id}`, "PATCH", { isVerb: false }, "c")).json();
+    expect(cleared.verbForms).toEqual([]);
+  });
+
+  it("keeps auxiliary and sense paired, including a reflexive variant", async () => {
+    const forms = [
+      { praeteritum: "zog um", participle2: "umgezogen", auxiliary: "SEIN", usage: "Wohnort" },
+      { praeteritum: "zog um", participle2: "umgezogen", auxiliary: "HABEN", reflexive: true, usage: "Kleidung" },
+    ];
+    const result = await (await request("", "POST", { ...verb, german: "umziehen", verbForms: forms })).json();
+    expect(result.verbForms.map((form: any) => [form.auxiliary, form.reflexive, form.usage])).toEqual([["SEIN",false,"Wohnort"],["HABEN",true,"Kleidung"]]);
+  });
+
+  it("exposes verb capability only to authenticated callers", async () => {
+    expect((await request("/../verbs/config", "GET", undefined, "")).status).toBe(401);
+    const response = await request("/../verbs/config");
+    expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(await response.json()).toEqual({ enabled: true, version: 1 });
   });
 
 });

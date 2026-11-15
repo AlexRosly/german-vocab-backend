@@ -8,6 +8,7 @@ import { WORD_INCLUDE } from "../words/word-access.service";
 import { ChangePublicationStatusDto } from "./dto/change-publication-status.dto";
 
 const DETAIL_INCLUDE = {
+  verbForms: { orderBy: { position: "asc" } },
   translations: { orderBy: { language: "asc" } },
   examples: { include: { translations: { orderBy: { language: "asc" } } }, orderBy: [{ createdAt: "asc" }, { id: "asc" }] },
 } satisfies Prisma.WordInclude;
@@ -28,6 +29,7 @@ function withRevision(word: ReviewCard) {
     publicationStatus: word.publicationStatus,
     createdByUserId: word.createdByUserId,
     updatedAt: word.updatedAt,
+    verbForms: word.verbForms,
     translations: word.translations.map(({ id, language, text, updatedAt }) => ({ id, language, text, updatedAt })).sort((a, b) => a.id.localeCompare(b.id)),
     examples: word.examples.map(({ id, german, translation, updatedAt, translations }) => ({ id, german, translation, updatedAt, translations: (translations ?? []).map(({ language, text }) => ({ language, text })).sort((a, b) => a.language.localeCompare(b.language)) })).sort((a, b) => a.id.localeCompare(b.id)),
   };

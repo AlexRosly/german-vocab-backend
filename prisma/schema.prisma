@@ -130,6 +130,7 @@ model Word {
 
   creator      User?              @relation("WordCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
   bookSources WordSourceBook[]
+  verbForms WordVerbForm[]
   translations WordTranslation[]
   examples     WordExample[]
   userWords    UserWord[]
@@ -380,4 +381,26 @@ model WordSourceBook {
   @@id([wordId, sourceBook])
   @@index([sourceBook])
   @@map("word_source_books")
+}
+
+enum VerbAuxiliary {
+  HABEN
+  SEIN
+}
+
+model WordVerbForm {
+  id String @id @default(cuid())
+  wordId String
+  position Int
+  praeteritum String @db.VarChar(200)
+  participle2 String @db.VarChar(200)
+  auxiliary VerbAuxiliary
+  reflexive Boolean @default(false)
+  usage String? @db.VarChar(300)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  word Word @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@unique([wordId, position])
+  @@map("word_verb_forms")
 }
