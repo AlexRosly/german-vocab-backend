@@ -131,6 +131,8 @@ model Word {
   creator      User?              @relation("WordCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
   bookSources WordSourceBook[]
   verbForms WordVerbForm[]
+  collocationsAsNoun WordCollocation[] @relation("CollocationNoun")
+  collocationsAsVerb WordCollocation[] @relation("CollocationVerb")
   translations WordTranslation[]
   examples     WordExample[]
   userWords    UserWord[]
@@ -403,4 +405,34 @@ model WordVerbForm {
 
   @@unique([wordId, position])
   @@map("word_verb_forms")
+}
+
+model WordCollocation {
+  id String @id @default(cuid())
+  nounWordId String
+  verbWordId String
+  german String @db.VarChar(500)
+  phraseKey String @db.VarChar(500)
+  grammarNote String? @db.VarChar(300)
+  revision String @default(dbgenerated("(gen_random_uuid())::text")) @db.VarChar(64)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  nounWord Word @relation("CollocationNoun",fields:[nounWordId],references:[id],onDelete:Cascade)
+  verbWord Word @relation("CollocationVerb",fields:[verbWordId],references:[id],onDelete:Cascade)
+  translations WordCollocationTranslation[]
+  @@unique([nounWordId,verbWordId,phraseKey])
+  @@index([verbWordId])
+  @@map("word_collocations")
+}
+
+model WordCollocationTranslation {
+  id String @id @default(cuid())
+  collocationId String
+  language String @db.VarChar(12)
+  text String @db.VarChar(1000)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  collocation WordCollocation @relation(fields:[collocationId],references:[id],onDelete:Cascade)
+  @@unique([collocationId,language])
+  @@map("word_collocation_translations")
 }

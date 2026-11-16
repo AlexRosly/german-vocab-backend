@@ -1,0 +1,285 @@
+{
+  "version": 1,
+  "collocations": [
+    {
+      "noun": {
+        "id": "wkrec_e7bd90d7b91e59c8dbfced352a1c",
+        "german": "Arbeitgeber",
+        "expectedUpdatedAt": "2026-11-08T12:42:46.664Z"
+      },
+      "verb": {
+        "id": "wk1109w_86bc5fc677e65db271955c7ffb1",
+        "german": "suchen",
+        "expectedUpdatedAt": "2026-11-09T20:09:48.788Z"
+      },
+      "german": "einen Arbeitgeber suchen",
+      "grammarNote": "Akkusativ",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "искать работодателя"
+        },
+        {
+          "language": "en",
+          "text": "look for an employer"
+        },
+        {
+          "language": "uk",
+          "text": "шукати роботодавця"
+        }
+      ]
+    },
+    {
+      "noun": {
+        "id": "wkrec_e7bd90d7b91e59c8dbfced352a1c",
+        "german": "Arbeitgeber",
+        "expectedUpdatedAt": "2026-11-08T12:42:46.664Z"
+      },
+      "verb": {
+        "id": "wk1109w_4f96c75dc2e6ed86c3ed04b270f",
+        "german": "finden",
+        "expectedUpdatedAt": "2026-11-09T20:09:48.788Z"
+      },
+      "german": "einen Arbeitgeber finden",
+      "grammarNote": "Akkusativ",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "найти работодателя"
+        },
+        {
+          "language": "en",
+          "text": "find an employer"
+        },
+        {
+          "language": "uk",
+          "text": "знайти роботодавця"
+        }
+      ]
+    },
+    {
+      "noun": {
+        "id": "wkrec_e7bd90d7b91e59c8dbfced352a1c",
+        "german": "Arbeitgeber",
+        "expectedUpdatedAt": "2026-11-08T12:42:46.664Z"
+      },
+      "verb": {
+        "id": "wkrec_5362d00edcc76a6a6b776ee88de1",
+        "german": "sprechen",
+        "expectedUpdatedAt": "2026-11-08T12:42:46.664Z"
+      },
+      "german": "mit dem Arbeitgeber sprechen",
+      "grammarNote": "mit + Dativ",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "разговаривать с работодателем"
+        },
+        {
+          "language": "en",
+          "text": "speak with the employer"
+        },
+        {
+          "language": "uk",
+          "text": "розмовляти з роботодавцем"
+        }
+      ]
+    },
+    {
+      "noun": {
+        "id": "wk1109w_0c5c688eef7267894d308c65444",
+        "german": "Arbeit",
+        "expectedUpdatedAt": "2026-11-09T20:09:48.788Z"
+      },
+      "verb": {
+        "id": "wk1109w_86bc5fc677e65db271955c7ffb1",
+        "german": "suchen",
+        "expectedUpdatedAt": "2026-11-09T20:09:48.788Z"
+      },
+      "german": "eine Arbeit suchen",
+      "grammarNote": "Akkusativ",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "искать работу"
+        },
+        {
+          "language": "en",
+          "text": "look for work"
+        },
+        {
+          "language": "uk",
+          "text": "шукати роботу"
+        }
+      ]
+    },
+    {
+      "noun": {
+        "id": "wk1109w_0c5c688eef7267894d308c65444",
+        "german": "Arbeit",
+        "expectedUpdatedAt": "2026-11-09T20:09:48.788Z"
+      },
+      "verb": {
+        "id": "wk1109w_4f96c75dc2e6ed86c3ed04b270f",
+        "german": "finden",
+        "expectedUpdatedAt": "2026-11-09T20:09:48.788Z"
+      },
+      "german": "eine Arbeit finden",
+      "grammarNote": "Akkusativ",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "найти работу"
+        },
+        {
+          "language": "en",
+          "text": "find a job"
+        },
+        {
+          "language": "uk",
+          "text": "знайти роботу"
+        }
+      ]
+    },
+    {
+      "noun": {
+        "id": "wk1112w_9132f1c35c6630f523c48c4282a",
+        "german": "Termin",
+        "expectedUpdatedAt": "2026-11-12T10:53:46.944Z"
+      },
+      "verb": {
+        "id": "wk1112w_340dbe4ca1870e9dfafb27434aa",
+        "german": "vereinbaren",
+        "expectedUpdatedAt": "2026-11-12T10:53:46.944Z"
+      },
+      "german": "einen Termin vereinbaren",
+      "grammarNote": "Akkusativ",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "договориться о встрече"
+        },
+        {
+          "language": "en",
+          "text": "arrange an appointment"
+        },
+        {
+          "language": "uk",
+          "text": "домовитися про зустріч"
+        }
+      ]
+    },
+    {
+      "noun": {
+        "id": "wkrec_a756f23e1c75bfd700925e028aec",
+        "german": "Entscheidung",
+        "expectedUpdatedAt": "2026-11-08T12:42:46.664Z"
+      },
+      "verb": {
+        "id": "wk1109w_8e9660260494c41445e5184b7e2",
+        "german": "treffen",
+        "expectedUpdatedAt": "2026-11-09T20:09:48.788Z"
+      },
+      "german": "eine Entscheidung treffen",
+      "grammarNote": "Akkusativ",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "принять решение"
+        },
+        {
+          "language": "en",
+          "text": "make a decision"
+        },
+        {
+          "language": "uk",
+          "text": "ухвалити рішення"
+        }
+      ]
+    },
+    {
+      "noun": {
+        "id": "wk1109w_2c9826cb0f1bae8cab5a413e164",
+        "german": "Frage",
+        "expectedUpdatedAt": "2026-11-09T20:09:48.788Z"
+      },
+      "verb": {
+        "id": "wk1112w_29fdf002dfb508b22d6777ff2e7",
+        "german": "stellen",
+        "expectedUpdatedAt": "2026-11-12T10:53:46.944Z"
+      },
+      "german": "eine Frage stellen",
+      "grammarNote": "Akkusativ",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "задать вопрос"
+        },
+        {
+          "language": "en",
+          "text": "ask a question"
+        },
+        {
+          "language": "uk",
+          "text": "поставити запитання"
+        }
+      ]
+    },
+    {
+      "noun": {
+        "id": "wk1112w_72ae6e382dcf4a5e71082aa89d6",
+        "german": "Antwort",
+        "expectedUpdatedAt": "2026-11-12T10:53:46.944Z"
+      },
+      "verb": {
+        "id": "wktreff_0a56d8d3af923e5183c25fcc",
+        "german": "geben",
+        "expectedUpdatedAt": "2026-11-08T18:50:55.638Z"
+      },
+      "german": "eine Antwort geben",
+      "grammarNote": "Akkusativ",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "дать ответ"
+        },
+        {
+          "language": "en",
+          "text": "give an answer"
+        },
+        {
+          "language": "uk",
+          "text": "дати відповідь"
+        }
+      ]
+    },
+    {
+      "noun": {
+        "id": "wk1112w_b842334291468e4d455b87983ed",
+        "german": "Geld",
+        "expectedUpdatedAt": "2026-11-12T10:53:46.944Z"
+      },
+      "verb": {
+        "id": "wkrec_2de8ff4a6329484d468e290ff85a",
+        "german": "verdienen",
+        "expectedUpdatedAt": "2026-11-08T12:42:46.664Z"
+      },
+      "german": "Geld verdienen",
+      "grammarNote": "Akkusativ",
+      "translations": [
+        {
+          "language": "ru",
+          "text": "зарабатывать деньги"
+        },
+        {
+          "language": "en",
+          "text": "earn money"
+        },
+        {
+          "language": "uk",
+          "text": "заробляти гроші"
+        }
+      ]
+    }
+  ]
+}

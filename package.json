@@ -21,7 +21,8 @@
     "prisma:studio": "prisma studio",
     "test:backup": "node --test test/backup-database.test.cjs test/backup-offsite.test.cjs",
     "test:corrections": "jest --config jest.corrections.config.cjs --runInBand",
-    "test:operations": "jest --config jest.operations.config.cjs --runInBand && node --test test/availability.test.cjs"
+    "test:operations": "jest --config jest.operations.config.cjs --runInBand && node --test test/availability.test.cjs",
+    "test:collocations": "jest --config jest.words.config.cjs --runInBand --runTestsByPath test/words.collocations.http.spec.ts && node --test test/import-collocations.test.cjs"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",

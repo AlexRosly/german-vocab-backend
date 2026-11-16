@@ -94,6 +94,7 @@ export function makeWordsDatabase() {
   }
 
   const db = {
+    wordCollocation: { count: jest.fn(async () => 0) },
     personalWordBooks: {
       findMany: jest.fn(async (args: Args) => [...privateBooks.values()].filter(row => matches(row, args.where)).map(row => project(row, args))),
       findUnique: jest.fn(async (args: any) => project([...privateBooks.values()].find(row => matches(row, args.where.userId_wordId)), args)),

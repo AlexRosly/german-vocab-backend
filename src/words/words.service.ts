@@ -1,3 +1,4 @@
+import { isNoun } from "./collocations.service";
 import { verbData } from "./verb-data";
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { randomUUID } from "node:crypto";
@@ -130,7 +131,13 @@ export class WordsService {
         notes: dto.notes === undefined ? current.notes : dto.notes,
       });
       await this.ensureNoDuplicate(tx, user, data, entries, id);
-      await tx.word.update({ where: { id }, data: { ...data, verbForms: verbData(dto, data, current.verbForms) } });
+      const forms = verbData(dto, data, current.verbForms);
+      const losesNoun = isNoun(current) && !isNoun(data);
+      const losesVerb = current.verbForms.length > 0 && (forms?.create ?? current.verbForms).length === 0;
+      if ((losesNoun || losesVerb) && await tx.wordCollocation.count({ where: { OR: [
+        ...(losesNoun ? [{ nounWordId: id }] : []), ...(losesVerb ? [{ verbWordId: id }] : []),
+      ] } })) throw new BadRequestException("Сначала удалите сочетания этой карточки, затем измените её часть речи");
+      await tx.word.update({ where: { id }, data: { ...data, verbForms: forms } });
       for (const language of (dto.translations ?? []).filter((entry) => entry.text === null).map((entry) => entry.language)) {
         await tx.wordTranslation.deleteMany({ where: { wordId: id, language } });
       }
