@@ -22,7 +22,9 @@
     "test:backup": "node --test test/backup-database.test.cjs test/backup-offsite.test.cjs",
     "test:corrections": "jest --config jest.corrections.config.cjs --runInBand",
     "test:operations": "jest --config jest.operations.config.cjs --runInBand && node --test test/availability.test.cjs",
-    "test:collocations": "jest --config jest.words.config.cjs --runInBand --runTestsByPath test/words.collocations.http.spec.ts && node --test test/import-collocations.test.cjs"
+    "test:collocations": "jest --config jest.words.config.cjs --runInBand --runTestsByPath test/words.collocations.http.spec.ts && node --test test/import-collocations.test.cjs",
+    "test:mail": "jest --config jest.mail.config.cjs --runInBand && node --test test/check-mail.test.cjs",
+    "mail:check": "node --env-file=.env scripts/check-mail.cjs"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",
@@ -35,6 +37,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "google-auth-library": "11.3.3",
+    "nodemailer": "10.6.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },

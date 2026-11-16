@@ -1,3 +1,4 @@
+import { MailModule } from "./mail/mail.module";
 import { CollocationsConfigController, CollocationsController } from "./words/collocations.controller";
 import { CollocationsService } from "./words/collocations.service";
 import { VerbsService } from "./words/verbs.service";
@@ -29,7 +30,7 @@ import { WordTranslationsController } from "./words/word-translations.controller
 import { WordTranslationsService } from "./words/word-translations.service";
 
 @Module({
-  imports: [OperationsModule, AuthModule, StudyModule, ModerationModule, PreferencesModule],
+  imports: [MailModule, OperationsModule, AuthModule, StudyModule, ModerationModule, PreferencesModule],
   controllers: [CollocationsConfigController, CollocationsController, VerbsController, CorrectionsController, PersonalBooksController, PersonalTranslationsController, WordRelationsController, PersonalNotesController, HealthController, WordsController, WordExamplesController, WordTranslationsController],
   providers: [CollocationsService, VerbsService, CorrectionsService, PersonalBooksService, PersonalTranslationsService, WordRelationsService, PersonalNotesService, PrismaService, WordsService, WordExamplesService, WordAccessService, WordTranslationsService],
 })
