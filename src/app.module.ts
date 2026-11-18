@@ -1,3 +1,5 @@
+import { DictionaryImportController } from "./dictionary-import/dictionary-import.controller";
+import { DictionaryImportService } from "./dictionary-import/dictionary-import.service";
 import { DictionaryExportController, DictionaryExportThrottle } from "./dictionary-export/dictionary-export.controller";
 import { DictionaryExportService } from "./dictionary-export/dictionary-export.service";
 import { MailModule } from "./mail/mail.module";
@@ -33,7 +35,7 @@ import { WordTranslationsService } from "./words/word-translations.service";
 
 @Module({
   imports: [MailModule, OperationsModule, AuthModule, StudyModule, ModerationModule, PreferencesModule],
-  controllers: [DictionaryExportController, CollocationsConfigController, CollocationsController, VerbsController, CorrectionsController, PersonalBooksController, PersonalTranslationsController, WordRelationsController, PersonalNotesController, HealthController, WordsController, WordExamplesController, WordTranslationsController],
-  providers: [DictionaryExportService, DictionaryExportThrottle, CollocationsService, VerbsService, CorrectionsService, PersonalBooksService, PersonalTranslationsService, WordRelationsService, PersonalNotesService, PrismaService, WordsService, WordExamplesService, WordAccessService, WordTranslationsService],
+  controllers: [DictionaryImportController, DictionaryExportController, CollocationsConfigController, CollocationsController, VerbsController, CorrectionsController, PersonalBooksController, PersonalTranslationsController, WordRelationsController, PersonalNotesController, HealthController, WordsController, WordExamplesController, WordTranslationsController],
+  providers: [DictionaryImportService, DictionaryExportService, DictionaryExportThrottle, CollocationsService, VerbsService, CorrectionsService, PersonalBooksService, PersonalTranslationsService, WordRelationsService, PersonalNotesService, PrismaService, WordsService, WordExamplesService, WordAccessService, WordTranslationsService],
 })
 export class AppModule {}
