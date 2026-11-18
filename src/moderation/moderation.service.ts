@@ -1,3 +1,4 @@
+import { guardWordSpellings, transactionConflict } from "../dictionary-import/import-schema";
 import { ConflictException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma, WordPublicationStatus } from "@prisma/client";
 import { createHash } from "node:crypto";
@@ -61,6 +62,7 @@ export class ModerationService {
     return this.writeTransaction(async (tx) => {
       const word = await tx.word.findUnique({ where: { id }, include: DETAIL_INCLUDE });
       if (!word) throw new NotFoundException("Карточка не найдена");
+      await guardWordSpellings(tx, [word.german]);
       const reviewed = withRevision(word);
       if (reviewed.revision !== dto.expectedRevision) {
         throw new ConflictException({ code: "STALE_REVIEW", message: "Карточка изменилась. Откройте её заново перед решением" });
@@ -114,7 +116,7 @@ export class ModerationService {
           timeout: 20_000,
         });
       } catch (error) {
-        if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== "P2034") throw error;
+        if (!transactionConflict(error)) throw error;
         if (attempt === 2) throw new ConflictException("Конфликт одновременных изменений. Откройте карточку заново");
       }
     }

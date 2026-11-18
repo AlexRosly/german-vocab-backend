@@ -3,7 +3,7 @@ import { Prisma } from "@prisma/client";
 import { AuthUser } from "../auth/auth.service";
 import { PrismaService } from "../prisma.service";
 import { dictionaryWords } from "../words/word-access.service";
-import { ImportRow, MAX_IMPORT_BYTES, lexemeKey, meaningsOverlap, normalizeText, parseDictionaryCsv } from "./dictionary-csv-reader";
+import { ImportRow, MAX_IMPORT_BYTES, germanVariants, lexemeKey, meaningsOverlap, normalizeText, parseDictionaryCsv } from "./dictionary-csv-reader";
 
 const select = { id: true, german: true, article: true, grammaticalNumber: true, translation: true,
   translations: { select: { language: true, text: true } }, verbForms: { select: { id: true }, take: 1 },
@@ -22,7 +22,7 @@ export class DictionaryImportService {
     const candidates = await this.prisma.$transaction(async tx => {
       await tx.$executeRawUnsafe("SET TRANSACTION READ ONLY");
       const result = new Map<string, Candidate>();
-      const terms: Prisma.WordWhereInput[] = [...new Set(valid.map(r => r.german))].map(german => ({ german: { equals: german, mode: "insensitive" } }));
+      const terms: Prisma.WordWhereInput[] = [...new Set(valid.flatMap(germanVariants))].map(german => ({ german: { equals: german, mode: "insensitive" } }));
       const ids = [...new Set(valid.map(r => r.wordId).filter(Boolean))];
       if (ids.length) terms.push({ id: { in: ids } });
       for (let i = 0; i < terms.length; i += 100) {

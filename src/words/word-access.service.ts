@@ -1,3 +1,4 @@
+import { guardWordSpellings, transactionConflict } from "../dictionary-import/import-schema";
 import { ConflictException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { AuthUser } from "../auth/auth.service";
@@ -27,6 +28,8 @@ export class WordAccessService {
   }
 
   async beginEdit(tx: Prisma.TransactionClient, user: AuthUser, wordId: string): Promise<void> {
+    const spelling = await tx.word.findFirst({ where: { id: wordId }, select: { german: true } });
+    if (spelling) await guardWordSpellings(tx, [spelling.german]);
     const isAdmin = user.role === "ADMIN";
     // Check permissions and hold the row lock until commit, including against publication.
     const updated = await tx.word.updateMany({
@@ -51,8 +54,7 @@ export class WordAccessService {
           timeout: 20_000,
         });
       } catch (error) {
-        const retryable = error instanceof Prisma.PrismaClientKnownRequestError &&
-          (error.code === "P2034" || error.code === "P2002");
+        const retryable = transactionConflict(error);
         if (!retryable) throw error;
         if (attempt === 2) throw new ConflictException("Конфликт одновременных изменений. Повторите запрос");
       }

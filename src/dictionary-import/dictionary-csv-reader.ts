@@ -1,3 +1,4 @@
+import { lessonMap } from "./import-materials";
 import { BadRequestException, PayloadTooLargeException } from "@nestjs/common";
 import { parse } from "csv-parse/sync";
 import { plainToInstance } from "class-transformer";
@@ -13,7 +14,8 @@ type Translation = { language: string; text: string };
 export type ImportRow = { row: number; german: string; wordId: string; type: string; article: string; number: string;
   translations: Translation[]; errors: string[]; values: Record<string, string>; exampleCount: number; verbFormCount: number };
 export const normalizeText = (value: string) => value.normalize("NFC").trim().replace(/\s+/gu, " ");
-export const lexemeKey = (row: Pick<ImportRow, "german" | "article" | "number" | "type">) => JSON.stringify([normalizeText(row.german).toLocaleLowerCase("de"), row.article, row.number, row.type]);
+export function germanVariants(row: Pick<ImportRow,"german"|"article"|"type">):string[]{const text=normalizeText(row.german),prefix=/^(der|die|das) (.+)$/iu.exec(text);const bare=row.type==="noun"&&prefix?.[1].toLowerCase()===row.article?prefix![2]:text;return row.type==="noun"?[bare,row.article+" "+bare]:[bare];}
+export const lexemeKey = (row: Pick<ImportRow, "german" | "article" | "number" | "type">) => JSON.stringify([germanVariants(row)[0].toLocaleLowerCase("de"), row.article, row.number, row.type]);
 export function meaningsOverlap(a: Translation[], b: Translation[]) {
   return a.some(x => b.some(y => x.language === y.language && normalizeText(x.text).toLocaleLowerCase() === normalizeText(y.text).toLocaleLowerCase()));
 }
@@ -70,8 +72,9 @@ export function parseDictionaryCsv(buffer: Buffer): ImportRow[] {
       if (!errors.length) verbData(dto, dto, [], true);
       verbFormCount = forms.length;
       const personal = texts(values, "personal_translation_");
-      if (personal.some(t => t.text.trim().length < 1 || t.text.length > 1000) || (values.personal_note?.length ?? 0) > 4000) errors.push("personal_materials");
+      if (personal.some(t => t.text.trim().length < 1 || t.text.length > 1000) || (values.personal_note?.length ?? 0) > 2000) errors.push("personal_materials");
       boolean(values.is_archived); boolean(values.is_favorite);
+      if(values.personal_book_lessons_json) lessonMap(JSON.parse(values.personal_book_lessons_json));
       const books = array(values.personal_books_json, 20);
       if (books.some(b => typeof b !== "string" || !b.trim() || b.length > 120 || /\p{Cc}/u.test(b))) errors.push("personal_books_json");
       const sources = array(values.source_books_json, 50);

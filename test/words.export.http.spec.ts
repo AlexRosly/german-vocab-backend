@@ -42,7 +42,7 @@ describe("Private dictionary CSV HTTP (real services, mocked database)", () => {
   let app: INestApplication, base: string, rows: AnyRow[], db: any;
   beforeEach(async () => {
     rows = [sample()];
-    db = { $executeRawUnsafe: jest.fn().mockResolvedValue(0), $transaction: jest.fn(),
+    db = { $queryRaw: jest.fn().mockResolvedValue([{ ready:false }]), $executeRawUnsafe: jest.fn().mockResolvedValue(0), $transaction: jest.fn(),
       word: { count: jest.fn(async ({ where }) => rows.filter(w => matches(w, where)).length), findMany: jest.fn(async ({ where, select, cursor, take }) => rows.filter(w => matches(w, where)).sort((a, b) => a.id.localeCompare(b.id)).filter(w => !cursor || w.id > cursor.id).slice(0, take).map(w => project(w, select))) },
       wordExample: { count: jest.fn(async ({ where }) => rows.filter(w => matches(w, where.word)).reduce((n, w) => n + w.examples.length, 0)) } };
     db.$transaction.mockImplementation((work: (tx: unknown) => unknown) => work(db));

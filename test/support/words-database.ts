@@ -93,7 +93,7 @@ export function makeWordsDatabase() {
     return row;
   }
 
-  const db = {
+  const db = { $queryRaw: jest.fn().mockResolvedValue([{ ready:false }]),
     wordCollocation: { count: jest.fn(async () => 0) },
     personalWordBooks: {
       findMany: jest.fn(async (args: Args) => [...privateBooks.values()].filter(row => matches(row, args.where)).map(row => project(row, args))),

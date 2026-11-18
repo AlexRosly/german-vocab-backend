@@ -1,3 +1,5 @@
+import { DictionaryImportSaveController } from "./dictionary-import/dictionary-import-save.controller";
+import { DictionaryImportApplyService } from "./dictionary-import/dictionary-import-apply.service";
 import { DictionaryImportController } from "./dictionary-import/dictionary-import.controller";
 import { DictionaryImportService } from "./dictionary-import/dictionary-import.service";
 import { DictionaryExportController, DictionaryExportThrottle } from "./dictionary-export/dictionary-export.controller";
@@ -35,7 +37,7 @@ import { WordTranslationsService } from "./words/word-translations.service";
 
 @Module({
   imports: [MailModule, OperationsModule, AuthModule, StudyModule, ModerationModule, PreferencesModule],
-  controllers: [DictionaryImportController, DictionaryExportController, CollocationsConfigController, CollocationsController, VerbsController, CorrectionsController, PersonalBooksController, PersonalTranslationsController, WordRelationsController, PersonalNotesController, HealthController, WordsController, WordExamplesController, WordTranslationsController],
-  providers: [DictionaryImportService, DictionaryExportService, DictionaryExportThrottle, CollocationsService, VerbsService, CorrectionsService, PersonalBooksService, PersonalTranslationsService, WordRelationsService, PersonalNotesService, PrismaService, WordsService, WordExamplesService, WordAccessService, WordTranslationsService],
+  controllers: [DictionaryImportSaveController, DictionaryImportController, DictionaryExportController, CollocationsConfigController, CollocationsController, VerbsController, CorrectionsController, PersonalBooksController, PersonalTranslationsController, WordRelationsController, PersonalNotesController, HealthController, WordsController, WordExamplesController, WordTranslationsController],
+  providers: [DictionaryImportApplyService, DictionaryImportService, DictionaryExportService, DictionaryExportThrottle, CollocationsService, VerbsService, CorrectionsService, PersonalBooksService, PersonalTranslationsService, WordRelationsService, PersonalNotesService, PrismaService, WordsService, WordExamplesService, WordAccessService, WordTranslationsService],
 })
 export class AppModule {}

@@ -63,6 +63,7 @@ model User {
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
+  importBatches DictionaryImportBatch[]
   accounts     Account[]
   authSessions AuthSession[]
   googleChallenges GoogleAuthChallenge[]
@@ -324,6 +325,7 @@ model PersonalWordBooks {
   userId String
   wordId String
   titles String[]
+  lessons Json @default(dbgenerated("'{}'::jsonb"))
   revision String @default(cuid()) @db.VarChar(64)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -435,4 +437,33 @@ model WordCollocationTranslation {
   collocation WordCollocation @relation(fields:[collocationId],references:[id],onDelete:Cascade)
   @@unique([collocationId,language])
   @@map("word_collocation_translations")
+}
+
+// Private staged imports expire after 24 hours; completed receipts retain no file payload.
+model DictionaryImportBatch {
+  id String @id @default(uuid()) @db.Uuid
+  userId String
+  key String @db.Uuid
+  requestHash String @db.VarChar(64)
+  rows Json
+  decisions Json
+  summary Json
+  cursor Int @default(0)
+  results Json @default("[]")
+  state String @default("PLANNED") @db.VarChar(16)
+  revision Int @default(0)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  @@unique([userId,key])
+  @@index([userId,createdAt])
+  @@index([state,expiresAt])
+  @@map("dictionary_import_batches")
+}
+// A write fence makes concurrent lexical edits restart their Serializable snapshot.
+model WordLexemeGuard {
+  key String @id @db.VarChar(64)
+  revision Int @default(0)
+  @@map("word_lexeme_guards")
 }

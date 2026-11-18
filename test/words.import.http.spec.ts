@@ -21,7 +21,7 @@ describe("Read-only dictionary CSV preview HTTP", () => {
   let app: INestApplication, url: string, db: any, words: any[];
   beforeEach(async () => {
     words = [card("house")];
-    db = { $executeRawUnsafe: jest.fn(), $transaction: jest.fn(), word: { findMany: jest.fn(async ({ where, select, take }: any) => words.filter(w => matches(w, where)).slice(0, take).map(w => Object.fromEntries(Object.keys(select).map(k => [k, k === "userWords" ? w[k].filter((u: any) => u.userId === select.userWords.where.userId).map((u: any) => ({ wordId: u.wordId })) : w[k]])))) } };
+    db = { $queryRaw: jest.fn().mockResolvedValue([{ ready:false }]), $executeRawUnsafe: jest.fn(), $transaction: jest.fn(), word: { findMany: jest.fn(async ({ where, select, take }: any) => words.filter(w => matches(w, where)).slice(0, take).map(w => Object.fromEntries(Object.keys(select).map(k => [k, k === "userWords" ? w[k].filter((u: any) => u.userId === select.userWords.where.userId).map((u: any) => ({ wordId: u.wordId })) : w[k]])))) } };
     db.$transaction.mockImplementation((work: any) => work(db));
     const module = await Test.createTestingModule({ imports: [AuthModule], controllers: [DictionaryImportController], providers: [DictionaryImportService, DictionaryExportThrottle, PrismaService] })
       .overrideProvider(PrismaService).useValue(db).overrideProvider(AuthService).useValue({ authenticate: async (token: string) => { const user = token === "a".repeat(43) ? userA : token === "b".repeat(43) ? userB : token === "c".repeat(43) ? admin : null; if (!user) throw new UnauthorizedException(); return { user, sessionId: "test" }; } }).compile();
@@ -37,6 +37,7 @@ describe("Read-only dictionary CSV preview HTTP", () => {
     expect((await request(csv([{ ...baseRow, role: "ADMIN" }]), "c")).status).toBe(400); expect(db.$transaction).not.toHaveBeenCalled();
   });
   it("classifies new, existing, in-file duplicate, ambiguous and invalid verb rows without writing", async () => {
+    words[0].german="das Haus"; // Existing manual cards may already include the article.
     words.push(card("bank1", "Bank", { article: "die", translations: [{ language: "en", text: "bank" }] }), card("bank2", "Bank", { article: "die", translations: [{ language: "en", text: "bench" }] }));
     const response = await request(csv([baseRow, { ...baseRow, german: "Wald", translation_en: "forest" }, { ...baseRow, german: "das   Haus", source_book: "Another book", lesson_number: "2", personal_note: "Different note" }, { ...baseRow, german: "Bank", article: "die", translation_en: "bank" }, { german: "gehen", word_type: "verb", article: "none", grammatical_number: "not_applicable" }]));
     expect(response.status).toBe(200); expect(response.headers.get("cache-control")).toBe("private, no-store"); const data = await response.json(); expect(data).toMatchObject({ readOnly: true, total: 5, counts: { new: 1, existing: 1, duplicate: 1, choice: 1, error: 1 } }); expect(data.rows[2].duplicateOf).toBe(1); expect(data.rows[3].candidates).toHaveLength(2); expect(data.rows[4].fields).toContain("verb_forms_required");

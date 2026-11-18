@@ -1,3 +1,4 @@
+import { guardWordSpellings, importSchemaReady } from "../dictionary-import/import-schema";
 import { isNoun } from "./collocations.service";
 import { verbData } from "./verb-data";
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common";
@@ -50,8 +51,10 @@ export class WordsService {
       select: { wordId: true, titles: true },
     }) : [];
     const titles = new Map(books.map(book => [book.wordId, book.titles]));
+    const lessons = words.length && await importSchemaReady(this.prisma) ? await this.prisma.personalWordBooks.findMany({ where:{ userId:user.id,wordId:{in:words.map(w=>w.id)} },select:{wordId:true,lessons:true} }) : [];
+    const lessonMap = new Map(lessons.map(row=>[row.wordId,row.lessons]));
     // Expose only the caller's settings, never the underlying users' link rows.
-    return words.flatMap(({ userWords, ...word }) => userWords[0] ? [{ ...word, dictionaryEntry: userWords[0], personalBooks: titles.get(word.id) ?? [] }] : []);
+    return words.flatMap(({ userWords, ...word }) => userWords[0] ? [{ ...word, dictionaryEntry: userWords[0], personalBooks: titles.get(word.id) ?? [], personalBookLessons: lessonMap.get(word.id) ?? {} }] : []);
   }
 
   private async ownEntry(tx: Prisma.TransactionClient, user: AuthUser, wordId: string) {
@@ -88,6 +91,7 @@ export class WordsService {
     return this.access.transaction(async (tx) => {
       const entries = translationEntries(dto);
       const data = this.cardData({ ...dto, translation: entries.find((entry) => entry.language === "ru")?.text ?? "" });
+      await guardWordSpellings(tx, [data.german]);
       await this.ensureNoDuplicate(tx, user, data, entries);
       // Validate all targets before writing. Visibility is checked again when relations are read.
       for (const id of dto.relatedWordIds ?? []) await this.access.requireReadable(user, id, tx);
@@ -130,6 +134,7 @@ export class WordsService {
         lessonNumber: dto.lessonNumber === undefined ? current.lessonNumber : dto.lessonNumber,
         notes: dto.notes === undefined ? current.notes : dto.notes,
       });
+      await guardWordSpellings(tx, [current.german, data.german]);
       await this.ensureNoDuplicate(tx, user, data, entries, id);
       const forms = verbData(dto, data, current.verbForms);
       const losesNoun = isNoun(current) && !isNoun(data);
