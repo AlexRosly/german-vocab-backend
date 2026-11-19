@@ -1,3 +1,4 @@
+import { parseDictionaryFile } from "./dictionary-file-reader";
 import { BadRequestException, ConflictException, Injectable, NotFoundException, ServiceUnavailableException, OnModuleInit, OnModuleDestroy, HttpException } from "@nestjs/common";
 import { Prisma, DictionaryImportBatch, PersonalWordNote, PersonalWordTranslation, PersonalWordBooks, UserWord } from "@prisma/client";
 import { createHash, randomUUID } from "node:crypto";
@@ -7,7 +8,7 @@ import { dictionaryWords, WORD_INCLUDE } from "../words/word-access.service";
 import { verbData } from "../words/verb-data";
 import { translationEntries } from "../words/translation-data";
 import { guardWordSpellings, importSchemaReady, transactionConflict } from "./import-schema";
-import { germanVariants, lexemeKey, MAX_IMPORT_BYTES, meaningsOverlap, parseDictionaryCsv } from "./dictionary-csv-reader";
+import { germanVariants, lexemeKey, MAX_IMPORT_BYTES, meaningsOverlap } from "./dictionary-csv-reader";
 import { privateBooks, savedRow, SavedImportRow, Lessons } from "./import-materials";
 
 export type ImportDecision = { row:number; action:"skip"|"existing"|"new"|"newMeaning"|"reuse"; wordId?:string; referenceRow?:number; revision?:string };
@@ -69,7 +70,7 @@ export class DictionaryImportApplyService implements OnModuleInit, OnModuleDestr
     return {warnings,entry};
   }
   async prepare(user:AuthUser,buffer:Buffer,rawDecisions:string,key:string){
-    await this.requireReady();key=uuid(key);const parsed=parseDictionaryCsv(buffer),decisions=this.decisions(rawDecisions,parsed.length);
+    await this.requireReady();key=uuid(key);const parsed=await parseDictionaryFile(buffer),decisions=this.decisions(rawDecisions,parsed.length);
     const requestHash=createHash("sha256").update(buffer).update(JSON.stringify(decisions)).digest("hex");
     const rows=parsed.map((row,i)=>decisions[i].action==="skip"?null:savedRow(row));
     if(Buffer.byteLength(JSON.stringify(rows))>MAX_IMPORT_BYTES)throw new BadRequestException("dictionary_import_too_large");

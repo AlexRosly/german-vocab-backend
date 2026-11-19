@@ -1,9 +1,10 @@
+import { parseDictionaryFile } from "./dictionary-file-reader";
 import { Injectable, PayloadTooLargeException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { AuthUser } from "../auth/auth.service";
 import { PrismaService } from "../prisma.service";
 import { dictionaryWords } from "../words/word-access.service";
-import { ImportRow, MAX_IMPORT_BYTES, germanVariants, lexemeKey, meaningsOverlap, normalizeText, parseDictionaryCsv } from "./dictionary-csv-reader";
+import { ImportRow, MAX_IMPORT_BYTES, germanVariants, lexemeKey, meaningsOverlap, normalizeText } from "./dictionary-csv-reader";
 
 const select = { id: true, german: true, article: true, grammaticalNumber: true, translation: true,
   translations: { select: { language: true, text: true } }, verbForms: { select: { id: true }, take: 1 },
@@ -17,7 +18,7 @@ function translations(w: Candidate) { const result = [...w.translations]; if (w.
 export class DictionaryImportService {
   constructor(private readonly prisma: PrismaService) {}
   async preview(user: AuthUser, buffer: Buffer) {
-    const rows = parseDictionaryCsv(buffer), valid = rows.filter(r => !r.errors.length);
+    const rows = await parseDictionaryFile(buffer), valid = rows.filter(r => !r.errors.length);
     // ADMIN imports obey the same public/own-draft scope as ordinary users.
     const candidates = await this.prisma.$transaction(async tx => {
       await tx.$executeRawUnsafe("SET TRANSACTION READ ONLY");

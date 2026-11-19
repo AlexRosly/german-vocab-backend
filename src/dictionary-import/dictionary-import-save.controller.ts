@@ -1,3 +1,4 @@
+import { validateImportUpload } from "./dictionary-file-reader";
 import { BadRequestException, Body, Controller, Get, Header, Headers, HttpCode, Param, Post, UploadedFile, UseGuards, UseInterceptors, Res } from "@nestjs/common";
 import type {Response} from 'express';
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -20,8 +21,8 @@ export class DictionaryImportSaveController {
   @Get("latest-batch") @Header("Cache-Control","private, no-store")
   async latest(@CurrentUser()user:AuthUser,@Res({passthrough:true})response:Response){const batch=await this.imports.latest(user);if(!batch){response.status(204);return;}return batch;}
   @Post("prepare") @HttpCode(200) @Header("Cache-Control","private, no-store") @UseGuards(DictionaryExportThrottle) @Throttle({default:{limit:3,ttl:60000}})
-  @UseInterceptors(FileInterceptor("file",{limits:{fileSize:MAX_IMPORT_BYTES,files:1,fields:1,fieldSize:2*1024*1024,parts:2},fileFilter:(_r,f,cb)=>cb(/\.csv$/i.test(f.originalname)?null:new BadRequestException("dictionary_import_csv_only"),/\.csv$/i.test(f.originalname))}))
-  prepare(@CurrentUser()user:AuthUser,@UploadedFile()file:{buffer:Buffer}|undefined,@Body()body:PrepareDto,@Headers("idempotency-key")key:string){if(!file?.buffer?.length)throw new BadRequestException("dictionary_import_empty");return this.imports.prepare(user,file.buffer,body.decisions,key);}
+  @UseInterceptors(FileInterceptor("file",{limits:{fileSize:MAX_IMPORT_BYTES,files:1,fields:1,fieldSize:2*1024*1024,parts:2},fileFilter:(_r,f,cb)=>cb(/\.(csv|xlsx)$/i.test(f.originalname)?null:new BadRequestException("dictionary_import_supported_files"),/\.(csv|xlsx)$/i.test(f.originalname))}))
+  prepare(@CurrentUser()user:AuthUser,@UploadedFile()file:{buffer:Buffer;originalname:string}|undefined,@Body()body:PrepareDto,@Headers("idempotency-key")key:string){return this.imports.prepare(user,validateImportUpload(file),body.decisions,key);}
   @Get("batches/:key") @Header("Cache-Control","private, no-store")
   get(@CurrentUser()user:AuthUser,@Param("key")key:string){return this.imports.get(user,key);}
   @Post("batches/:key/apply") @HttpCode(200) @Header("Cache-Control","private, no-store") @UseGuards(DictionaryExportThrottle) @Throttle({default:{limit:120,ttl:60000}})

@@ -1,0 +1,18 @@
+import { crc32, deflateRawSync } from "node:zlib";
+export function zipFixture(parts:Record<string,string|Buffer>,declaredSize?:number){
+ const locals:Buffer[]=[],central:Buffer[]=[];let offset=0;
+ for(const [name,raw]of Object.entries(parts)){const value=Buffer.isBuffer(raw)?raw:Buffer.from(raw),data=deflateRawSync(value),filename=Buffer.from(name),sum=crc32(value);const local=Buffer.alloc(30);local.writeUInt32LE(0x04034b50);local.writeUInt16LE(20,4);local.writeUInt16LE(0x800,6);local.writeUInt16LE(8,8);local.writeUInt32LE(sum,14);local.writeUInt32LE(data.length,18);local.writeUInt32LE(declaredSize??value.length,22);local.writeUInt16LE(filename.length,26);locals.push(local,filename,data);
+ const c=Buffer.alloc(46);c.writeUInt32LE(0x02014b50);c.writeUInt16LE(20,4);c.writeUInt16LE(20,6);c.writeUInt16LE(0x800,8);c.writeUInt16LE(8,10);c.writeUInt32LE(sum,16);c.writeUInt32LE(data.length,20);c.writeUInt32LE(declaredSize??value.length,24);c.writeUInt16LE(filename.length,28);c.writeUInt32LE(offset,42);central.push(c,filename);offset+=local.length+filename.length+data.length;}
+ const cd=Buffer.concat(central),end=Buffer.alloc(22);end.writeUInt32LE(0x06054b50);end.writeUInt16LE(Object.keys(parts).length,8);end.writeUInt16LE(Object.keys(parts).length,10);end.writeUInt32LE(cd.length,12);end.writeUInt32LE(offset,16);return Buffer.concat([...locals,cd,end]);
+}
+const escape=(s:string)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+export const column=(i:number)=>{let s='';for(i++;i;i=Math.floor((i-1)/26))s=String.fromCharCode(65+(i-1)%26)+s;return s;};
+export function sheetXml(rows:(string|number|boolean|null)[][]){return '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>'+rows.map((row,r)=>'<row r="'+(r+1)+'">'+row.map((v,c)=>v===null?'':'<c r="'+column(c)+(r+1)+'" t="'+(typeof v==='number'?'n':typeof v==='boolean'?'b':'inlineStr')+'">'+(typeof v==='string'?'<is><t xml:space="preserve">'+escape(v)+'</t></is>':'<v>'+(typeof v==='boolean'?Number(v):v)+'</v>')+'</c>').join('')+'</row>').join('')+'</sheetData></worksheet>';}
+export function workbookParts(rows:(string|number|boolean|null)[][],sheets=1):Record<string,string>{
+ return {'[Content_Types].xml':'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/></Types>',
+ '_rels/.rels':'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="root" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>',
+ 'xl/workbook.xml':'<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>'+Array.from({length:sheets},(_,i)=>'<sheet name="Words'+i+'" sheetId="'+(i+1)+'" r:id="s'+i+'"/>').join('')+'</sheets></workbook>',
+ 'xl/_rels/workbook.xml.rels':'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+Array.from({length:sheets},(_,i)=>'<Relationship Id="s'+i+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet'+(i+1)+'.xml"/>').join('')+'</Relationships>',
+ ...Object.fromEntries(Array.from({length:sheets},(_,i)=>['xl/worksheets/sheet'+(i+1)+'.xml',sheetXml(rows)]))};
+}
+export const xlsxFixture=(rows:(string|number|boolean|null)[][])=>zipFixture(workbookParts(rows));

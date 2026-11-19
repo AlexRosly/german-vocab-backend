@@ -1,3 +1,4 @@
+import { xlsxFixture } from "./support/xlsx-fixture";
 import "reflect-metadata";
 import { INestApplication, UnauthorizedException, ValidationPipe } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
@@ -31,7 +32,7 @@ describe("Read-only dictionary CSV preview HTTP", () => {
   function request(content: string | Uint8Array, actor = "a", name = "file.csv", route = "/preview", field?: string) { const form = new FormData(); form.append("file", new Blob([content as BlobPart]), name); if (field) form.append(field, "ADMIN"); return fetch(url + route, { method: "POST", headers: actor ? { authorization: "Bearer " + actor.repeat(43) } : {}, body: form }); }
   it("authenticates capabilities/uploads, rejects owner/status overrides and does not call persistence", async () => {
     expect((await fetch(url + "/config")).status).toBe(401); expect((await request(csv([baseRow]), "")).status).toBe(401);
-    const config = await fetch(url + "/config", { headers: { authorization: "Bearer " + "a".repeat(43) } }); expect(config.headers.get("cache-control")).toBe("private, no-store"); expect(await config.json()).toMatchObject({ readOnly: true, formats: ["csv"] });
+    const config = await fetch(url + "/config", { headers: { authorization: "Bearer " + "a".repeat(43) } }); expect(config.headers.get("cache-control")).toBe("private, no-store"); expect(await config.json()).toMatchObject({ readOnly: true, formats: ["csv", "xlsx"] });
     expect((await request(csv([baseRow]), "a", "file.csv", "/preview?userId=other")).status).toBe(400);
     expect((await request(csv([baseRow]), "b", "file.csv", "/preview", "publicationStatus")).status).toBe(400);
     expect((await request(csv([{ ...baseRow, role: "ADMIN" }]), "c")).status).toBe(400); expect(db.$transaction).not.toHaveBeenCalled();
@@ -89,4 +90,10 @@ describe("Read-only dictionary CSV preview HTTP", () => {
     const first = await (await request(csv([baseRow]))).json(); const second = await (await request(csv([baseRow]))).json(); expect(second).toEqual(first);
     expect((await request(csv([baseRow]))).status).toBe(200); expect((await request(csv([baseRow]))).status).toBe(429); expect((await request(csv([baseRow]), "b")).status).toBe(200);
   });
+  it("previews Excel through the same duplicate and access checks and rejects extension mismatch", async () => {
+    const bytes=xlsxFixture([["german","word_type","article","grammatical_number","translation_en"],["Haus","noun","das","singular","house"],["Haus","noun","das","singular","house"]]);
+    const response=await request(bytes,"a","words.xlsx");expect(response.status).toBe(200);expect(await response.json()).toMatchObject({readOnly:true,total:2,counts:{existing:1,duplicate:1,new:0,error:0,choice:0}});
+    expect((await request(csv([baseRow]),"a","wrong.xlsx")).status).toBe(400);expect((await request(bytes,"a","wrong.csv")).status).toBe(400);
+  });
+
 });
