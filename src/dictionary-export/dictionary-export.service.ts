@@ -1,3 +1,4 @@
+import { exportHistory, historyPeriod, type HistoryKind } from "./study-history-csv";
 import { importSchemaReady } from "../dictionary-import/import-schema";
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
@@ -21,6 +22,13 @@ const select = (userId: string, lessons: boolean) => ({
 @Injectable()
 export class DictionaryExportService {
   constructor(private readonly prisma: PrismaService) {}
+  history(user: AuthUser, kind: HistoryKind, period: { from?: string; to?: string }) {
+    historyPeriod(period);
+    return this.prisma.$transaction(async tx => {
+      await tx.$executeRawUnsafe("SET TRANSACTION READ ONLY");
+      return exportHistory(tx, user.id, kind, period);
+    }, { isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead, maxWait: 10_000, timeout: 60_000 });
+  }
   export(user: AuthUser): Promise<{ csv: string; wordCount: number }> {
     return this.prisma.$transaction(async tx => {
       await tx.$executeRawUnsafe("SET TRANSACTION READ ONLY");
