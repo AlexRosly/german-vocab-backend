@@ -6,6 +6,9 @@ const {spawnSync}=require('node:child_process'),{randomBytes,createHash}=require
 const {pipeline}=require('node:stream/promises'),{Writable}=require('node:stream');
 const REMOTE='wortkarten-drive-own:WortkartenBackups-own/production';
 const DOCKER_HOST='unix:///var/run/docker.sock';
+// pg_attver compatibility landed in 18.7; a cached floating :18 may still be 18.6.
+const RESTORE_IMAGE='postgres:18.7';
+const MIN_SERVER_VERSION=180007;
 const required=['users','words','word_examples','word_translations','user_words','study_sessions','study_session_words','word_progress','_prisma_migrations'];
 const verifySql=`DO $$ DECLARE name text; BEGIN
   FOREACH name IN ARRAY ARRAY[${required.map(t=>"'"+t+"'").join(',')}] LOOP
@@ -46,7 +49,7 @@ async function runRestore(config,{run=execute,checkOnly=false,notify=()=>{}}={})
   const rclone=(...args)=>call(config.rclone,['--config',config.config,'--contimeout','10s','--timeout','60s','--retries','1','--low-level-retries','1',...args]);
   const json=(text)=>{try{return JSON.parse(text);}catch{throw Error('restore_invalid_'+step);}};
   try{
-    step='python';call('python3',['--version']);step='docker_image';docker('image','inspect','postgres:18');step='remote_configuration';
+    step='python';call('python3',['--version']);step='docker_image';docker('image','inspect',RESTORE_IMAGE);step='remote_configuration';
     if(!rclone('listremotes').split(/\r?\n/).includes('wortkarten-drive-own:'))throw Error('restore_remote_missing');
     if(checkOnly)return {configurationReady:true,downloaded:false,restored:false};
     const base=path.join(config.home,'backups','wortkarten-restore-checks');fs.mkdirSync(base,{recursive:true,mode:0o700});
@@ -80,23 +83,27 @@ async function runRestore(config,{run=execute,checkOnly=false,notify=()=>{}}={})
     const fd=fs.openSync(downloaded.database.file,'r'),magic=Buffer.alloc(5);try{fs.readSync(fd,magic,0,5,0);}finally{fs.closeSync(fd);}if(magic.toString()!=='PGDMP')throw Error('restore_dump_format_invalid');
     step='database_restore';notify(step);nonce=randomBytes(16).toString('hex');container='wortkarten-restore-check-'+nonce;
     const password=randomBytes(32).toString('hex');
-    const id=call('docker',['--host',DOCKER_HOST,'run','--detach','--rm','--name',container,'--label','wortkarten.restore-check='+nonce,'--network','none','--memory','768m','--cpus','1','--pids-limit','128','--env','POSTGRES_DB=wortkarten_restore','--env','POSTGRES_PASSWORD','postgres:18'],{env:{...childEnv,POSTGRES_PASSWORD:password}});
+    const id=call('docker',['--host',DOCKER_HOST,'run','--detach','--rm','--name',container,'--label','wortkarten.restore-check='+nonce,'--network','none','--memory','768m','--cpus','1','--pids-limit','128','--env','POSTGRES_DB=wortkarten_restore','--env','POSTGRES_PASSWORD',RESTORE_IMAGE],{env:{...childEnv,POSTGRES_PASSWORD:password}});
     if(!/^[a-f0-9]{64}$/.test(id))throw Error('restore_container_invalid');
     const own=()=>{if(docker('inspect','--format','{{index .Config.Labels "wortkarten.restore-check"}}',container)!==nonce)throw Error('restore_container_identity_changed');};own();
     let ready=false;
     for(let i=0;i<60;i++){const r=run('docker',['--host',DOCKER_HOST,'exec',container,'pg_isready','-h','127.0.0.1','-U','postgres','-d','wortkarten_restore'],{env:childEnv,timeout:5000});if(!r.error&&r.status===0){ready=true;break;}await new Promise(resolve=>setTimeout(resolve,1000));}
     if(!ready)throw Error('restore_container_not_ready');
-    own();docker('cp',downloaded.database.file,container+':/tmp/database.dump');
+    own();
+    const version=docker('exec',container,'psql','--host','/var/run/postgresql','--username','postgres','--dbname','wortkarten_restore','-X','-qAt','--set','ON_ERROR_STOP=1','--command',"SELECT current_setting('server_version_num')::integer");
+    if(!/^\d+$/.test(version)||Number(version)<MIN_SERVER_VERSION||Number(version)>=190000)throw Error('restore_server_version_incompatible');
+    const serverVersion=Number(version);
+    docker('cp',downloaded.database.file,container+':/tmp/database.dump');
     docker('exec',container,'pg_restore','--host','/var/run/postgresql','--username','postgres','--dbname','wortkarten_restore','--clean','--if-exists','--no-owner','--no-acl','--exit-on-error','--single-transaction','/tmp/database.dump');
     step='verification';notify(step);own();
     const output=docker('exec',container,'psql','--host','/var/run/postgresql','--username','postgres','--dbname','wortkarten_restore','-X','-qAt','--set','ON_ERROR_STOP=1','--command',verifySql);
     const counts=json(output);for(const k of ['words','examples','users','dictionaryEntries','sessions','answers','progress','migrations'])if(!Number.isSafeInteger(counts[k])||counts[k]<0)throw Error('restore_counts_invalid');
     if(!counts.words||!counts.users)throw Error('restore_data_missing');
-    const report={restored:true,completedAt:new Date().toISOString(),backup:source.Name,cloudDownloadVerified:true,sha256:{database:downloaded.database.sha256,project:downloaded.project.sha256},...project,counts};
+    const report={restored:true,restoreImage:RESTORE_IMAGE,serverVersion,completedAt:new Date().toISOString(),backup:source.Name,cloudDownloadVerified:true,sha256:{database:downloaded.database.sha256,project:downloaded.project.sha256},...project,counts};
     own();step='cleanup';docker('rm','--force','--volumes',container);cleaned=true;
     fs.writeFileSync(path.join(directory,'report.json'),JSON.stringify(report,null,2),{mode:0o600});
     return {...report,directory};
-  }catch(error){if(directory)fs.writeFileSync(path.join(directory,'failure.json'),JSON.stringify({restored:false,step,container:container||null,message:'Restore check did not finish; inspect private logs.'}),{mode:0o600});throw Error('Restore check failed at '+step+(directory?'; private directory: '+directory:''));}
+  }catch(error){if(directory)fs.writeFileSync(path.join(directory,'failure.json'),JSON.stringify({restored:false,step,container:container||null,reason:['restore_server_version_incompatible'].includes(error.message)?error.message:'command_or_verification_failed',message:'Restore check did not finish; inspect private logs.'}),{mode:0o600});throw Error('Restore check failed at '+step+(directory?'; private directory: '+directory:'')+(step==='docker_image'?'; install official image: docker pull '+RESTORE_IMAGE:error.message==='restore_server_version_incompatible'?'; PostgreSQL 18.7 or newer 18.x is required':''));}
   finally{
     if(container&&!cleaned){const identity=run('docker',['--host',DOCKER_HOST,'inspect','--format','{{index .Config.Labels "wortkarten.restore-check"}}',container],{env:childEnv});if(identity.status===0&&String(identity.stdout).trim()===nonce)run('docker',['--host',DOCKER_HOST,'rm','--force','--volumes',container],{env:childEnv});}
   }
