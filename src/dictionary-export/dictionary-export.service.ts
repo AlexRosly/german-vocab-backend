@@ -13,7 +13,7 @@ const select = (userId: string, lessons: boolean) => ({
   verbForms: { select: { praeteritum: true, participle2: true, auxiliary: true, reflexive: true, usage: true }, orderBy: { position: "asc" } },
   examples: { select: { id: true, german: true, translation: true, translations: { select: { language: true, text: true }, orderBy: { language: "asc" } } }, orderBy: [{ createdAt: "asc" }, { id: "asc" }] },
   bookSources: { select: { sourceBook: true, lessonNumbers: true }, orderBy: { sourceBook: "asc" } },
-  userWords: { where: { userId }, select: { isFavorite: true, isArchived: true } },
+  userWords: { where: { userId }, select: { isFavorite: true, isArchived: true, isDifficult: true } },
   personalNotes: { where: { userId }, select: { text: true } },
   personalTranslations: { where: { userId }, select: { language: true, text: true }, orderBy: { language: "asc" } },
   personalBooks: { where: { userId }, select: { titles: true, ...(lessons ? { lessons: true } : {}) } },

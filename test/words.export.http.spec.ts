@@ -41,7 +41,7 @@ function project(row: AnyRow, select: AnyRow): AnyRow {
 describe("Private dictionary CSV HTTP (real services, mocked database)", () => {
   let app: INestApplication, base: string, rows: AnyRow[], db: any;
   beforeEach(async () => {
-    rows = [sample()];
+    rows = [sample()]; rows[0].userWords[0].isDifficult=true;
     db = { $queryRaw: jest.fn().mockResolvedValue([{ ready:false }]), $executeRawUnsafe: jest.fn().mockResolvedValue(0), $transaction: jest.fn(),
       word: { count: jest.fn(async ({ where }) => rows.filter(w => matches(w, where)).length), findMany: jest.fn(async ({ where, select, cursor, take }) => rows.filter(w => matches(w, where)).sort((a, b) => a.id.localeCompare(b.id)).filter(w => !cursor || w.id > cursor.id).slice(0, take).map(w => project(w, select))) },
       wordExample: { count: jest.fn(async ({ where }) => rows.filter(w => matches(w, where.word)).reduce((n, w) => n + w.examples.length, 0)) } };
@@ -59,7 +59,7 @@ describe("Private dictionary CSV HTTP (real services, mocked database)", () => {
   it("exports all caller fields and variants with BOM, quoting and private no-store headers", async () => {
     const response = await request(); expect(response.status).toBe(200); expect(response.headers.get("content-type")).toMatch(/^text\/csv/); expect(response.headers.get("cache-control")).toBe("private, no-store"); expect(response.headers.get("x-wortkarten-word-count")).toBe("1"); expect(response.headers.get("content-disposition")).toMatch(/attachment; filename="wortkarten-dictionary-\d{4}-\d{2}-\d{2}\.csv"/);
     const bytes = new Uint8Array(await response.arrayBuffer()); expect([...bytes.slice(0, 3)]).toEqual([239, 187, 191]); const text = new TextDecoder().decode(bytes); const [headers, data] = parse(text), record = Object.fromEntries(headers.map((h, i) => [h, data[i]]));
-    expect(headers).toEqual(EXPORT_COLUMNS); expect(record).toMatchObject({ word_id: "word", word_type: "verb", level: "", praeteritum: "ging", participle_ii: "gegangen", auxiliary: "sein", is_archived: "true", is_favorite: "true", personal_note: "ONLY_A", personal_translation_uk: "йти", translation_de: "", shared_note: rows[0].notes });
+    expect(headers).toEqual(EXPORT_COLUMNS); expect(record).toMatchObject({ word_id: "word", word_type: "verb", level: "", praeteritum: "ging", participle_ii: "gegangen", auxiliary: "sein", is_archived: "true", is_favorite: "true", is_difficult: "true", personal_note: "ONLY_A", personal_translation_uk: "йти", translation_de: "", shared_note: rows[0].notes });
     expect(JSON.parse(record.extra_verb_forms_json)).toHaveLength(1); expect(JSON.parse(record.extra_examples_json)[0].german).toBe("Wir gehen."); expect(JSON.parse(record.source_books_json)[0].lessonNumbers).toEqual([1, 2]); expect(JSON.parse(record.personal_books_json)).toEqual(["My book"]); expect(text).not.toMatch(/PRIVATE_B|AUTH_HASH|passwordHash|accessToken|createdByUserId/);
     expect(db.$executeRawUnsafe).toHaveBeenCalledWith("SET TRANSACTION READ ONLY"); expect(db.$transaction.mock.calls[0][1]).toMatchObject({ isolationLevel: "RepeatableRead" });
   });

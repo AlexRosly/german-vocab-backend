@@ -12,4 +12,6 @@ export class SaveDictionaryEntryDto {
   isFavorite?: boolean;
   @ApiPropertyOptional() @ValidateIf((_object, value) => value !== undefined) @IsBoolean()
   isArchived?: boolean;
+  @ApiPropertyOptional() @ValidateIf((_object, value) => value !== undefined) @IsBoolean()
+  isDifficult?: boolean;
 }

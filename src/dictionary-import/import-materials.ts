@@ -4,7 +4,7 @@ import { CreateWordDto } from "../words/dto/create-word.dto";
 import { TRANSLATION_LANGUAGE_CODES } from "../languages/language-options";
 import { normalizeText, type ImportRow } from "./dictionary-csv-reader";
 export type Lessons = Record<string, number[]>;
-export type SavedImportRow = Omit<ImportRow, "values" | "errors"> & { card: CreateWordDto; sources: { sourceBook: string; lessonNumbers: number[] }[]; personal: { note: string; translations: {language:string;text:string}[]; books: string[]; lessons: Lessons; favorite: boolean|null; archived: boolean|null } };
+export type SavedImportRow = Omit<ImportRow, "values" | "errors"> & { card: CreateWordDto; sources: { sourceBook: string; lessonNumbers: number[] }[]; personal: { note: string; translations: {language:string;text:string}[]; books: string[]; lessons: Lessons; favorite: boolean|null; archived: boolean|null; difficult?: boolean|null } };
 const entries = (v: Record<string,string>, prefix: string) => TRANSLATION_LANGUAGE_CODES.filter(l=>v[prefix+l]).map(language=>({language,text:v[prefix+language].normalize("NFC").trim()}));
 export function lessonMap(value: unknown): Lessons {
   if (!value || typeof value!=="object" || Array.isArray(value)) throw new BadRequestException("dictionary_import_private_books_invalid");
@@ -40,5 +40,5 @@ export function savedRow(row: ImportRow): SavedImportRow {
   const books=privateBooks(personalTitles,personalLessons);
   const {values:_values,errors:_errors,...identity}=row;
   return {...identity,card:plainToInstance(CreateWordDto,{german:row.german,article:row.article,grammaticalNumber:row.number,translations:entries(v,"translation_"),pluralForm:v.plural_form||null,level:v.level||null,sourceBook:v.source_book||null,lessonNumber:v.lesson_number?Number(v.lesson_number):null,notes:v.shared_note||null,examples,...(row.type==="verb"?{isVerb:true,verbForms:forms}:{})}),
-    sources:[...sourceMap].map(([sourceBook,numbers])=>({sourceBook,lessonNumbers:[...numbers].sort((a,b)=>a-b)})),personal:{note:v.personal_note?.normalize("NFC").trim()||"",translations:entries(v,"personal_translation_"),books:books.titles,lessons:books.lessons,favorite:v.is_favorite?v.is_favorite==="true":null,archived:v.is_archived?v.is_archived==="true":null}};
+    sources:[...sourceMap].map(([sourceBook,numbers])=>({sourceBook,lessonNumbers:[...numbers].sort((a,b)=>a-b)})),personal:{note:v.personal_note?.normalize("NFC").trim()||"",translations:entries(v,"personal_translation_"),books:books.titles,lessons:books.lessons,favorite:v.is_favorite?v.is_favorite==="true":null,archived:v.is_archived?v.is_archived==="true":null,difficult:v.is_difficult?v.is_difficult==="true":null}};
 }

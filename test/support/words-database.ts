@@ -127,7 +127,7 @@ export function makeWordsDatabase() {
         }
         for (const example of nestedExamples?.create ?? []) await db.wordExample.create({ data: { wordId: id, ...example } });
         if (nestedLinks) {
-          const link = { id: `link-${++sequence}`, isFavorite: false, isArchived: false, revision: `entry-${sequence}`, wordId: id, createdAt: new Date(), ...nestedLinks.create };
+          const link = { id: `link-${++sequence}`, isFavorite: false, isArchived: false, isDifficult: false, revision: `entry-${sequence}`, wordId: id, createdAt: new Date(), ...nestedLinks.create };
           links.set(link.id, link);
         }
         return project(row, args);
@@ -154,7 +154,7 @@ export function makeWordsDatabase() {
           const existing = [...links.values()].some(row => row.userId === data.userId && row.wordId === data.wordId);
           if (existing && args.skipDuplicates) continue;
           if (existing) throw new Error("Duplicate dictionary entry");
-          const link = { id: `link-${++sequence}`, isFavorite: false, isArchived: false, revision: `entry-${sequence}`, createdAt: new Date(), ...data };
+          const link = { id: `link-${++sequence}`, isFavorite: false, isArchived: false, isDifficult: false, revision: `entry-${sequence}`, createdAt: new Date(), ...data };
           links.set(link.id, link); count++;
         }
         return { count };
@@ -164,7 +164,7 @@ export function makeWordsDatabase() {
       upsert: jest.fn(async (args: { where: Row; create: Row; update: Row }) => {
         const existing = [...links.values()].find((row) => matches(row, args.where.userId_wordId));
         if (existing) return structuredClone(existing);
-        const link = { id: `link-${++sequence}`, isFavorite: false, isArchived: false, revision: `entry-${sequence}`, createdAt: new Date(), ...args.create };
+        const link = { id: `link-${++sequence}`, isFavorite: false, isArchived: false, isDifficult: false, revision: `entry-${sequence}`, createdAt: new Date(), ...args.create };
         links.set(link.id, link);
         return structuredClone(link);
       }),

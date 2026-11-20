@@ -66,7 +66,7 @@ export class DictionaryImportApplyService implements OnModuleInit, OnModuleDestr
     for(const incoming of p.translations){const current=translations.find(t=>t.language===incoming.language);if(current&&current.text!==incoming.text)warnings.push("personal_translation_"+incoming.language);else if(write&&!current)await tx.personalWordTranslation.create({data:{...key,...incoming,revision:randomUUID()}});}
     const merged=privateBooks([...(books?.titles??[]),...p.books],{...Object.fromEntries(Object.entries((books?.lessons??{})as Lessons).map(([title,numbers])=>[title,[...numbers]])),...Object.fromEntries(Object.entries(p.lessons).map(([title,numbers])=>[title,[...(books?.lessons&&Object.hasOwn(books.lessons as Lessons,title)?(books.lessons as Lessons)[title]:[]),...numbers]]))});
     if(write&&JSON.stringify({titles:books?.titles??[],lessons:books?.lessons??{}})!==JSON.stringify(merged))await tx.personalWordBooks.upsert({where:{userId_wordId:key},create:{...key,titles:merged.titles,lessons:json(merged.lessons),revision:randomUUID()},update:{titles:merged.titles,lessons:json(merged.lessons),revision:randomUUID()}});
-    if(entry&&((p.favorite!==null&&entry.isFavorite!==p.favorite)||(p.archived!==null&&entry.isArchived!==p.archived)))warnings.push("dictionary_flags");
+    if(entry&&((p.favorite!==null&&entry.isFavorite!==p.favorite)||(p.archived!==null&&entry.isArchived!==p.archived)||(p.difficult!=null&&entry.isDifficult!==p.difficult)))warnings.push("dictionary_flags");
     return {warnings,entry};
   }
   async prepare(user:AuthUser,buffer:Buffer,rawDecisions:string,key:string){
@@ -131,7 +131,7 @@ export class DictionaryImportApplyService implements OnModuleInit, OnModuleDestr
           }
         }
         const {warnings,entry}=await this.personal(tx,user,word.id,row,true);
-        if(!entry)await tx.userWord.create({data:{userId:user.id,wordId:word.id,isFavorite:row.personal.favorite??false,isArchived:row.personal.archived??false,revision:randomUUID()}});
+        if(!entry)await tx.userWord.create({data:{userId:user.id,wordId:word.id,isFavorite:row.personal.favorite??false,isArchived:row.personal.archived??false,isDifficult:row.personal.difficult??false,revision:randomUUID()}});
         receipts.push({row:row.row,wordId:word.id,outcome:created?"created":entry?"already":"attached",warnings,revision:word.updatedAt.toISOString()});
       }
       const done=end===rows.length;

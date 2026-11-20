@@ -155,6 +155,7 @@ model Word {
 
 model UserWord {
   isFavorite Boolean @default(false)
+  isDifficult Boolean @default(false)
   isArchived Boolean @default(false)
   revision String @default(dbgenerated("(gen_random_uuid())::text")) @db.VarChar(64)
   id        String   @id @default(cuid())

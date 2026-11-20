@@ -73,7 +73,7 @@ export function parseDictionaryCsv(buffer: Buffer): ImportRow[] {
       verbFormCount = forms.length;
       const personal = texts(values, "personal_translation_");
       if (personal.some(t => t.text.trim().length < 1 || t.text.length > 1000) || (values.personal_note?.length ?? 0) > 2000) errors.push("personal_materials");
-      boolean(values.is_archived); boolean(values.is_favorite);
+      boolean(values.is_archived); boolean(values.is_favorite); boolean(values.is_difficult);
       if(values.personal_book_lessons_json) lessonMap(JSON.parse(values.personal_book_lessons_json));
       const books = array(values.personal_books_json, 20);
       if (books.some(b => typeof b !== "string" || !b.trim() || b.length > 120 || /\p{Cc}/u.test(b))) errors.push("personal_books_json");

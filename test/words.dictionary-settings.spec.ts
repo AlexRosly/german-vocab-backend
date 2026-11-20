@@ -32,10 +32,10 @@ describe("Personal dictionary settings HTTP", () => {
   });
   it("isolates flags per user and exposes only the caller's settings in mine",async()=>{
     for(const actor of ["a","b","c"])await link(actor);
-    const a=await state();expect(a).toEqual({wordId:"shared",isFavorite:false,isArchived:false,revision:expect.any(String)});
+    const a=await state();expect(a).toEqual({wordId:"shared",isFavorite:false,isArchived:false,isDifficult:false,revision:expect.any(String)});
     expect((await save(a.revision,{isFavorite:true})).status).toBe(200);
     expect((await state("b")).isFavorite).toBe(false);expect((await state("c")).isFavorite).toBe(false);
-    const mine=await (await request("/mine")).json();expect(mine[0].dictionaryEntry).toEqual({isFavorite:true,isArchived:false,revision:expect.any(String)});
+    const mine=await (await request("/mine")).json();expect(mine[0].dictionaryEntry).toEqual({isFavorite:true,isArchived:false,isDifficult:false,revision:expect.any(String)});
     expect(mine[0]).not.toHaveProperty("userWords");expect(JSON.stringify(mine)).not.toContain('"user-b"');
     for(const path of ["","/shared"])expect(JSON.stringify(await (await request(path)).json())).not.toContain("dictionaryEntry");
   });
@@ -65,5 +65,31 @@ describe("Personal dictionary settings HTTP", () => {
     await link("a","private");const before=await state("a","private");expect((await save(before.revision,{isArchived:true},"a","private")).status).toBe(200);
     expect(fixture.words.get("private")!.publicationStatus).toBe("PENDING_REVIEW");
     await link("b");fixture.words.get("shared")!.publicationStatus="REJECTED";expect((await request(endpoint(),"GET",undefined,"b")).status).toBe(404);
+  });
+
+  it("keeps difficult markers personal, independent and revision-protected without changing the shared card",async()=>{
+    for(const actor of ["a","b","c"])await link(actor);
+    const card=structuredClone(fixture.words.get("shared")),before=await state();
+    const marked=await (await save(before.revision,{isDifficult:true})).json();
+    expect(marked).toMatchObject({isDifficult:true,isFavorite:false,isArchived:false});
+    expect(marked.revision).not.toBe(before.revision);
+    expect((await state("b")).isDifficult).toBe(false);expect((await state("c")).isDifficult).toBe(false);
+    expect((await (await request("/mine")).json())[0].dictionaryEntry.isDifficult).toBe(true);
+    expect(JSON.stringify(await (await request("")).json())).not.toContain("isDifficult");
+    expect((await save(before.revision,{isDifficult:false})).status).toBe(409);
+    const archived=await (await save(marked.revision,{isArchived:true,isFavorite:true})).json();
+    expect(archived).toMatchObject({isDifficult:true,isArchived:true,isFavorite:true});
+    const restored=await (await save(archived.revision,{isArchived:false})).json();
+    expect(restored).toMatchObject({isDifficult:true,isArchived:false,isFavorite:true});
+    const cleared=await (await save(restored.revision,{isDifficult:false})).json();
+    expect(cleared).toMatchObject({isDifficult:false,isArchived:false,isFavorite:true});
+    expect(fixture.words.get("shared")).toEqual(card);
+  });
+  it("rejects invalid difficult flags and owner injection before writes",async()=>{
+    await link();const before=await state();
+    for(const body of [{isDifficult:null},{isDifficult:"false"},{isDifficult:1},{isDifficult:true,userId:userB.id},{isDifficult:true,role:"ADMIN"}]){
+      expect((await request(endpoint(),"PUT",{revision:before.revision,...body})).status).toBe(400);
+    }
+    expect(fixture.db.userWord.updateMany).not.toHaveBeenCalled();
   });
 });
