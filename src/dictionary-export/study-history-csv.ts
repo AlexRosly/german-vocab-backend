@@ -4,8 +4,8 @@ import { csvHeader, csvLine, MAX_EXPORT_BYTES } from "./dictionary-csv";
 import { dictionaryWords } from "../words/word-access.service";
 
 export const HISTORY_COLUMNS = {
-  sessions: ["format_version", "session_id", "started_at_utc", "completed_at_utc", "total_words", "known_count", "needs_review_count"],
-  answers: ["format_version", "session_id", "started_at_utc", "completed_at_utc", "word_id", "german", "article", "answer", "answered_at_utc", "word_available"],
+  sessions: ["format_version", "session_id", "started_at_utc", "completed_at_utc", "total_words", "known_count", "needs_review_count", "mode"],
+  answers: ["format_version", "session_id", "started_at_utc", "completed_at_utc", "word_id", "german", "article", "answer", "answered_at_utc", "word_available", "mode", "next_review_at_utc"],
 };
 export type HistoryKind = keyof typeof HISTORY_COLUMNS;
 export const MAX_HISTORY_ROWS = 50_000;
@@ -23,7 +23,7 @@ export function historyPeriod(period: Period): Prisma.DateTimeFilter | undefined
   return from || to ? { ...(from ? { gte: from } : {}), ...(to ? { lt: new Date(to.getTime() + 86400000) } : {}) } : undefined;
 }
 const tooLarge = () => { throw new PayloadTooLargeException("history_export_too_large"); };
-const sessionSelect = { id: true, startedAt: true, completedAt: true, totalWords: true, knownCount: true, needsReviewCount: true } satisfies Prisma.StudySessionSelect;
+const sessionSelect = { id: true, mode: true, startedAt: true, completedAt: true, totalWords: true, knownCount: true, needsReviewCount: true } satisfies Prisma.StudySessionSelect;
 
 export async function exportHistory(tx: Prisma.TransactionClient, userId: string, kind: HistoryKind, period: Period): Promise<{ csv: string; rowCount: number }> {
   if (kind !== "sessions" && kind !== "answers") throw new BadRequestException("history_export_invalid_kind");
@@ -37,20 +37,20 @@ export async function exportHistory(tx: Prisma.TransactionClient, userId: string
     if (await tx.studySession.count({ where: sessionWhere }) > MAX_HISTORY_ROWS) tooLarge();
     for (;;) {
       const sessions = await tx.studySession.findMany({ where: sessionWhere, select: sessionSelect, orderBy: { id: "asc" }, take: 1000, ...(lastId ? { cursor: { id: lastId }, skip: 1 } : {}) });
-      for (const s of sessions) append({ format_version: 1, session_id: s.id, started_at_utc: s.startedAt.toISOString(), completed_at_utc: s.completedAt.toISOString(), total_words: s.totalWords, known_count: s.knownCount, needs_review_count: s.needsReviewCount });
+      for (const s of sessions) append({ format_version: 1, session_id: s.id, started_at_utc: s.startedAt.toISOString(), completed_at_utc: s.completedAt.toISOString(), total_words: s.totalWords, known_count: s.knownCount, needs_review_count: s.needsReviewCount, mode: s.mode });
       if (sessions.length < 1000) break; lastId = sessions[sessions.length - 1].id;
     }
   } else {
     const where = { session: sessionWhere } satisfies Prisma.StudySessionWordWhereInput;
     if (await tx.studySessionWord.count({ where }) > MAX_HISTORY_ROWS) tooLarge();
     for (;;) {
-      const answers = await tx.studySessionWord.findMany({ where, select: { id: true, wordId: true, answer: true, answeredAt: true, session: { select: sessionSelect } }, orderBy: { id: "asc" }, take: 1000, ...(lastId ? { cursor: { id: lastId }, skip: 1 } : {}) });
+      const answers = await tx.studySessionWord.findMany({ where, select: { id: true, wordId: true, answer: true, answeredAt: true, nextReviewAt: true, session: { select: sessionSelect } }, orderBy: { id: "asc" }, take: 1000, ...(lastId ? { cursor: { id: lastId }, skip: 1 } : {}) });
       // Do not even read the text of another user's now-private card, including for ADMIN.
       const words = answers.length ? await tx.word.findMany({ where: { AND: [dictionaryWords(userId), { id: { in: [...new Set(answers.map(a => a.wordId))] } }] }, select: { id: true, german: true, article: true } }) : [];
       const accessible = new Map(words.map(w => [w.id, w]));
       for (const a of answers) {
         const word = accessible.get(a.wordId), s = a.session;
-        append({ format_version: 1, session_id: s.id, started_at_utc: s.startedAt.toISOString(), completed_at_utc: s.completedAt.toISOString(), word_id: word?.id, german: word?.german, article: word?.article, answer: a.answer, answered_at_utc: a.answeredAt.toISOString(), word_available: !!word });
+        append({ format_version: 1, session_id: s.id, started_at_utc: s.startedAt.toISOString(), completed_at_utc: s.completedAt.toISOString(), word_id: word?.id, german: word?.german, article: word?.article, answer: a.answer, answered_at_utc: a.answeredAt.toISOString(), word_available: !!word, mode: s.mode, next_review_at_utc: a.nextReviewAt?.toISOString() });
       }
       if (answers.length < 1000) break; lastId = answers[answers.length - 1].id;
     }

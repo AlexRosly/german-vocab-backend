@@ -1,9 +1,9 @@
 import { Type } from "class-transformer";
-import { ApiProperty } from "@nestjs/swagger";
-import { StudyAnswer } from "@prisma/client";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { StudyAnswer, StudyMode } from "@prisma/client";
 import {
   ArrayMaxSize, ArrayMinSize, ArrayUnique, IsArray, IsEnum,
-  IsInt, IsString, Matches, Max, MaxLength, Min, MinLength, ValidateNested,
+  IsInt, IsString, Matches, Max, MaxLength, Min, MinLength, ValidateIf, ValidateNested,
 } from "class-validator";
 
 export type StudyAnswerDto = StudyAnswer;
@@ -22,6 +22,11 @@ export class StudySessionWordDto {
 }
 
 export class CreateStudySessionDto {
+  @ApiPropertyOptional({ enum: StudyMode })
+  @ValidateIf((_object, value) => value !== undefined)
+  @IsEnum(StudyMode)
+  mode?: StudyMode;
+
   @ApiProperty({ minimum: 1, maximum: 500 })
   @IsInt()
   @Min(1)

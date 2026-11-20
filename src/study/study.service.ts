@@ -1,7 +1,7 @@
 import {
   BadRequestException, ConflictException, Injectable, NotFoundException,
 } from "@nestjs/common";
-import { Prisma, StudyAnswer } from "@prisma/client";
+import { Prisma, StudyAnswer, StudyMode } from "@prisma/client";
 import { createHash } from "node:crypto";
 import { PrismaService } from "../prisma.service";
 import { dictionaryWords, WORD_INCLUDE } from "../words/word-access.service";
@@ -56,7 +56,7 @@ export class StudyService {
           include: { words: true },
         });
         if (previous) {
-          if (previous.totalWords !== dto.totalWords || answerSignature(previous.words) !== answerSignature(dto.words)) {
+          if ((previous.mode ?? null) !== (dto.mode ?? null) || previous.totalWords !== dto.totalWords || answerSignature(previous.words) !== answerSignature(dto.words)) {
             throw new ConflictException("Этот Idempotency-Key уже использован для другой сессии");
           }
           return this.getSession(tx, userId, sessionId);
@@ -74,22 +74,12 @@ export class StudyService {
 
       const now = new Date();
       const knownCount = dto.words.filter((item) => item.answer === "KNOWN").length;
-      const session = await tx.studySession.create({
-        data: {
-          ...(sessionId ? { id: sessionId } : {}),
-          userId,
-          totalWords: dto.totalWords,
-          knownCount,
-          needsReviewCount: dto.words.length - knownCount,
-          words: { create: dto.words.map((item) => ({ wordId: item.wordId, answer: item.answer })) },
-        },
-      });
-
       const previousProgress = await tx.wordProgress.findMany({
         where: { userId, wordId: { in: wordIds } },
       });
       const progressByWordId = new Map(previousProgress.map((item) => [item.wordId, item]));
 
+      const schedules = new Map<string, { consecutiveKnown: number; currentIntervalDays: number; lastReviewedAt: Date; nextReviewAt: Date }>();
       for (const item of dto.words) {
         const previous = progressByWordId.get(item.wordId);
         const isKnown = item.answer === "KNOWN";
@@ -101,6 +91,23 @@ export class StudyService {
           lastReviewedAt: now,
           nextReviewAt: new Date(now.getTime() + intervalDays * DAY_MS),
         };
+        schedules.set(item.wordId, schedule);
+      }
+      const session = await tx.studySession.create({
+        data: {
+          ...(sessionId ? { id: sessionId } : {}),
+          userId,
+          mode: dto.mode ?? null,
+          totalWords: dto.totalWords,
+          knownCount,
+          needsReviewCount: dto.words.length - knownCount,
+          words: { create: dto.words.map((item) => ({ wordId: item.wordId, answer: item.answer, answeredAt: now, nextReviewAt: schedules.get(item.wordId)!.nextReviewAt })) },
+        },
+      });
+
+      for (const item of dto.words) {
+        const isKnown = item.answer === "KNOWN";
+        const schedule = schedules.get(item.wordId)!;
         await tx.wordProgress.upsert({
           where: { userId_wordId: { userId, wordId: item.wordId } },
           create: {
@@ -162,7 +169,7 @@ export class StudyService {
       ] } : {}) },
       orderBy: [{ startedAt: "desc" }, { id: "desc" }],
       take: limit + 1,
-      select: { id: true, totalWords: true, knownCount: true, needsReviewCount: true, startedAt: true, completedAt: true },
+      select: { id: true, mode: true, totalWords: true, knownCount: true, needsReviewCount: true, startedAt: true, completedAt: true },
     });
     const sessions = rows.slice(0, limit);
     return { sessions, nextCursor: rows.length > limit ? historyCursor(sessions[sessions.length - 1]) : null };
@@ -201,6 +208,7 @@ export class StudyService {
       });
       return {
         totalSessions,
+        historyVersion: 2,
         totalWordsInDictionary: wordCount,
         wordsWithProgress: progressRows.length,
         studiedToday: progressRows.filter((row) => row.lastReviewedAt && row.lastReviewedAt <= now && localDay(formatter, row.lastReviewedAt) === studyDate).length,
@@ -239,6 +247,7 @@ export class StudyService {
     ) {
       throw new BadRequestException("totalWords должен совпадать с количеством ответов от 1 до 500");
     }
+    if (dto.mode !== undefined && !Object.values(StudyMode).includes(dto.mode)) throw new BadRequestException("Некорректный режим тренировки");
     const words: StudySessionWordDto[] = dto.words;
     if (words.some((item) => !item || typeof item.wordId !== "string" || item.wordId.length > 191 || !/^\S+$/u.test(item.wordId))) {
       throw new BadRequestException("Каждое слово должно иметь непустой wordId без пробелов");

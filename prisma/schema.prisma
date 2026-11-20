@@ -203,7 +203,16 @@ model WordExample {
   @@map("word_examples")
 }
 
+enum StudyMode {
+  forward
+  reverse
+  article
+  plural
+  spelling
+}
+
 model StudySession {
+  mode             StudyMode?
   id               String   @id @default(cuid())
   userId           String
   totalWords       Int
@@ -220,6 +229,7 @@ model StudySession {
 }
 
 model StudySessionWord {
+  nextReviewAt DateTime?
   id         String      @id @default(cuid())
   sessionId  String
   wordId     String
