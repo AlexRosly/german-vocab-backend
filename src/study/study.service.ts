@@ -180,7 +180,7 @@ export class StudyService {
     const activeProgress: Prisma.WordProgressWhereInput = { userId, word: personalWords(userId) };
 
     return this.prisma.$transaction(async (tx) => {
-      const preferences = await tx.user.findUnique({ where: { id: userId }, select: { timeZone: true, dailyGoal: true } });
+      const preferences = await tx.user.findUnique({ where: { id: userId }, select: { timeZone: true, dailyGoal: true, newWordsDailyGoal: true } });
       if (!preferences) throw new NotFoundException("Пользователь не найден");
       const timeZone = canonicalTimeZone(preferences.timeZone);
       const formatter = localDayFormatter(timeZone);
@@ -195,6 +195,10 @@ export class StudyService {
         tx.word.count({ where: personalWords(userId) }),
         tx.wordProgress.count({ where: { ...activeProgress, nextReviewAt: { lte: now } } }),
       ]);
+      // First saved answer per user/word, independent of repeats, archives or current filters.
+      const firstAnswers = await tx.studySessionWord.groupBy({
+        by: ["wordId"], where: { session: { userId }, answeredAt: { lte: now } }, _min: { answeredAt: true },
+      });
       return {
         totalSessions,
         totalWordsInDictionary: wordCount,
@@ -202,6 +206,8 @@ export class StudyService {
         studiedToday: progressRows.filter((row) => row.lastReviewedAt && row.lastReviewedAt <= now && localDay(formatter, row.lastReviewedAt) === studyDate).length,
         timeZone,
         dailyGoal: preferences.dailyGoal,
+        newWordsDailyGoal: preferences.newWordsDailyGoal,
+        newWordsStudiedToday: firstAnswers.filter(row => row._min.answeredAt && localDay(formatter, row._min.answeredAt) === studyDate).length,
         studyDate,
         dueCount,
         knownAnswers: progressRows.reduce((sum, row) => sum + row.knownCount, 0),

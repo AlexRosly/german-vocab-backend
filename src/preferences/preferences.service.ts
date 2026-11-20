@@ -5,7 +5,7 @@ import { PrismaService } from "../prisma.service";
 import { canonicalTimeZone, validDailyGoal } from "./study-preferences";
 import { UpdatePreferencesDto } from "./dto/update-preferences.dto";
 
-const PREFERENCES_SELECT = { interfaceLanguage: true, translationLanguage: true, timeZone: true, dailyGoal: true } satisfies Prisma.UserSelect;
+const PREFERENCES_SELECT = { interfaceLanguage: true, translationLanguage: true, timeZone: true, dailyGoal: true, newWordsDailyGoal: true } satisfies Prisma.UserSelect;
 
 @Injectable()
 export class PreferencesService {
@@ -19,7 +19,7 @@ export class PreferencesService {
 
   update(userId: string, dto: UpdatePreferencesDto) {
     if (!dto || typeof dto !== "object") throw new BadRequestException("Укажите настройки");
-    const data: { interfaceLanguage?: string; translationLanguage?: string; timeZone?: string; dailyGoal?: number } = {};
+    const data: { interfaceLanguage?: string; translationLanguage?: string; timeZone?: string; dailyGoal?: number; newWordsDailyGoal?: number } = {};
     if (dto.interfaceLanguage !== undefined) {
       const language = normalizeLanguage(dto.interfaceLanguage);
       if (typeof language !== "string" || !INTERFACE_LANGUAGE_CODES.includes(language)) {
@@ -32,6 +32,10 @@ export class PreferencesService {
     if (dto.dailyGoal !== undefined) {
       if (!validDailyGoal(dto.dailyGoal)) throw new BadRequestException("Ежедневная цель должна быть целым числом от 1 до 500");
       data.dailyGoal = dto.dailyGoal;
+    }
+    if (dto.newWordsDailyGoal !== undefined) {
+      if (!validDailyGoal(dto.newWordsDailyGoal)) throw new BadRequestException("План новых слов должен быть целым числом от 1 до 500");
+      data.newWordsDailyGoal = dto.newWordsDailyGoal;
     }
     if (Object.keys(data).length === 0) throw new BadRequestException("Укажите хотя бы одну настройку");
     return this.prisma.user.update({ where: { id: userId }, data, select: PREFERENCES_SELECT });

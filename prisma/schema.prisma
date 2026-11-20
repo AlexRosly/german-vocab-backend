@@ -59,6 +59,7 @@ model User {
   translationLanguage String    @default("ru")
   timeZone            String    @default("UTC")
   dailyGoal           Int       @default(10)
+  newWordsDailyGoal   Int       @default(10)
   role                UserRole  @default(USER)
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt

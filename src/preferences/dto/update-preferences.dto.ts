@@ -17,6 +17,11 @@ export class UpdatePreferencesDto {
   @Max(500)
   dailyGoal?: number;
 
+  @ApiPropertyOptional({ default: 10, minimum: 1, maximum: 500 })
+  @ValidateIf((_object, value) => value !== undefined)
+  @IsInt() @Min(1) @Max(500)
+  newWordsDailyGoal?: number;
+
   @ApiPropertyOptional({ enum: INTERFACE_LANGUAGE_CODES })
   @Transform(({ value }: { value: unknown }) => normalizeLanguage(value))
   @ValidateIf((_object, value) => value !== undefined)

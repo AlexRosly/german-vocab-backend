@@ -118,10 +118,20 @@ export function makeStudyDatabase() {
 
   const db = {
     personalWordTranslation: personalTranslationsModel(privateTranslations, matches),
-    user: { findUnique: jest.fn(async (_args: unknown) => ({ timeZone: "UTC", dailyGoal: 10 })) },
+    user: { findUnique: jest.fn(async (_args: unknown) => ({ timeZone: "UTC", dailyGoal: 10, newWordsDailyGoal: 10 })) },
     word: {
       findMany: jest.fn(async (args: Args = {}) => ordered([...words.values()].filter((row) => matches(row, args.where)), args.orderBy).map((row) => projectWord(row, args))),
       count: jest.fn(async (args: Args = {}) => [...words.values()].filter((row) => matches(row, args.where)).length),
+    },
+    studySessionWord: {
+      groupBy: jest.fn(async (args: { where: { session: { userId: string }; answeredAt: { lte: Date } } }) => {
+        const first = new Map<string, Date>();
+        for (const row of answers.values()) {
+          if (sessions.get(row.sessionId)?.userId !== args.where.session.userId || row.answeredAt > args.where.answeredAt.lte) continue;
+          if (!first.has(row.wordId) || first.get(row.wordId)! > row.answeredAt) first.set(row.wordId, row.answeredAt);
+        }
+        return [...first].map(([wordId, answeredAt]) => ({ wordId, _min: { answeredAt } }));
+      }),
     },
     studySession: {
       findMany: jest.fn(async (args: Args = {}) => ordered([...sessions.values()].filter((row) => matches(row, args.where)), args.orderBy).slice(0, args.take).map((row) => projectSession(row, args))),

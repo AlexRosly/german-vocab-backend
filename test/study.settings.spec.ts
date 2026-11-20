@@ -27,7 +27,7 @@ describe("Calendar days and personal daily goals", () => {
   it("counts each active personal word once in the chosen local day without changing SRS", async () => {
     jest.useFakeTimers({ now: new Date("2026-11-01T23:30:00Z") });
     const fixture = makeStudyDatabase();
-    fixture.db.user.findUnique.mockResolvedValue({ timeZone: "Europe/Berlin", dailyGoal: 2 });
+    fixture.db.user.findUnique.mockResolvedValue({ timeZone: "Europe/Berlin", dailyGoal: 2, newWordsDailyGoal: 10 });
     const study = new StudyService(fixture.db as unknown as PrismaService);
     for (const word of ["today", "yesterday", "removed", "private", "other", "future"]) fixture.seedWord(word);
     for (const word of ["today", "yesterday", "private", "future"]) fixture.link("a", word);
@@ -39,7 +39,7 @@ describe("Calendar days and personal daily goals", () => {
     fixture.seedProgress("b", "other", { lastReviewedAt: new Date("2026-11-01T23:00:00Z") });
     const before = structuredClone([...fixture.progress]);
     expect(await study.getProgress("a")).toMatchObject({ timeZone: "Europe/Berlin", dailyGoal: 2, studyDate: "2026-11-02", studiedToday: 1 });
-    fixture.db.user.findUnique.mockResolvedValue({ timeZone: "UTC", dailyGoal: 10 });
+    fixture.db.user.findUnique.mockResolvedValue({ timeZone: "UTC", dailyGoal: 10, newWordsDailyGoal: 10 });
     expect(await study.getProgress("a")).toMatchObject({ studyDate: "2026-11-01", studiedToday: 2 });
     expect([...fixture.progress]).toEqual(before);
     expect(fixture.db.wordProgress.upsert).not.toHaveBeenCalled();
