@@ -3,6 +3,8 @@ import { ApiBearerAuth, ApiHeader, ApiTags } from "@nestjs/swagger";
 import { AuthGuard } from "../auth/auth.guard";
 import { AuthUser } from "../auth/auth.service";
 import { CurrentUser } from "../auth/current-user.decorator";
+import { StudyStatisticsService } from "./study-statistics.service";
+import { StudyStatisticsQueryDto } from "./dto/study-statistics-query.dto";
 import { StudyService } from "./study.service";
 import { CreateStudySessionDto } from "./dto/create-study-session.dto";
 import { StudyHistoryQueryDto } from "./dto/study-history-query.dto";
@@ -13,7 +15,7 @@ import { PersonalTranslationsService } from "../words/personal-translations.serv
 @UseGuards(AuthGuard)
 @Controller("study")
 export class StudyController {
-  constructor(private readonly studyService: StudyService, private readonly personalTranslations: PersonalTranslationsService) {}
+  constructor(private readonly studyService: StudyService, private readonly personalTranslations: PersonalTranslationsService, private readonly statistics: StudyStatisticsService) {}
 
   @Post("sessions")
   @Header("Cache-Control", "no-store")
@@ -43,6 +45,12 @@ export class StudyController {
   @Header("Cache-Control", "no-store")
   async getHistorySession(@CurrentUser() user: AuthUser, @Param("id") id: string) {
     return this.presentSession(await this.studyService.getHistorySession(user.id, id), user);
+  }
+
+  @Get("statistics")
+  @Header("Cache-Control", "no-store")
+  getStatistics(@CurrentUser() user: AuthUser, @Query() query: StudyStatisticsQueryDto) {
+    return this.statistics.get(user.id, query.days);
   }
 
   @Get("progress")
