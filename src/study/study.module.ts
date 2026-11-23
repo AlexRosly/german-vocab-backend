@@ -1,3 +1,4 @@
+import { StudyBookStatisticsService } from "./study-book-statistics.service";
 import { PersonalTranslationsService } from "../words/personal-translations.service";
 import { WordAccessService } from "../words/word-access.service";
 import { Module } from "@nestjs/common";
@@ -10,6 +11,6 @@ import { StudyService } from "./study.service";
 @Module({
   imports: [AuthModule],
   controllers: [StudyController],
-  providers: [StudyStatisticsService, StudyService, PrismaService, PersonalTranslationsService, WordAccessService],
+  providers: [StudyBookStatisticsService, StudyStatisticsService, StudyService, PrismaService, PersonalTranslationsService, WordAccessService],
 })
 export class StudyModule {}
