@@ -4,7 +4,8 @@ const fs=require('node:fs'),path=require('node:path');
 const {createHash}=require('node:crypto'),{spawnSync}=require('node:child_process');
 const repo=path.resolve(__dirname,'..');
 const legacyTables=['users','accounts','auth_sessions','google_auth_challenges','words','word_verb_forms','word_collocations','word_collocation_translations','word_source_books','word_translations','word_examples','word_example_translations','user_words','study_sessions','study_session_words','word_progress','personal_word_notes','personal_word_translations','personal_word_books','word_relations','word_corrections','_prisma_migrations'];
-const tables=[...legacyTables,'dictionary_import_batches','word_lexeme_guards'];
+const priorTables=[...legacyTables,'dictionary_import_batches','word_lexeme_guards'];
+const tables=[...priorTables,'personal_example_translations'];
 const hash=value=>createHash('sha256').update(value).digest('hex');
 function canonical(value){return Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(k=>[k,canonical(value[k])])):value}
 const tableHash=rows=>hash(rows.map(row=>JSON.stringify(canonical(row))).sort().join('\n'));
@@ -40,7 +41,7 @@ async function main(argv=process.argv.slice(2)){
  try{snapshot=await prisma.$transaction(async tx=>{
   await tx.$executeRawUnsafe('SET TRANSACTION READ ONLY');
   const found=await tx.$queryRaw`SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY tablename`;
-  if(![legacyTables,tables].some(list=>JSON.stringify(found.map(r=>r.tablename).sort())===JSON.stringify([...list].sort())))throw new Error('Public table list differs from this application schema; inspect before backup');
+  if(![legacyTables,priorTables,tables].some(list=>JSON.stringify(found.map(r=>r.tablename).sort())===JSON.stringify([...list].sort())))throw new Error('Public table list differs from this application schema; inspect before backup');
   const data={};for(const table of found.map(r=>r.tablename)){const rows=await tx.$queryRawUnsafe(`SELECT to_jsonb(t) AS row FROM public.${ident(table)} t`);data[table]=rows.map(r=>r.row)}
   const checks=await tx.$queryRaw`SELECT t.relname AS table_name,c.conname AS name,pg_get_constraintdef(c.oid,true) AS definition FROM pg_constraint c JOIN pg_class t ON t.oid=c.conrelid JOIN pg_namespace n ON n.oid=t.relnamespace WHERE n.nspname='public' AND c.contype='c' ORDER BY t.relname,c.conname`;
   const columns=await tx.$queryRaw`SELECT table_name,column_name,ordinal_position,data_type,udt_name,is_nullable,column_default FROM information_schema.columns WHERE table_schema='public' ORDER BY table_name,ordinal_position`;

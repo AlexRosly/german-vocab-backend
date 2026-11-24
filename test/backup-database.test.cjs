@@ -27,3 +27,13 @@ test('private output inside a different Git checkout is refused too',()=>{
  try{assert.match(run(['--expect-host','backup-test.invalid','--directory',path.join(other,'private-backup')]),/outside the Git checkout/)}
  finally{fs.unlinkSync(marker);fs.rmdirSync(other)}
 });
+
+
+test('private example translations are included in data backup and restore SQL',()=>{
+ const {tables,sqlBackup}=require('../scripts/backup-database.cjs');
+ assert.equal(tables.filter(t=>t==='personal_example_translations').length,1);
+ const row={userId:'synthetic-user',exampleId:'synthetic-example',language:'ru',text:'Private example text',sourceGerman:'Ich lerne.',revision:'test'};
+ const sql=sqlBackup({data:{personal_example_translations:[row]},checks:[]},'-- Synthetic schema');
+ assert.ok(sql.includes('INSERT INTO "public"."personal_example_translations"'));
+ assert.ok(sql.includes('Private example text'));
+});
