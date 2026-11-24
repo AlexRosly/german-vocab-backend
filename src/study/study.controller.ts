@@ -1,3 +1,4 @@
+import { StudyDifficultStatisticsService } from "./study-difficult-statistics.service";
 import { StudyBookStatisticsService } from "./study-book-statistics.service";
 import { StudyBookStatisticsQueryDto } from "./dto/study-book-statistics-query.dto";
 import { Body, Controller, Get, Header, Headers, Param, Post, Query, UseGuards } from "@nestjs/common";
@@ -17,7 +18,7 @@ import { PersonalTranslationsService } from "../words/personal-translations.serv
 @UseGuards(AuthGuard)
 @Controller("study")
 export class StudyController {
-  constructor(private readonly studyService: StudyService, private readonly personalTranslations: PersonalTranslationsService, private readonly statistics: StudyStatisticsService, private readonly bookStatistics: StudyBookStatisticsService) {}
+  constructor(private readonly studyService: StudyService, private readonly personalTranslations: PersonalTranslationsService, private readonly statistics: StudyStatisticsService, private readonly bookStatistics: StudyBookStatisticsService, private readonly difficultStatistics: StudyDifficultStatisticsService) {}
 
   @Post("sessions")
   @Header("Cache-Control", "no-store")
@@ -47,6 +48,12 @@ export class StudyController {
   @Header("Cache-Control", "no-store")
   async getHistorySession(@CurrentUser() user: AuthUser, @Param("id") id: string) {
     return this.presentSession(await this.studyService.getHistorySession(user.id, id), user);
+  }
+
+  @Get("statistics/difficult")
+  @Header("Cache-Control", "no-store")
+  getDifficultStatistics(@CurrentUser() user: AuthUser, @Query() query: StudyStatisticsQueryDto) {
+    return this.difficultStatistics.get(user.id, query.days);
   }
 
   @Get("statistics/books")
