@@ -1,3 +1,4 @@
+import { presentPersonalExamples } from "./personal-example-translations.service";
 import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma.service";
@@ -47,7 +48,7 @@ export class PersonalTranslationsService {
     });
   }
   // One batched read, scoped to the caller, requested locale and current dictionary visibility.
-  async present<T extends { id: string; translations: readonly { language: string; text: string }[] }>(user: AuthUser, words: readonly T[]) {
+  async present<T extends { id: string; translations: readonly { language: string; text: string }[]; examples?: readonly { id: string; wordId: string; german: string; translations: readonly { language: string; text: string }[] }[] }>(user: AuthUser, words: readonly T[]) {
     if (!words.length) return [];
     const rows = await this.prisma.personalWordTranslation.findMany({
       where: { userId: user.id, language: user.translationLanguage, wordId: { in: [...new Set(words.map(word => word.id))] },
@@ -55,7 +56,7 @@ export class PersonalTranslationsService {
       select: { wordId: true, text: true },
     });
     const translations = new Map(rows.map(row => [row.wordId, row.text]));
-    return words.map(word => {
+    return (await presentPersonalExamples(this.prisma, user, words)).map(word => {
       const common = presentWord(word, user.translationLanguage);
       const personal = translations.get(word.id);
       return personal === undefined ? common : { ...common, selectedTranslation: { language: user.translationLanguage, text: personal, source: "personal" as const } };

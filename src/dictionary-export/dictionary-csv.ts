@@ -7,7 +7,7 @@ const languages = TRANSLATION_LANGUAGE_CODES;
 export const EXPORT_COLUMNS = ["format_version", "word_id", "german", "word_type", "article", "grammatical_number", "plural_form", "level", "source_book", "lesson_number",
   "praeteritum", "participle_ii", "auxiliary", "reflexive", "verb_usage", ...languages.map(l => "translation_" + l),
   "example_id", "example_german", ...languages.map(l => "example_translation_" + l), "shared_note", "personal_note", "is_favorite", "is_archived", "is_difficult",
-  ...languages.map(l => "personal_translation_" + l), "source_books_json", "personal_books_json", "extra_examples_json", "extra_verb_forms_json", "personal_book_lessons_json"];
+  ...languages.map(l => "personal_translation_" + l), "source_books_json", "personal_books_json", "extra_examples_json", "extra_verb_forms_json", "personal_book_lessons_json", "personal_example_translations_json"];
 export const TEMPLATE_COLUMNS = ["german", "word_type", "article", "grammatical_number", "plural_form", "level", "source_book", "lesson_number",
   "translation_ru", "translation_en", "translation_uk", "example_german", "example_translation_ru", "example_translation_en", "example_translation_uk",
   "praeteritum", "participle_ii", "auxiliary", "reflexive", "personal_note"];
@@ -16,7 +16,7 @@ export type CsvWord = {
   id: string; german: string; article: string; grammaticalNumber: string; pluralForm: string | null; level: string | null;
   sourceBook: string | null; lessonNumber: number | null; notes: string | null; translation: string;
   translations: Translation[]; verbForms: { praeteritum: string; participle2: string; auxiliary: string; reflexive: boolean; usage: string | null }[];
-  examples: { id: string; german: string; translation: string; translations: Translation[] }[];
+  examples: { id: string; german: string; translation: string; translations: Translation[]; personalTranslations?: (Translation & {sourceGerman:string})[] }[];
   bookSources: { sourceBook: string; lessonNumbers: number[] }[];
   userWords: { isFavorite: boolean; isArchived: boolean; isDifficult?: boolean }[];
   personalNotes: { text: string }[]; personalTranslations: Translation[]; personalBooks: { titles: string[]; lessons?: unknown }[];
@@ -49,6 +49,7 @@ export function wordRow(word: CsvWord): CsvRow {
     personal_note: word.personalNotes[0]?.text, is_favorite: entry.isFavorite, is_archived: entry.isArchived, is_difficult: entry.isDifficult ?? false,
     source_books_json: JSON.stringify(word.bookSources), personal_books_json: JSON.stringify(word.personalBooks[0]?.titles ?? []), personal_book_lessons_json: JSON.stringify(word.personalBooks[0]?.lessons ?? {}),
     extra_examples_json: JSON.stringify(word.examples.slice(1).map(e => ({ id: e.id, german: e.german, translations: Object.entries(translations(e.translations, e.translation)).map(([language, text]) => ({ language, text })) }))),
+    personal_example_translations_json: JSON.stringify(word.examples.flatMap(e => (e.personalTranslations ?? []).map(p => ({ exampleId:e.id, german:p.sourceGerman, language:p.language, text:p.text })))),
     extra_verb_forms_json: JSON.stringify(word.verbForms.slice(1).map(f => ({ praeteritum: f.praeteritum, participle2: f.participle2, auxiliary: f.auxiliary, reflexive: f.reflexive, usage: f.usage }))),
   };
   for (const language of languages) { row["translation_" + language] = shared[language]; row["personal_translation_" + language] = personal[language]; row["example_translation_" + language] = exampleTexts[language]; }

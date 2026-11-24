@@ -1,3 +1,4 @@
+import { presentPersonalExamples } from "./personal-example-translations.service";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { AuthUser } from "../auth/auth.service";
 import { presentWord } from "../languages/word-presentation";
@@ -14,7 +15,7 @@ export class WordExamplesService {
     return this.access.transaction(async (tx) => {
       await this.access.requireReadable(user, wordId, tx);
       const examples = await tx.wordExample.findMany({ where: { wordId }, include: { translations: true }, orderBy: { createdAt: "asc" } });
-      return examples.map((example) => presentWord(example, user.translationLanguage));
+      return (await presentPersonalExamples(tx, user, [{ id: wordId, examples }]))[0].examples!;
     });
   }
 

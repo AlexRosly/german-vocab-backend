@@ -1,3 +1,5 @@
+import { importPersonalExampleTranslations } from "./personal-example-import";
+import { personalExamplesReady } from "../words/personal-example-translations.service";
 import { parseDictionaryFile } from "./dictionary-file-reader";
 import { BadRequestException, ConflictException, Injectable, NotFoundException, ServiceUnavailableException, OnModuleInit, OnModuleDestroy, HttpException } from "@nestjs/common";
 import { Prisma, DictionaryImportBatch, PersonalWordNote, PersonalWordTranslation, PersonalWordBooks, UserWord } from "@prisma/client";
@@ -67,12 +69,14 @@ export class DictionaryImportApplyService implements OnModuleInit, OnModuleDestr
     const merged=privateBooks([...(books?.titles??[]),...p.books],{...Object.fromEntries(Object.entries((books?.lessons??{})as Lessons).map(([title,numbers])=>[title,[...numbers]])),...Object.fromEntries(Object.entries(p.lessons).map(([title,numbers])=>[title,[...(books?.lessons&&Object.hasOwn(books.lessons as Lessons,title)?(books.lessons as Lessons)[title]:[]),...numbers]]))});
     if(write&&JSON.stringify({titles:books?.titles??[],lessons:books?.lessons??{}})!==JSON.stringify(merged))await tx.personalWordBooks.upsert({where:{userId_wordId:key},create:{...key,titles:merged.titles,lessons:json(merged.lessons),revision:randomUUID()},update:{titles:merged.titles,lessons:json(merged.lessons),revision:randomUUID()}});
     if(entry&&((p.favorite!==null&&entry.isFavorite!==p.favorite)||(p.archived!==null&&entry.isArchived!==p.archived)||(p.difficult!=null&&entry.isDifficult!==p.difficult)))warnings.push("dictionary_flags");
+    warnings.push(...await importPersonalExampleTranslations(tx,user.id,wordId,p.exampleTranslations??[],write));
     return {warnings,entry};
   }
   async prepare(user:AuthUser,buffer:Buffer,rawDecisions:string,key:string){
     await this.requireReady();key=uuid(key);const parsed=await parseDictionaryFile(buffer),decisions=this.decisions(rawDecisions,parsed.length);
     const requestHash=createHash("sha256").update(buffer).update(JSON.stringify(decisions)).digest("hex");
     const rows=parsed.map((row,i)=>decisions[i].action==="skip"?null:savedRow(row));
+    if(rows.some(row=>row?.personal.exampleTranslations?.length)&&!await personalExamplesReady(this.prisma))throw new ServiceUnavailableException("Личные переводы примеров пока недоступны");
     if(Buffer.byteLength(JSON.stringify(rows))>MAX_IMPORT_BYTES)throw new BadRequestException("dictionary_import_too_large");
     return this.transaction(async tx=>{
       const previous=await tx.dictionaryImportBatch.findUnique({where:{userId_key:{userId:user.id,key}}});

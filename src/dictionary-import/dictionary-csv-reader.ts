@@ -1,3 +1,4 @@
+import { parsePersonalExampleTranslations } from "./personal-example-import";
 import { lessonMap } from "./import-materials";
 import { BadRequestException, PayloadTooLargeException } from "@nestjs/common";
 import { parse } from "csv-parse/sync";
@@ -71,6 +72,7 @@ export function parseDictionaryCsv(buffer: Buffer): ImportRow[] {
       for (const error of validateSync(dto, { whitelist: true, forbidNonWhitelisted: true })) errors.push(error.property);
       if (!errors.length) verbData(dto, dto, [], true);
       verbFormCount = forms.length;
+      parsePersonalExampleTranslations(values.personal_example_translations_json);
       const personal = texts(values, "personal_translation_");
       if (personal.some(t => t.text.trim().length < 1 || t.text.length > 1000) || (values.personal_note?.length ?? 0) > 2000) errors.push("personal_materials");
       boolean(values.is_archived); boolean(values.is_favorite); boolean(values.is_difficult);
