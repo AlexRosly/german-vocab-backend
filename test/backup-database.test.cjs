@@ -37,3 +37,10 @@ test('private example translations are included in data backup and restore SQL',
  assert.ok(sql.includes('INSERT INTO "public"."personal_example_translations"'));
  assert.ok(sql.includes('Private example text'));
 });
+
+test('personal tags and dictionary settings survive database SQL backup',()=>{
+ const {tables,sqlBackup}=require('../scripts/backup-database.cjs');
+ for(const name of ['personal_word_tags','personal_dictionary_settings'])assert.equal(tables.filter(t=>t===name).length,1);
+ const sql=sqlBackup({data:{personal_word_tags:[{userId:'synthetic-user',wordId:'synthetic-word',titles:['Exam'],revision:'test'}],personal_dictionary_settings:[{userId:'synthetic-user',lessonNames:[{book:'Book',lessonNumber:2,name:'Work'}],neutralColor:'#123456',revision:'test'}]},checks:[]},'-- Synthetic schema');
+ assert(sql.includes('INSERT INTO "public"."personal_word_tags"'));assert(sql.includes('INSERT INTO "public"."personal_dictionary_settings"'));assert(sql.includes('Exam'));assert(sql.includes('#123456'));
+});

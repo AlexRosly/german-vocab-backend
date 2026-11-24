@@ -74,7 +74,9 @@ model User {
   personalNotes PersonalWordNote[]
   personalTranslations PersonalWordTranslation[]
   personalExampleTranslations PersonalExampleTranslation[]
+  dictionarySettings PersonalDictionarySettings?
   personalBooks PersonalWordBooks[]
+  personalTags PersonalWordTags[]
   corrections WordCorrection[] @relation("CorrectionReporter")
   reviewedCorrections WordCorrection[] @relation("CorrectionReviewer")
   createdWords Word[]         @relation("WordCreator")
@@ -144,6 +146,7 @@ model Word {
   personalNotes PersonalWordNote[]
   personalTranslations PersonalWordTranslation[]
   personalBooks PersonalWordBooks[]
+  personalTags PersonalWordTags[]
   corrections WordCorrection[]
   relationsFrom WordRelation[] @relation("RelationLeft")
   relationsTo WordRelation[] @relation("RelationRight")
@@ -498,4 +501,30 @@ model PersonalExampleTranslation {
   @@id([userId, exampleId, language])
   @@index([exampleId])
   @@map("personal_example_translations")
+}
+
+
+model PersonalWordTags {
+  userId String
+  wordId String
+  titles String[]
+  revision String @default(cuid()) @db.VarChar(64)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  word Word @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  @@id([userId, wordId])
+  @@index([wordId])
+  @@map("personal_word_tags")
+}
+
+model PersonalDictionarySettings {
+  userId String @id
+  lessonNames Json @default(dbgenerated("'[]'::jsonb"))
+  neutralColor String? @db.VarChar(7)
+  revision String @default(cuid()) @db.VarChar(64)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@map("personal_dictionary_settings")
 }

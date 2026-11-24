@@ -1,3 +1,4 @@
+import { parseOrganizationMaterials } from "./organization-import";
 import { parsePersonalExampleTranslations } from "./personal-example-import";
 import { lessonMap } from "./import-materials";
 import { BadRequestException, PayloadTooLargeException } from "@nestjs/common";
@@ -51,7 +52,7 @@ export function parseDictionaryCsv(buffer: Buffer): ImportRow[] {
     if (Object.values(values).some(v => v.length > 64 * 1024)) errors.push("cell_too_long");
     if (!/^[^\p{Cc}]+$/u.test(german)) errors.push("german");
     if (values.word_id && !/^[A-Za-z0-9._-]{1,191}$/.test(values.word_id)) errors.push("word_id");
-    if (!["noun", "verb", "other"].includes(type) || (type === "noun" ? article === "none" || number === "not_applicable" : article !== "none" || number !== "not_applicable")) errors.push("word_type");
+    if (!["noun", "verb", "other"].includes(type) || (type === "noun" ? article === "none" || number === "not_applicable" : article !== "none" || (type === "verb" && number !== "not_applicable"))) errors.push("word_type");
     try {
       const extras = array(values.extra_examples_json, 19).map(e => {
         if (!allowedKeys(e, ["id", "german", "translations"]) || (e.id !== undefined && (typeof e.id !== "string" || !/^[A-Za-z0-9._-]{1,191}$/.test(e.id)))) throw Error();
@@ -72,6 +73,7 @@ export function parseDictionaryCsv(buffer: Buffer): ImportRow[] {
       for (const error of validateSync(dto, { whitelist: true, forbidNonWhitelisted: true })) errors.push(error.property);
       if (!errors.length) verbData(dto, dto, [], true);
       verbFormCount = forms.length;
+      parseOrganizationMaterials(values.personal_tags_json,values.personal_lesson_names_json);
       parsePersonalExampleTranslations(values.personal_example_translations_json);
       const personal = texts(values, "personal_translation_");
       if (personal.some(t => t.text.trim().length < 1 || t.text.length > 1000) || (values.personal_note?.length ?? 0) > 2000) errors.push("personal_materials");

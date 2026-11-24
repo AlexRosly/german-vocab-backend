@@ -1,3 +1,4 @@
+import { organizationReady, normalizedLessonNames, namesForWord } from "./organization-data";
 import { guardWordSpellings, importSchemaReady } from "../dictionary-import/import-schema";
 import { isNoun } from "./collocations.service";
 import { verbData } from "./verb-data";
@@ -53,8 +54,12 @@ export class WordsService {
     const titles = new Map(books.map(book => [book.wordId, book.titles]));
     const lessons = words.length && await importSchemaReady(this.prisma) ? await this.prisma.personalWordBooks.findMany({ where:{ userId:user.id,wordId:{in:words.map(w=>w.id)} },select:{wordId:true,lessons:true} }) : [];
     const lessonMap = new Map(lessons.map(row=>[row.wordId,row.lessons]));
+    const organizationEnabled = words.length > 0 && await organizationReady(this.prisma);
+    const tagRows = organizationEnabled ? await this.prisma.personalWordTags.findMany({where:{userId:user.id,wordId:{in:words.map(w=>w.id)}},select:{wordId:true,titles:true}}) : [];
+    const settings = organizationEnabled ? await this.prisma.personalDictionarySettings.findUnique({where:{userId:user.id},select:{lessonNames:true,neutralColor:true}}) : null;
+    const tagsByWord = new Map(tagRows.map(row=>[row.wordId,row.titles])), names = normalizedLessonNames(settings?.lessonNames??[]);
     // Expose only the caller's settings, never the underlying users' link rows.
-    return words.flatMap(({ userWords, ...word }) => userWords[0] ? [{ ...word, dictionaryEntry: userWords[0], personalBooks: titles.get(word.id) ?? [], personalBookLessons: lessonMap.get(word.id) ?? {} }] : []);
+    return words.flatMap(({ userWords, ...word }) => userWords[0] ? [{ ...word, dictionaryEntry: userWords[0], personalBooks: titles.get(word.id) ?? [], personalBookLessons: lessonMap.get(word.id) ?? {}, organizationEnabled, personalTags:tagsByWord.get(word.id)??[], personalLessonNames:namesForWord({...word,personalBooks:titles.get(word.id)??[],personalBookLessons:lessonMap.get(word.id)??{}},names), neutralCardColor:settings?.neutralColor??null }] : []);
   }
 
   private async ownEntry(tx: Prisma.TransactionClient, user: AuthUser, wordId: string) {
