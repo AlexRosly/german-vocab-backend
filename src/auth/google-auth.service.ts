@@ -5,7 +5,7 @@ import { isEmail } from "class-validator";
 import { PrismaService } from "../prisma.service";
 
 export type GoogleIdentity = { subject: string; email: string; authoritativeEmail: boolean };
-export type GooglePurpose = "login" | "link";
+export type GooglePurpose = "login" | "link" | "archive" | "restore";
 export const GOOGLE_NONCE_COOKIE = "wortkarten_google_nonce";
 export const GOOGLE_CHALLENGE_TTL = 10 * 60 * 1000;
 const digest = (value: string) => createHash("sha256").update(value).digest("hex");

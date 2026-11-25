@@ -1,3 +1,4 @@
+import { setAuditActor } from "../audit/audit-context";
 import { guardWordSpellings, transactionConflict } from "../dictionary-import/import-schema";
 import { ConflictException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma, WordPublicationStatus } from "@prisma/client";
@@ -110,7 +111,7 @@ export class ModerationService {
   private async writeTransaction<T>(work: (tx: Prisma.TransactionClient) => Promise<T>): Promise<T> {
     for (let attempt = 0; attempt < 3; attempt += 1) {
       try {
-        return await this.prisma.$transaction(work, {
+        return await this.prisma.$transaction(async tx => { await setAuditActor(tx); return work(tx); }, {
           isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
           maxWait: 10_000,
           timeout: 20_000,

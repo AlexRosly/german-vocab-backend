@@ -23,6 +23,9 @@ const USER_SELECT = {
   role: true,
 } satisfies Prisma.UserSelect;
 
+const AUTH_SELECT = { ...USER_SELECT, archivedAt: true } satisfies Prisma.UserSelect;
+const visibleUser = (user: AuthUser & { archivedAt?: Date | null }): AuthUser => { const { archivedAt: _archived, ...value } = user; return value; };
+
 export type AuthUser = Prisma.UserGetPayload<{ select: typeof USER_SELECT }>;
 export interface AuthContext {
   user: AuthUser;
@@ -96,26 +99,19 @@ export class AuthService {
     }
   }
 
-  async login(dto: CredentialsDto): Promise<AuthResult> {
+  async login(dto: CredentialsDto, restore = false): Promise<AuthResult> {
     this.checkPasswordLength(dto.password);
     const email = dto.email.trim().toLowerCase();
-    const account = await this.prisma.account.findUnique({
-      where: { provider_providerAccountId: { provider: "EMAIL", providerAccountId: email } },
-      select: { passwordHash: true, user: { select: USER_SELECT } },
+    return this.googleTransaction(async tx => {
+      const account = await tx.account.findUnique({ where: { provider_providerAccountId: { provider: "EMAIL", providerAccountId: email } }, select: { passwordHash: true, user: { select: AUTH_SELECT } } });
+      const passwordMatches = await compare(dto.password, account?.passwordHash ?? await this.dummyHash);
+      if (!account?.passwordHash || !passwordMatches) throw new UnauthorizedException("Неверный email или пароль");
+      if (account.user.archivedAt && !restore) throw new ForbiddenException("Аккаунт архивирован. Выберите восстановление аккаунта.");
+      if (restore && account.user.archivedAt) await tx.user.update({ where: { id: account.user.id }, data: { archivedAt: null } });
+      const tokens = this.newTokens();
+      await tx.authSession.create({ data: { userId: account.user.id, ...this.sessionData(tokens) } });
+      return { user: visibleUser(account.user), ...tokens };
     });
-    const passwordMatches = await compare(
-      dto.password,
-      account?.passwordHash ?? (await this.dummyHash),
-    );
-    if (!account?.passwordHash || !passwordMatches) {
-      throw new UnauthorizedException("Неверный email или пароль");
-    }
-
-    const tokens = this.newTokens();
-    await this.prisma.authSession.create({
-      data: { userId: account.user.id, ...this.sessionData(tokens) },
-    });
-    return { user: account.user, ...tokens };
   }
 
   async googleAccount(userId: string) {
@@ -123,19 +119,22 @@ export class AuthService {
     return { connected: !!account };
   }
 
-  async signInWithGoogle(identity: GoogleIdentity): Promise<AuthResult> {
+  async signInWithGoogle(identity: GoogleIdentity, restore = false): Promise<AuthResult> {
     const tokens = this.newTokens();
     const user = await this.googleTransaction(async tx => {
-      const account = await tx.account.findUnique({ where: { provider_providerAccountId: { provider: "GOOGLE", providerAccountId: identity.subject } }, select: { user: { select: USER_SELECT } } });
+      const account = await tx.account.findUnique({ where: { provider_providerAccountId: { provider: "GOOGLE", providerAccountId: identity.subject } }, select: { user: { select: AUTH_SELECT } } });
       let user = account?.user;
+      if (user?.archivedAt && !restore) throw new ForbiddenException("Аккаунт архивирован. Выберите восстановление аккаунта.");
+      if (user?.archivedAt && restore) { await tx.user.update({ where: { id: user.id }, data: { archivedAt: null } }); }
+      if (!user && restore) throw new UnauthorizedException("Не удалось восстановить аккаунт");
       if (!user) {
         const existing = await tx.user.findFirst({ where: { email: { equals: identity.email, mode: "insensitive" } }, select: { id: true } });
         if (existing) throw new ConflictException("Этот email уже есть. Войдите с паролем и подключите Google в настройках.");
         user = await tx.user.create({ data: { email: identity.email, emailVerified: identity.authoritativeEmail ? new Date() : null, role: "USER",
-          accounts: { create: { provider: "GOOGLE", providerAccountId: identity.subject } } }, select: USER_SELECT });
+          accounts: { create: { provider: "GOOGLE", providerAccountId: identity.subject } } }, select: AUTH_SELECT });
       }
       await tx.authSession.create({ data: { userId: user.id, ...this.sessionData(tokens) } });
-      return user;
+      return visibleUser(user);
     });
     return { user, ...tokens };
   }
@@ -175,9 +174,9 @@ export class AuthService {
       const now = new Date();
       const session = await tx.authSession.findUnique({
         where: { refreshTokenHash },
-        include: { user: { select: USER_SELECT } },
+        include: { user: { select: AUTH_SELECT } },
       });
-      if (!session || session.refreshExpiresAt <= now) {
+      if (!session || session.user.archivedAt || session.refreshExpiresAt <= now) {
         throw new UnauthorizedException("Сессия недействительна");
       }
 
@@ -189,7 +188,7 @@ export class AuthService {
       });
       // Compare-and-swap makes a refresh token usable only once, including concurrent requests.
       if (updated.count !== 1) throw new UnauthorizedException("Сессия недействительна");
-      return { user: session.user, ...tokens };
+      return { user: visibleUser(session.user), ...tokens };
     });
   }
 
@@ -227,13 +226,13 @@ export class AuthService {
     if (!isToken(accessToken)) throw new UnauthorizedException();
     const session = await this.prisma.authSession.findUnique({
       where: { accessTokenHash: digest(accessToken) },
-      include: { user: { select: USER_SELECT } },
+      include: { user: { select: AUTH_SELECT } },
     });
     const now = new Date();
-    if (!session || session.accessExpiresAt <= now || session.refreshExpiresAt <= now) {
+    if (!session || session.user.archivedAt || session.accessExpiresAt <= now || session.refreshExpiresAt <= now) {
       throw new UnauthorizedException();
     }
-    return { user: session.user, sessionId: session.id };
+    return { user: visibleUser(session.user), sessionId: session.id };
   }
 
   private checkPasswordLength(password: string): void {

@@ -54,7 +54,20 @@ export class AuthController {
     return this.authService.linkGoogle(user.id, identity, dto.password);
   }
 
-  private async issueGoogleChallenge(response: Response, purpose: "login" | "link", userId?: string) {
+  @Post("restore") @HttpCode(200) @Header("Cache-Control", "no-store")
+  async restore(@Body() dto: CredentialsDto, @Res({ passthrough: true }) response: Response) {
+    return this.sendAuth(await this.authService.login(dto, true), response);
+  }
+  @Post("google/restore-challenge") @HttpCode(200) @Header("Cache-Control", "no-store")
+  async restoreChallenge(@Res({ passthrough: true }) response: Response) { return this.issueGoogleChallenge(response, "restore"); }
+  @Post("google/restore") @HttpCode(200) @Header("Cache-Control", "no-store")
+  async restoreGoogle(@Body() dto: GoogleCredentialDto, @Req() request: Request, @Res({ passthrough: true }) response: Response) {
+    const identity = await this.google.verify(dto.credential, this.readCookie(request, GOOGLE_NONCE_COOKIE), "restore");
+    response.clearCookie(GOOGLE_NONCE_COOKIE, this.cookieOptions());
+    return this.sendAuth(await this.authService.signInWithGoogle(identity, true), response);
+  }
+
+  private async issueGoogleChallenge(response: Response, purpose: "login" | "link" | "restore", userId?: string) {
     const result = await this.google.issue(purpose, userId);
     response.cookie(GOOGLE_NONCE_COOKIE, result.nonce, { ...this.cookieOptions(), maxAge: GOOGLE_CHALLENGE_TTL });
     return result;

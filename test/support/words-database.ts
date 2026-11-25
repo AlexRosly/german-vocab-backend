@@ -221,6 +221,7 @@ export function makeWordsDatabase() {
         return { count };
       }),
     },
+    $executeRaw: jest.fn().mockResolvedValue(1), // transaction-local audit attribution
     $transaction: jest.fn(),
   };
   db.$transaction.mockImplementation(async (work: (tx: unknown) => Promise<unknown>, options?: Row) => {

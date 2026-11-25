@@ -55,6 +55,7 @@ model User {
   id                  String    @id @default(cuid())
   email               String?   @unique
   emailVerified       DateTime?
+  archivedAt          DateTime?
   interfaceLanguage   String    @default("ru")
   translationLanguage String    @default("ru")
   timeZone            String    @default("UTC")
@@ -65,6 +66,7 @@ model User {
   updatedAt           DateTime  @updatedAt
 
   importBatches DictionaryImportBatch[]
+  auditEvents WordAuditEvent[]
   accounts     Account[]
   authSessions AuthSession[]
   googleChallenges GoogleAuthChallenge[]
@@ -527,4 +529,23 @@ model PersonalDictionarySettings {
   updatedAt DateTime @updatedAt
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@map("personal_dictionary_settings")
+}
+
+
+model WordAuditEvent {
+  id String @id @default(dbgenerated("(gen_random_uuid())::text"))
+  wordId String
+  wordGerman String
+  entity String
+  action String
+  before Json?
+  after Json?
+  actorId String?
+  actorRole String?
+  transactionId String
+  createdAt DateTime @default(now())
+  actor User? @relation(fields:[actorId],references:[id],onDelete:SetNull)
+  @@index([createdAt(sort:Desc),id(sort:Desc)])
+  @@index([wordId,createdAt(sort:Desc)])
+  @@map("word_audit_events")
 }

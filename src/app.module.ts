@@ -1,3 +1,7 @@
+import { APP_INTERCEPTOR } from "@nestjs/core";
+import { AuditActorInterceptor } from "./audit/audit-context";
+import { WordAuditController } from "./audit/word-audit.controller";
+import { WordAuditService } from "./audit/word-audit.service";
 import { WordOrganizationController } from "./words/word-organization.controller";
 import { WordOrganizationService } from "./words/word-organization.service";
 import { PersonalExampleTranslationsController } from "./words/personal-example-translations.controller";
@@ -41,7 +45,7 @@ import { WordTranslationsService } from "./words/word-translations.service";
 
 @Module({
   imports: [MailModule, OperationsModule, AuthModule, StudyModule, ModerationModule, PreferencesModule],
-  controllers: [WordOrganizationController, PersonalExampleTranslationsController, DictionaryImportSaveController, DictionaryImportController, DictionaryExportController, CollocationsConfigController, CollocationsController, VerbsController, CorrectionsController, PersonalBooksController, PersonalTranslationsController, WordRelationsController, PersonalNotesController, HealthController, WordsController, WordExamplesController, WordTranslationsController],
-  providers: [WordOrganizationService, PersonalExampleTranslationsService, DictionaryImportApplyService, DictionaryImportService, DictionaryExportService, DictionaryExportThrottle, CollocationsService, VerbsService, CorrectionsService, PersonalBooksService, PersonalTranslationsService, WordRelationsService, PersonalNotesService, PrismaService, WordsService, WordExamplesService, WordAccessService, WordTranslationsService],
+  controllers: [WordAuditController, WordOrganizationController, PersonalExampleTranslationsController, DictionaryImportSaveController, DictionaryImportController, DictionaryExportController, CollocationsConfigController, CollocationsController, VerbsController, CorrectionsController, PersonalBooksController, PersonalTranslationsController, WordRelationsController, PersonalNotesController, HealthController, WordsController, WordExamplesController, WordTranslationsController],
+  providers: [{ provide: APP_INTERCEPTOR, useClass: AuditActorInterceptor }, WordAuditService, WordOrganizationService, PersonalExampleTranslationsService, DictionaryImportApplyService, DictionaryImportService, DictionaryExportService, DictionaryExportThrottle, CollocationsService, VerbsService, CorrectionsService, PersonalBooksService, PersonalTranslationsService, WordRelationsService, PersonalNotesService, PrismaService, WordsService, WordExamplesService, WordAccessService, WordTranslationsService],
 })
 export class AppModule {}

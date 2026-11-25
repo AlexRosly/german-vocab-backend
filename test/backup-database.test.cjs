@@ -44,3 +44,9 @@ test('personal tags and dictionary settings survive database SQL backup',()=>{
  const sql=sqlBackup({data:{personal_word_tags:[{userId:'synthetic-user',wordId:'synthetic-word',titles:['Exam'],revision:'test'}],personal_dictionary_settings:[{userId:'synthetic-user',lessonNames:[{book:'Book',lessonNumber:2,name:'Work'}],neutralColor:'#123456',revision:'test'}]},checks:[]},'-- Synthetic schema');
  assert(sql.includes('INSERT INTO "public"."personal_word_tags"'));assert(sql.includes('INSERT INTO "public"."personal_dictionary_settings"'));assert(sql.includes('Exam'));assert(sql.includes('#123456'));
 });
+
+test('audit data and executable definitions are restored in the correct order',()=>{
+ const {tables,sqlBackup}=require('../scripts/backup-database.cjs');assert.equal(tables.filter(t=>t==='word_audit_events').length,1);
+ const sql=sqlBackup({data:{word_audit_events:[{id:'event',wordId:'word',wordGerman:'Haus',entity:'words',action:'UPDATE',transactionId:'1'}]},checks:[],auditDefinitions:['CREATE FUNCTION synthetic_audit() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RETURN NULL; END $$','CREATE TRIGGER synthetic_trigger AFTER UPDATE ON words FOR EACH ROW EXECUTE FUNCTION synthetic_audit()']},'-- Synthetic schema');
+ assert(sql.indexOf('INSERT INTO "public"."word_audit_events"')<sql.indexOf('CREATE FUNCTION synthetic_audit'));assert(sql.indexOf('CREATE FUNCTION synthetic_audit')<sql.indexOf('CREATE TRIGGER synthetic_trigger'));assert(sql.endsWith('COMMIT;\n'));
+});

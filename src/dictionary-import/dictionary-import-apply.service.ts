@@ -1,3 +1,4 @@
+import { setAuditActor } from "../audit/audit-context";
 import { importOrganization } from "./organization-import";
 import { organizationReady } from "../words/organization-data";
 import { importPersonalExampleTranslations } from "./personal-example-import";
@@ -35,7 +36,7 @@ export class DictionaryImportApplyService implements OnModuleInit, OnModuleDestr
   async ready(){return importSchemaReady(this.prisma);}
   private async requireReady(){if(!await this.ready())throw new ServiceUnavailableException("dictionary_import_not_ready");}
   private async transaction<T>(work:(tx:Prisma.TransactionClient)=>Promise<T>):Promise<T>{
-    for(let i=0;i<4;i++)try{return await this.prisma.$transaction(work,{isolationLevel:Prisma.TransactionIsolationLevel.Serializable,maxWait:10000,timeout:60000});}
+    for(let i=0;i<4;i++)try{return await this.prisma.$transaction(async tx=>{await setAuditActor(tx);return work(tx)},{isolationLevel:Prisma.TransactionIsolationLevel.Serializable,maxWait:10000,timeout:60000});}
     catch(e){if(!transactionConflict(e)){if(e instanceof HttpException)throw e;throw new ServiceUnavailableException("dictionary_import_failed");}if(i===3)throw new ConflictException("dictionary_import_concurrent_change");}
     throw new ConflictException("dictionary_import_concurrent_change");
   }
