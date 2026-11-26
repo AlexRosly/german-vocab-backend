@@ -135,6 +135,7 @@ model Word {
   createdAt         DateTime              @default(now())
   updatedAt         DateTime              @updatedAt
 
+  image WordImage?
   creator      User?              @relation("WordCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
   bookSources WordSourceBook[]
   verbForms WordVerbForm[]
@@ -548,4 +549,20 @@ model WordAuditEvent {
   @@index([createdAt(sort:Desc),id(sort:Desc)])
   @@index([wordId,createdAt(sort:Desc)])
   @@map("word_audit_events")
+}
+
+
+// Only metadata lives in Neon; sanitized WebP files live in the backed-up project storage.
+model WordImage {
+  wordId String @id
+  storageKey String @unique @db.VarChar(64)
+  sha256 String @db.VarChar(64)
+  bytes Int
+  width Int
+  height Int
+  revision String @unique @db.VarChar(36)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  word Word @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  @@map("word_images")
 }

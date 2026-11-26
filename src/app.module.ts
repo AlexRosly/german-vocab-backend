@@ -1,3 +1,6 @@
+import { WordImagesService } from "./words/word-images.service";
+import { WordImageStore } from "./words/word-image-store";
+import { WordImagesController, WordImagesConfigController } from "./words/word-images.controller";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { AuditActorInterceptor } from "./audit/audit-context";
 import { WordAuditController } from "./audit/word-audit.controller";
@@ -45,7 +48,7 @@ import { WordTranslationsService } from "./words/word-translations.service";
 
 @Module({
   imports: [MailModule, OperationsModule, AuthModule, StudyModule, ModerationModule, PreferencesModule],
-  controllers: [WordAuditController, WordOrganizationController, PersonalExampleTranslationsController, DictionaryImportSaveController, DictionaryImportController, DictionaryExportController, CollocationsConfigController, CollocationsController, VerbsController, CorrectionsController, PersonalBooksController, PersonalTranslationsController, WordRelationsController, PersonalNotesController, HealthController, WordsController, WordExamplesController, WordTranslationsController],
-  providers: [{ provide: APP_INTERCEPTOR, useClass: AuditActorInterceptor }, WordAuditService, WordOrganizationService, PersonalExampleTranslationsService, DictionaryImportApplyService, DictionaryImportService, DictionaryExportService, DictionaryExportThrottle, CollocationsService, VerbsService, CorrectionsService, PersonalBooksService, PersonalTranslationsService, WordRelationsService, PersonalNotesService, PrismaService, WordsService, WordExamplesService, WordAccessService, WordTranslationsService],
+  controllers: [WordImagesController, WordImagesConfigController, WordAuditController, WordOrganizationController, PersonalExampleTranslationsController, DictionaryImportSaveController, DictionaryImportController, DictionaryExportController, CollocationsConfigController, CollocationsController, VerbsController, CorrectionsController, PersonalBooksController, PersonalTranslationsController, WordRelationsController, PersonalNotesController, HealthController, WordsController, WordExamplesController, WordTranslationsController],
+  providers: [WordImagesService, WordImageStore, { provide: APP_INTERCEPTOR, useClass: AuditActorInterceptor }, WordAuditService, WordOrganizationService, PersonalExampleTranslationsService, DictionaryImportApplyService, DictionaryImportService, DictionaryExportService, DictionaryExportThrottle, CollocationsService, VerbsService, CorrectionsService, PersonalBooksService, PersonalTranslationsService, WordRelationsService, PersonalNotesService, PrismaService, WordsService, WordExamplesService, WordAccessService, WordTranslationsService],
 })
 export class AppModule {}

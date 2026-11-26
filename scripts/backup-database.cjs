@@ -7,7 +7,8 @@ const legacyTables=['users','accounts','auth_sessions','google_auth_challenges',
 const priorTables=[...legacyTables,'dictionary_import_batches','word_lexeme_guards'];
 const exampleTables=[...priorTables,'personal_example_translations'];
 const organizationTables=[...exampleTables,'personal_word_tags','personal_dictionary_settings'];
-const tables=[...organizationTables,'word_audit_events'];
+const auditTables=[...organizationTables,'word_audit_events'];
+const tables=[...auditTables,'word_images'];
 const hash=value=>createHash('sha256').update(value).digest('hex');
 function canonical(value){return Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(k=>[k,canonical(value[k])])):value}
 const tableHash=rows=>hash(rows.map(row=>JSON.stringify(canonical(row))).sort().join('\n'));
@@ -44,7 +45,7 @@ async function main(argv=process.argv.slice(2)){
  try{snapshot=await prisma.$transaction(async tx=>{
   await tx.$executeRawUnsafe('SET TRANSACTION READ ONLY');
   const found=await tx.$queryRaw`SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY tablename`;
-  if(![legacyTables,priorTables,exampleTables,organizationTables,tables].some(list=>JSON.stringify(found.map(r=>r.tablename).sort())===JSON.stringify([...list].sort())))throw new Error('Public table list differs from this application schema; inspect before backup');
+  if(![legacyTables,priorTables,exampleTables,organizationTables,auditTables,tables].some(list=>JSON.stringify(found.map(r=>r.tablename).sort())===JSON.stringify([...list].sort())))throw new Error('Public table list differs from this application schema; inspect before backup');
   const data={};for(const table of found.map(r=>r.tablename)){const rows=await tx.$queryRawUnsafe(`SELECT to_jsonb(t) AS row FROM public.${ident(table)} t`);data[table]=rows.map(r=>r.row)}
   const checks=await tx.$queryRaw`SELECT t.relname AS table_name,c.conname AS name,pg_get_constraintdef(c.oid,true) AS definition FROM pg_constraint c JOIN pg_class t ON t.oid=c.conrelid JOIN pg_namespace n ON n.oid=t.relnamespace WHERE n.nspname='public' AND c.contype='c' ORDER BY t.relname,c.conname`;
   const columns=await tx.$queryRaw`SELECT table_name,column_name,ordinal_position,data_type,udt_name,is_nullable,column_default FROM information_schema.columns WHERE table_schema='public' ORDER BY table_name,ordinal_position`;
@@ -52,7 +53,7 @@ async function main(argv=process.argv.slice(2)){
   if(data.word_audit_events){
    const functions=await tx.$queryRawUnsafe("SELECT pg_get_functiondef(p.oid) AS definition FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.proname='wortkarten_audit_word_change' AND p.pronargs=0");
    const triggers=await tx.$queryRawUnsafe("SELECT pg_get_triggerdef(t.oid,true) AS definition FROM pg_trigger t JOIN pg_proc p ON p.oid=t.tgfoid JOIN pg_namespace n ON n.oid=p.pronamespace WHERE NOT t.tgisinternal AND n.nspname='public' AND p.proname='wortkarten_audit_word_change' ORDER BY t.tgname");
-   if(functions.length!==1||triggers.length!==9)throw new Error('Audit definitions incomplete; inspect before backup');
+   if(functions.length!==1||triggers.length!==(data.word_images?10:9))throw new Error('Audit definitions incomplete; inspect before backup');
    auditDefinitions.push(...functions.map(r=>r.definition),...triggers.map(r=>r.definition));
   }
   return {version:1,createdAt:new Date().toISOString(),host:target.hostname,readOnly:true,data,checks,columns,auditDefinitions};

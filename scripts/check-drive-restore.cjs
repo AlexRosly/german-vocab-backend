@@ -99,7 +99,16 @@ async function runRestore(config,{run=execute,checkOnly=false,notify=()=>{}}={})
     const output=docker('exec',container,'psql','--host','/var/run/postgresql','--username','postgres','--dbname','wortkarten_restore','-X','-qAt','--set','ON_ERROR_STOP=1','--command',verifySql);
     const counts=json(output);for(const k of ['words','examples','users','dictionaryEntries','sessions','answers','progress','migrations'])if(!Number.isSafeInteger(counts[k])||counts[k]<0)throw Error('restore_counts_invalid');
     if(!counts.words||!counts.users)throw Error('restore_data_missing');
-    const report={restored:true,restoreImage:RESTORE_IMAGE,serverVersion,completedAt:new Date().toISOString(),backup:source.Name,cloudDownloadVerified:true,sha256:{database:downloaded.database.sha256,project:downloaded.project.sha256},...project,counts};
+    const hasImages=docker('exec',container,'psql','--host','/var/run/postgresql','--username','postgres','--dbname','wortkarten_restore','-X','-qAt','--set','ON_ERROR_STOP=1','--command',"SELECT to_regclass('public.word_images') IS NOT NULL");
+    if(!['t','f'].includes(hasImages))throw Error('restore_image_schema_invalid');
+    let imageFilesVerified=0;
+    if(hasImages==='t'){
+      step='image_verification';
+      const references=docker('exec',container,'psql','--host','/var/run/postgresql','--username','postgres','--dbname','wortkarten_restore','-X','-qAt','--set','ON_ERROR_STOP=1','--command',`SELECT COALESCE(json_agg(json_build_object('key',"storageKey",'bytes',bytes,'sha256',sha256)),'[]'::json) FROM public.word_images`);
+      imageFilesVerified=json(call('python3',[path.resolve(__dirname,'../deploy/backup/verify-image-files.py'),path.join(directory,'project-restored')],{input:references})).imageFilesVerified;
+      if(!Number.isSafeInteger(imageFilesVerified)||imageFilesVerified<0)throw Error('restore_images_invalid');
+    }
+    const report={restored:true,restoreImage:RESTORE_IMAGE,serverVersion,imageFilesVerified,completedAt:new Date().toISOString(),backup:source.Name,cloudDownloadVerified:true,sha256:{database:downloaded.database.sha256,project:downloaded.project.sha256},...project,counts};
     own();step='cleanup';docker('rm','--force','--volumes',container);cleaned=true;
     fs.writeFileSync(path.join(directory,'report.json'),JSON.stringify(report,null,2),{mode:0o600});
     return {...report,directory};

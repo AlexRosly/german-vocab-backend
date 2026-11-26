@@ -3,3 +3,5 @@ dist/
 .env
 coverage/
 *.tsbuildinfo
+
+storage/word-images/

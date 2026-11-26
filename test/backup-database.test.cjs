@@ -50,3 +50,11 @@ test('audit data and executable definitions are restored in the correct order',(
  const sql=sqlBackup({data:{word_audit_events:[{id:'event',wordId:'word',wordGerman:'Haus',entity:'words',action:'UPDATE',transactionId:'1'}]},checks:[],auditDefinitions:['CREATE FUNCTION synthetic_audit() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RETURN NULL; END $$','CREATE TRIGGER synthetic_trigger AFTER UPDATE ON words FOR EACH ROW EXECUTE FUNCTION synthetic_audit()']},'-- Synthetic schema');
  assert(sql.indexOf('INSERT INTO "public"."word_audit_events"')<sql.indexOf('CREATE FUNCTION synthetic_audit'));assert(sql.indexOf('CREATE FUNCTION synthetic_audit')<sql.indexOf('CREATE TRIGGER synthetic_trigger'));assert(sql.endsWith('COMMIT;\n'));
 });
+
+
+test('image metadata and image audit trigger survive database SQL backup',()=>{
+ const {tables,sqlBackup}=require('../scripts/backup-database.cjs');assert.equal(tables.filter(t=>t==='word_images').length,1);
+ const row={wordId:'w',storageKey:'12345678-1234-4234-9234-123456789abc.webp',sha256:'a'.repeat(64),bytes:30,width:40,height:40,revision:'12345678-1234-4234-9234-123456789abc'};
+ const sql=sqlBackup({data:{word_images:[row]},checks:[],auditDefinitions:['CREATE TRIGGER wk_audit_word_images AFTER INSERT ON word_images FOR EACH ROW EXECUTE FUNCTION wortkarten_audit_word_change()']},'-- Synthetic schema');
+ assert(sql.includes('INSERT INTO "public"."word_images"'));assert(sql.includes(row.storageKey));assert(sql.includes('CREATE TRIGGER wk_audit_word_images'));
+});
